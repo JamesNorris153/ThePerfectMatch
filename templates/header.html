@@ -1,0 +1,30 @@
+<script>
+  function toggleHamburger(element) {
+    $(element).parent().parent().find('.navbar-menu').toggleClass('is-active');
+    $(element).toggleClass('is-active');
+  }
+</script>
+<nav class="navbar is-info is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item">
+      LOGO
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" onclick="toggleHamburger(this);">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/staff/roles">Roles</a>
+      <a class="navbar-item" href="/staff/applicants">Applicants</a>
+      <a class="navbar-item" href="/staff/reports">Reports</a>
+      <a class="navbar-item" href="/staff/tests">Tests</a>
+    </div>
+    <div class="navbar-end">
+      <a class="navbar-item" href="/staff/settings">Settings</a>
+      <a class="navbar-item" href="/staff/login">Logout</a>
+    </div>
+  </div>
+</nav>
