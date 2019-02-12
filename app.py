@@ -31,7 +31,7 @@ def page_not_found(e):
 
 ## Jobs page - default page for users not logged in
 @app.route('/applicant/jobs')
-def show_jobs_page():
+def show_applicant_jobs_page():
     return render_template("applicant_jobs.html")
 
 ## Applicant Portal
@@ -43,6 +43,11 @@ def show_applicant_login_page():
 @app.route('/staff/login')
 def show_staff_login_page():
     return render_template("staff_portal.html")
+
+## Jobs page - default page for users not logged in
+@app.route('/staff/jobs')
+def show_staff_jobs_page():
+    return render_template("staff_jobs.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
