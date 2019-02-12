@@ -44,10 +44,15 @@ def show_applicant_login_page():
 def show_staff_login_page():
     return render_template("staff_portal.html")
 
-## Jobs page - default page for users not logged in
+## Staff jobs page
 @app.route('/staff/jobs')
 def show_staff_jobs_page():
     return render_template("staff_jobs.html")
+
+@app.route('/staff/candidates')
+def show_staff_candidates_page():
+    return render_template("staff_candidates.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)

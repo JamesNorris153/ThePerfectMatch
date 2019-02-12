@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="/static/css/bulma.css">
+  <script src="/static/js/jquery-3.3.1.min.js"></script>
+  <title>BRAND Candidates</title>
+</head>
+<style>
+</style>
+<body class="has-navbar-fixed-top">
+  {% include 'header.html' %}
+  <table class="table is-hoverable is-fullwidth is-bordered is-striped">
+  <thead>
+    <tr>
+      <th>Job</th>
+      <th>Candidate</th>
+      <th>Score</th>
+      <th>
+        Actions
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Software Engineer</td>
+      <td>John Smith</td>
+      <td>500</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Show CV</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Like</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Dislike</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Analyst</td>
+      <td>Jack Daniels</td>
+      <td>430</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Show CV</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Like</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Dislike</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Software Engineer</td>
+      <td>Jane Doe</td>
+      <td>300</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Show CV</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Like</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small" style="margin:2px">Dislike</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>
