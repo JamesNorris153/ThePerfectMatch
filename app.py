@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS
 #Example for importing methods
-#from models import get_users, create_user, get_user
+from models.users import get_users, create_user, get_user
 
 app = Flask(__name__, static_url_path='/static')
 
