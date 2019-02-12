@@ -10,12 +10,13 @@ CORS(app)
 ## Sends static files when necessary
 @app.route('/static/<path:path>')
 def send_js(path):
-    return send_from_directory('static',path)
+	return send_from_directory('static',path)
 
 ## Landing page
 @app.route('/')
 def index():
-    return render_template('index.html')
+	print("test")
+	return render_template('index.html')
 
 ## Internal server error
 @app.errorhandler(500)
