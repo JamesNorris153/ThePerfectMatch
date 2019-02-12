@@ -32,7 +32,7 @@ def page_not_found(e):
 ## Jobs page - default page for users not logged in
 @app.route('/applicant/jobs')
 def show_jobs_page():
-    return render_template("jobs.html")
+    return render_template("applicant_jobs.html")
 
 ## Applicant Portal
 @app.route('/applicant/login')
