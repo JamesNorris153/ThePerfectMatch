@@ -1,0 +1,16 @@
+.loginForm {
+  max-width:450px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.loginForm * {
+  margin-bottom:5px;
+}
+.registerForm {
+  max-width:450px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.registerForm * {
+  margin-bottom:5px;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="/static/js/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/static/css/bulma.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/login.css">
+  <title>Applicant Portal</title>
+</head>
+<script>
+  function swapForm() {
+  $('.registerForm').toggleClass('is-hidden');
+  $('.loginForm').toggleClass('is-hidden');
+}
+</script>
+<body>
+  <div class="hero">
+    <div class="hero-head">
+      <a class="tag" href="/applicant/jobs">Back to jobs</a>
+      <a class="tag" href="/staff/login">Looking for the staff portal?</a>
+    </div>
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <p class="subtitle">Applicant Portal</p>
+        <form class="box loginForm">
+          <input class="input is-rounded" type="text" placeholder="Email Address">
+          <input class="input is-rounded" type="password" placeholder="Password">
+          <a class="button is-info is-rounded">Login</a>
+          <div class="level">
+            <a class="level-left is-info is-rounded is-small">Forgot your password?</a>
+            <a class="level-right is-info is-rounded is-small" onclick="swapForm();">Sign Up</a>
+          </div>
+        </form>
+        <form class="box registerForm is-hidden">
+          <input class="input is-rounded" type="text" placeholder="First Name">
+          <input class="input is-rounded" type="text" placeholder="Surname">
+          <input class="input is-rounded" type="text" placeholder="Email Address">
+          <input class="input is-rounded" type="password" placeholder="Password">
+          <input class="input is-rounded" type="password" placeholder="Confirm Password">
+          <a class="button is-info is-rounded">Sign Up</a>
+          <div class="level">
+            <a class="is-info is-rounded is-small" onclick="swapForm();">Already have an account?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

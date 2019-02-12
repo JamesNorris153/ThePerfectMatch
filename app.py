@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from flask_cors import CORS
+
 #Example for importing methods
 from models.users import get_users, create_user, get_user
 
@@ -15,7 +16,8 @@ def send_js(path):
 ## Landing page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Might be worth checking if user is already logged in -> Take to correct access page
+    return redirect("/applicant/jobs")
 
 ## Internal server error
 @app.errorhandler(500)
@@ -28,9 +30,19 @@ def page_not_found(e):
     return render_template("404.html")
 
 ## Jobs page - default page for users not logged in
-@app.route('/jobs')
+@app.route('/applicant/jobs')
 def show_jobs_page():
     return render_template("jobs.html")
+
+## Applicant Portal
+@app.route('/applicant/login')
+def show_applicant_login_page():
+    return render_template("applicant_portal.html")
+
+# Staff Portal
+@app.route('/staff/login')
+def show_staff_login_page():
+    return render_template("staff_portal.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
