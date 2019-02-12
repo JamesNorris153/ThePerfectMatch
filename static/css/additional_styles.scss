@@ -1,5 +1,4 @@
 // To compile: sass --no-source-map additional_styles.scss:bulma.css
-
 @charset "utf-8";
 @import "bulma/bulma.sass";
 
@@ -7,12 +6,10 @@ $yellow: #fff07c;
 $green: #82ff9e;
 $pink: #ff729f;
 $mid_blue: #75dddd;
-// $cyan
-// $turquoise
 
 // PRIMARY COLOURS
 $primary: $turquoise;
-$link: mid_blue;
+$link: $mid_blue;
 $info: $cyan;
 $success: $green;
 $warning: $yellow;
@@ -21,6 +18,7 @@ $dark: $grey-darker;
 $text: $grey-dark;
 $background: $white-ter;
 
+// TABLE VARIABLES
 
 // ADDITIONAL CLASSES
 .noMargin {
