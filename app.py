@@ -27,5 +27,10 @@ def internal_server_error(e):
 def page_not_found(e):
     return render_template("404.html")
 
+## Jobs page - default page for users not logged in
+@app.route('/jobs')
+def show_jobs_page():
+    return render_template("jobs.html")
+
 if __name__ == '__main__':
     app.run(debug=True)
