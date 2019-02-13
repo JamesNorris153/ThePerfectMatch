@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS
+from models import authenticate
 #Example for importing methods
 #from models import get_users, create_user, get_user
 
@@ -13,10 +14,21 @@ def send_js(path):
 	return send_from_directory('static',path)
 
 ## Landing page
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-	print("test")
-	return render_template('index.html')
+
+	if request.method == "GET":
+		return render_template('index.html')
+
+	if request.method == "GET":
+		username = request.form.get('username')
+		password = request.form.get('password')
+		if authenticate(username, password):
+			return 'Template not yet implemented'
+		else:
+			return render_template('index.html', error = "Incorrect username or password")
+
+@app.route('/', methods=['POST'])
 
 ## Internal server error
 @app.errorhandler(500)

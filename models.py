@@ -26,3 +26,7 @@ ROOT = path.dirname(path.relpath((__file__)))
 #     user = cur.fetchall()
 #     con.close()
 #     return user
+
+def authenticate(username, password):
+	# not implemented yet
+	return True
