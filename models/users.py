@@ -26,3 +26,7 @@ def get_user(id):
     user = cur.fetchall()
     con.close()
     return user
+
+def authenticate_user(email, password):
+	# not implemented yet
+	return True
