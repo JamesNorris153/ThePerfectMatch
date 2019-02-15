@@ -6,7 +6,7 @@ from flask_cors import CORS
 from models import authenticate
 >>>>>>> james
 #Example for importing methods
-from models.users import get_users, create_user, get_user
+from users import get_users, create_user, get_user
 
 app = Flask(__name__, static_url_path='/static')
 
