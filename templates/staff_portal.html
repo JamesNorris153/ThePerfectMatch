@@ -16,10 +16,11 @@
     <div class="hero-body">
       <div class="container has-text-centered">
         <p class="subtitle">Staff Portal</p>
-        <form class="box loginForm">
+        <form class="box loginForm" action="/staff/login" method="POST">
           <input class="input is-rounded" type="text" placeholder="Email Address">
           <input class="input is-rounded" type="password" placeholder="Password">
-          <a class="button is-info is-rounded">Login</a>
+          <input class="button is-info is-rounded" type="submit" value="Login">
+		  <p>{{ error }}</p>
           <div class="level">
             <a class="is-info is-rounded is-small">Forgot your password?</a>
           </div>

@@ -22,22 +22,24 @@
     <div class="hero-body">
       <div class="container has-text-centered">
         <p class="subtitle">Applicant Portal</p>
-        <form class="box loginForm">
-          <input class="input is-rounded" type="text" placeholder="Email Address">
-          <input class="input is-rounded" type="password" placeholder="Password">
-          <a class="button is-info is-rounded">Login</a>
+        <form class="box loginForm" action ="/applicant/login" method="POST">
+          <input class="input is-rounded" type="text" placeholder="Email Address" name="email">
+          <input class="input is-rounded" type="password" placeholder="Password" name="password">
+          <input class="button is-info is-rounded" type="submit" value="Login">
+		  <p>{{ error }}</p>
           <div class="level">
             <a class="level-left is-info is-rounded is-small">Forgot your password?</a>
             <a class="level-right is-info is-rounded is-small" onclick="swapForm();">Sign Up</a>
           </div>
-        </form>
-        <form class="box registerForm is-hidden">
-          <input class="input is-rounded" type="text" placeholder="First Name">
-          <input class="input is-rounded" type="text" placeholder="Surname">
-          <input class="input is-rounded" type="text" placeholder="Email Address">
-          <input class="input is-rounded" type="password" placeholder="Password">
-          <input class="input is-rounded" type="password" placeholder="Confirm Password">
-          <a class="button is-info is-rounded">Sign Up</a>
+		</form>
+        <form class="box registerForm is-hidden" action="/applicant/register" method="POST">
+          <input class="input is-rounded" type="text" placeholder="First Name" name="first_name">
+          <input class="input is-rounded" type="text" placeholder="Surname" name="last_name">
+          <input class="input is-rounded" type="text" placeholder="Email Address" name="email">
+          <input class="input is-rounded" type="password" placeholder="Password" name="password">
+          <input class="input is-rounded" type="password" placeholder="Confirm Password" name="confirm_password">
+          <input class="button is-info is-rounded" type="submit" value="Sign Up">
+		  <p>{{ error }}</p>
           <div class="level">
             <a class="is-info is-rounded is-small" onclick="swapForm();">Already have an account?</a>
           </div>

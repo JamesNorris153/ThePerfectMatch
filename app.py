@@ -1,12 +1,9 @@
 from flask import Flask, render_template, request, redirect
 from flask_cors import CORS
-<<<<<<< HEAD
-
-=======
-from models import authenticate
->>>>>>> james
 #Example for importing methods
-from users import get_users, create_user, get_user
+from users import get_users, create_user, get_user, authenticate_user
+from admins import authenticate_admin
+from applicant import applicant
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -20,19 +17,7 @@ def send_js(path):
 ## Landing page
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # Might be worth checking if user is already logged in -> Take to correct access page
-    return redirect("/applicant/jobs")
-
-	if request.method == "GET":
-		return render_template('index.html')
-
-	if request.method == "GET":
-		username = request.form.get('username')
-		password = request.form.get('password')
-		if authenticate(username, password):
-			return 'Template not yet implemented'
-		else:
-			return render_template('index.html', error = "Incorrect username or password")
+	return render_template("index.html")
 
 ## Internal server error
 @app.errorhandler(500)
@@ -50,14 +35,49 @@ def show_applicant_jobs_page():
     return render_template("applicant_jobs.html")
 
 ## Applicant Portal
-@app.route('/applicant/login')
+@app.route('/applicant/login', methods=["GET", "POST"])
 def show_applicant_login_page():
-    return render_template("applicant_portal.html")
+	if request.method == "GET":
+		return render_template("applicant_portal.html")
+
+	if request.method == "POST":
+		email = request.form.get('email')
+		password = request.form.get('password')
+		if authenticate_user(email, password):
+			return "Template not yet implemented"
+		else:
+			return render_template("applicant_portal.html", error="Incorrect username or password")
+
+@app.route('/applicant/register', methods=["POST"])
+def register_applicant():
+	# TODO: check whether a user is already registered under this email
+	email = request.form.get('email')
+	password = request.form.get('password')
+	confirm_password = request.form.get('confirm_password')
+
+	if password != confirm_password:
+		return render_template("applicant_portal.html", error="Password's entered do not match")
+
+	first_name = request.form.get('first_name')
+	last_name = request.form.get('last_name')
+	new = applicant(first_name, last_name, email, password)
+	create_user(new)
+	return render_template("applicant_portal.html")
+
 
 # Staff Portal
-@app.route('/staff/login')
+@app.route('/staff/login', methods=["GET", "POST"])
 def show_staff_login_page():
-    return render_template("staff_portal.html")
+	if request.method == "GET":
+		return render_template("staff_portal.html")
+
+	if request.method == "POST":
+		email = request.form.get('email')
+		password = request.form.get('password')
+		if authenticate_admin(email, password):
+			return "Template not yet implemented"
+		else:
+			return render_template("staff_portal.html", error="Incorrect username or password")
 
 ## Staff jobs page
 @app.route('/staff/jobs')
