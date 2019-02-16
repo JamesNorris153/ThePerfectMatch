@@ -15,7 +15,7 @@ def send_js(path):
 	return send_from_directory('static',path)
 
 ## Landing page
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
 	return render_template("index.html")
 
@@ -44,7 +44,7 @@ def show_applicant_login_page():
 		email = request.form.get('email')
 		password = request.form.get('password')
 		if authenticate_user(email, password):
-			return "Template not yet implemented"
+			return redirect("/applicant/jobs")
 		else:
 			return render_template("applicant_portal.html", error="Incorrect username or password")
 
@@ -62,7 +62,7 @@ def register_applicant():
 	last_name = request.form.get('last_name')
 	new = applicant(first_name, last_name, email, password)
 	create_user(new)
-	return render_template("applicant_portal.html")
+	return redirect("/applicant/jobs")
 
 
 # Staff Portal
@@ -75,7 +75,7 @@ def show_staff_login_page():
 		email = request.form.get('email')
 		password = request.form.get('password')
 		if authenticate_admin(email, password):
-			return "Template not yet implemented"
+			return redirect("/staff/jobs")
 		else:
 			return render_template("staff_portal.html", error="Incorrect username or password")
 

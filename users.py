@@ -7,7 +7,7 @@ ROOT = path.dirname(path.relpath((__file__)))
 def create_user(applicant):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT INTO users (email,name) VALUES (?,?)',(applicant.email,applicant.first_name))
+    cur.execute('INSERT INTO users (email,first_name,last_name,password) VALUES (?,?)',(applicant.email,applicant.first_name,applicant.last_name,applicant.password))
     con.commit()
     con.close()
 
@@ -29,4 +29,4 @@ def get_user(id):
 
 def authenticate_user(email, password):
 	# not implemented yet
-	return False
+	return True
