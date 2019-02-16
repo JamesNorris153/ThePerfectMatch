@@ -78,10 +78,14 @@ def show_staff_login_page():
 	if request.method == "POST":
 		email = request.form.get('email')
 		password = request.form.get('password')
+		# if authenticate_admin(email, password):
+		# 	return redirect("/staff/jobs")
+		# else:
+		# 	return render_template("staff_portal.html", error="Incorrect username or password")
 		if authenticate_admin(email, password):
-			return redirect("/staff/jobs")
+			return "Success"
 		else:
-			return render_template("staff_portal.html", error="Incorrect username or password")
+			return "Incorrect username or password"
 
 ## Staff jobs page
 @app.route('/staff/jobs')
