@@ -34,6 +34,11 @@ def page_not_found(e):
 def show_applicant_jobs_page():
     return render_template("applicant_jobs.html")
 
+## CV Page - Let user edit/view their cv
+@app.route('/applicant/cv')
+def show_applicant_cv_page():
+	return render_template("applicant_cv.html")
+
 ## Applicant Portal
 @app.route('/applicant/login', methods=["GET", "POST"])
 def show_applicant_login_page():
