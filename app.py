@@ -43,27 +43,31 @@ def show_applicant_login_page():
 	if request.method == "POST":
 		email = request.form.get('email')
 		password = request.form.get('password')
+		# if authenticate_user(email, password):
+		# 	return redirect("/applicant/jobs")
+		# else:
+		# 	return render_template("applicant_portal.html", error="Incorrect username or password")
 		if authenticate_user(email, password):
-			return redirect("/applicant/jobs")
+			return "Success"
 		else:
-			return render_template("applicant_portal.html", error="Incorrect username or password")
+			return "Incorrect username or password"
 
 @app.route('/applicant/register', methods=["POST"])
 def register_applicant():
 	# TODO: check whether a user is already registered under this email
 	email = request.form.get('email')
 	password = request.form.get('password')
-	confirm_password = request.form.get('confirm_password')
+	# confirm_password = request.form.get('confirm_password')
 
-	if password != confirm_password:
-		return render_template("applicant_portal.html", error="Password's entered do not match")
+	# if password != confirm_password:
+		# return render_template("applicant_portal.html", error="Password's entered do not match")
 
 	first_name = request.form.get('first_name')
 	last_name = request.form.get('last_name')
 	new = applicant(first_name, last_name, email, password)
-	create_user(new)
-	return redirect("/applicant/jobs")
-
+	create_user(new) #Method could return information e.g. successful registration, email taken, etc.
+	# return redirect("/applicant/jobs")
+	return "Success"
 
 # Staff Portal
 @app.route('/staff/login', methods=["GET", "POST"])
