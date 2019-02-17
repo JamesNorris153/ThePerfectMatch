@@ -38,6 +38,7 @@ def show_applicant_jobs_page():
 @app.route('/applicant/cv')
 def show_applicant_cv_page():
 	return render_template("applicant_cv.html")
+	# NEEDS TO RETURN TEMPLATE WITH CV + USER ID
 
 ## Applicant Portal
 @app.route('/applicant/login', methods=["GET", "POST"])

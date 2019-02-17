@@ -20,7 +20,27 @@
     newItem = $(element).parent().find(".template").clone().removeClass('template');
     $(newItem).insertBefore(element);
   }
+  function resetModal() {
+    $('#loading_modal').removeClass('is-active');
+    $('#modal_close_button').addClass('is-hidden');
+    $('#loading_bar').removeAttr('value').addClass('is-info').removeClass('is-success').removeClass('is-danger');
+    $('.modal-background').click();
+    $('#modal_message').html('LOADING...');
+  }
+  function loadedModal(state,message) {
+    if (state == "Success") {
+      $('#loading_bar').removeClass('is-info').addClass('is-success');
+    } else {
+      $('#loading_bar').removeClass('is-info').addClass('is-danger');
+    }
+    $('#modal_close_button').removeClass('is-hidden');
+    $('#loading_bar').attr('value','100');
+    $('.modal-background').click(resetModal);
+    $('#modal_message').html(message);
+  }
   function saveChanges() {
+
+    $('#loading_modal').addClass('is-active');
 
     // Reset all errored out boxes
     $('.is-danger:not(.button)').removeClass('is-danger');
@@ -34,7 +54,7 @@
 
     // If there have been any errors thus far, don't try parsing data
     if ($('.is-danger:not(.button)').length != 0) {
-      alert("Some details were not entered correctly, please see the red boxes");
+      loadedModal('Failure','Some details were not entered correctly, please see the red boxes');
       return;
     }
 
@@ -176,7 +196,10 @@
 
     // If some inputs were invalid, don't try create a cv
     if ($('.is-danger:not(.button)').length != 0) {
-      alert("Some inputted values were duplicates, please see the red boxes");
+      $('#modal_close_button').removeClass('is-hidden');
+      $('#loading_bar').attr('value','100');
+      $('.modal-background').click(hideModal);
+      loadedModal('Failure','Some inputted values were duplicates, please see the red boxes');
       return;
     }
 
@@ -195,14 +218,15 @@
       "Hobbies": hobby_details
     };
 
-    alert(JSON.stringify(cv));
+    loadedModal('Success',JSON.stringify(cv));
+
 
     // $.post('/applicant/save_cv', {cv:cv}, function(data) {
     //   if (data == "Success") {
-    //     alert("All Changes Saved");
+    //     loadedModal("Success","All Changes Saved");
     //   } else {
     //     // Data will be error message returned from server
-    //     alert(data);
+    //     loadedModal("Failure",data);
     //   }
     // });
 
@@ -218,6 +242,18 @@
       </a>
     </div>
   </nav>
+
+  <div class="modal" id="loading_modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box has-text-centered">
+        <progress id="loading_bar" class="progress is-large is-info" max="100">50%</progress>
+        <div id="modal_message">LOADING...</div>
+        <button id="modal_close_button" class="modal-close is-large is-hidden" aria-label="close" onclick="resetModal();"></button>
+      </div>
+    </div>
+  </div>
+
 
   <div class="box" id="university_details">
     <p class="title">University</p>
