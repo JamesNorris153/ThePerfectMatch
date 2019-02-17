@@ -36,9 +36,8 @@
     $(invalid_selection_boxes).addClass('is-danger');
     $(valid_selection_boxes).removeClass('is-danger');
 
-    // If some inputs were invalid, don't try consolidate anything yet
     if ($('.is-danger:not(.button)').length != 0) {
-      alert("Some inputs were invalid, please see the red boxes");
+      alert("Some details were not entered correctly, please see the red boxes");
       return;
     }
 
@@ -53,10 +52,25 @@
     $(all_a_levels).each(function() {
       subject_name = $(this).find('input[name="subject_name"]').val();
       grade = $(this).find('div[name="grade"] select option:selected').val();
-      a_level_details.push({
-        "Subject":subject_name,
-        "Grade":grade
-      });
+      duplicate = false;
+      for (each in a_level_details) {
+        // If found in array, must be a duplicate
+        if (a_level_details[each].Subject == subject_name) {
+          duplicate = true;
+        }
+      }
+      // If found to be a duplicate, mark it red
+      if (duplicate) {
+        $(this).find('input[name="subject_name"]').addClass('is-danger');
+        $(this).find('div[name="grade"]').addClass('is-danger');
+      } else {
+        $(this).find('input[name="subject_name"]').removeClass('is-danger');
+        $(this).find('div[name="grade"]').removeClass('is-danger');
+        a_level_details.push({
+          "Subject":subject_name,
+          "Grade":grade
+        });
+      }
     });
 
     // Get all Languages
@@ -65,10 +79,25 @@
     $(all_languages).each(function() {
       language_name = $(this).find('input[name="language_name"]').val();
       expertise = $(this).find('div[name="expertise"] select option:selected').val();
-      language_details.push({
-        "Language":language_name,
-        "Expertise":expertise
-      });
+      duplicate = false;
+      for (each in language_details) {
+        // If found in array, must be a duplicate
+        if (language_details[each].Language == language_name) {
+          duplicate = true;
+        }
+      }
+      // If found to be a duplicate, mark it red
+      if (duplicate) {
+        $(this).find('input[name="language_name"]').addClass('is-danger');
+        $(this).find('div[name="expertise"]').addClass('is-danger');
+      } else {
+        $(this).find('input[name="language_name"]').removeClass('is-danger');
+        $(this).find('div[name="expertise"]').removeClass('is-danger');
+        language_details.push({
+          "Language":language_name,
+          "Expertise":expertise
+        });
+      }
     });
 
     // Get all Employment
@@ -80,11 +109,30 @@
       years = $(this).find('input[name="years"]').val();
       months = $(this).find('input[name="months"]').val();
       employment_length = years+" years "+months+" months";
-      employment_details.push({
-        "Company":company_name,
-        "Position":position_name,
-        "Length of Employment":employment_length
-      });
+      duplicate = false;
+      for (each in employment_details) {
+        // If found in array, must be a duplicate
+        if (employment_details[each].Company == company_name && employment_details[each].Position == position_name) {
+          duplicate = true;
+        }
+      }
+      // If found to be a duplicate, mark it red
+      if (duplicate) {
+        $(this).find('input[name="company_name"]').addClass('is-danger');
+        $(this).find('input[name="position_name"]').addClass('is-danger');
+        $(this).find('input[name="years"]').addClass('is-danger');
+        $(this).find('input[name="months"]').addClass('is-danger');
+      } else {
+        $(this).find('input[name="company_name"]').removeClass('is-danger');
+        $(this).find('input[name="position_name"]').removeClass('is-danger');
+        $(this).find('input[name="years"]').removeClass('is-danger');
+        $(this).find('input[name="months"]').removeClass('is-danger');
+        employment_details.push({
+          "Company":company_name,
+          "Position":position_name,
+          "Length of Employment":employment_length
+        });
+      }
     });
 
     // Get all Skills
@@ -93,10 +141,25 @@
     $(all_skills).each(function() {
       skill_name = $(this).find('input[name="skill_name"]').val();
       expertise = $(this).find('div[name="expertise"] select option:selected').val();
-      skill_details.push({
-        "Skill":skill_name,
-        "Expertise":expertise
-      });
+      duplicate = false;
+      for (each in skill_details) {
+        // If found in array, must be a duplicate
+        if (skill_details[each].Skill == skill_name) {
+          duplicate = true;
+        }
+      }
+      // If found to be a duplicate, mark it red
+      if (duplicate) {
+        $(this).find('input[name="skill_name"]').addClass('is-danger');
+        $(this).find('div[name="expertise"]').addClass('is-danger');
+      } else {
+        $(this).find('input[name="skill_name"]').removeClass('is-danger');
+        $(this).find('div[name="expertise"]').removeClass('is-danger');
+        skill_details.push({
+          "Skill":skill_name,
+          "Expertise":expertise
+        });
+      }
     });
 
     // Get all Hobbies
@@ -105,14 +168,37 @@
     $(all_hobbies).each(function() {
       hobby_name = $(this).find('input[name="hobby_name"]').val();
       interest = $(this).find('div[name="interest"] select option:selected').val();
-      hobby_details.push({
-        "Name":hobby_name,
-        "Interest":interest
-      });
+      duplicate = false;
+      for (each in hobby_details) {
+        // If found in array, must be a duplicate
+        if (hobby_details[each].Name == hobby_name) {
+          duplicate = true;
+        }
+      }
+      // If found to be a duplicate, mark it red
+      if (duplicate) {
+        $(this).find('input[name="hobby_name"]').addClass('is-danger');
+        $(this).find('div[name="interest"]').addClass('is-danger');
+      } else {
+        $(this).find('input[name="hobby_name"]').removeClass('is-danger');
+        $(this).find('div[name="interest"]').removeClass('is-danger');
+        hobby_details.push({
+          "Name":hobby_name,
+          "Interest":interest
+        });
+      }
     });
+
+    // If some inputs were invalid, don't try create a cv
+    if ($('.is-danger:not(.button)').length != 0) {
+      alert("Some inputted values were duplicates, please see the red boxes");
+      return;
+    }
 
     // Create JSON CV
     var cv = {
+      // NEED TO GET USER'S NAME AND ID FROM SOMEWHERE!!!
+      "User_ID": "100",
       "Name": "NAMETY NAME",
       "Degree Qualification": degree,
       "Degree Level": degree_level,
@@ -125,6 +211,16 @@
     };
 
     alert(JSON.stringify(cv));
+
+    // $.post('/applicant/save_cv', {cv:cv}, function(data) {
+    //   if (data == "Success") {
+    //     alert("All Changes Saved");
+    //   } else {
+    //     // Data will be error message returned from server
+    //     alert(data);
+    //   }
+    // });
+
   }
 </script>
 <body class="has-navbar-fixed-top has-navbar-fixed-bottom">
