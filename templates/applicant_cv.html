@@ -14,17 +14,25 @@
 </style>
 <script>
 
-function deleteItem(element) {
-  $(element).parent().parent().parent().remove();
-}
+  function deleteItem(element) {
+    $(element).parent().parent().parent().remove();
+  }
 
-function addItem(element) {
-  newItem = $(element).parent().find(".template").clone().removeClass('template');
-  $(newItem).insertBefore(element);
-}
+  function addItem(element) {
+    newItem = $(element).parent().find(".template").clone().removeClass('template');
+    $(newItem).insertBefore(element);
+  }
 </script>
-<body class="has-navbar-fixed-top">
+<body class="has-navbar-fixed-top has-navbar-fixed-bottom">
   {% include 'header.html' %}
+
+  <nav class="navbar is-success is-fixed-bottom">
+    <div class="navbar-brand">
+      <a class="button is-success subtitle has-text-weight-bold">
+        Save Changes
+      </a>
+    </div>
+  </nav>
 
   <div class="box">
     <p class="title">University</p>
