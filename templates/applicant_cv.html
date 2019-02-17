@@ -13,14 +13,118 @@
   }
 </style>
 <script>
-
   function deleteItem(element) {
     $(element).parent().parent().parent().remove();
   }
-
   function addItem(element) {
     newItem = $(element).parent().find(".template").clone().removeClass('template');
     $(newItem).insertBefore(element);
+  }
+  function saveChanges() {
+
+    // Basic error check for valid inputs
+    all_text_inputs = $('.cv_item:not(.template) input:not(.button)');
+    invalid_inputs = $(all_text_inputs).filter(function() { return $(this).val() == ""; });
+    valid_inputs = $(all_text_inputs).filter(function() { return $(this).val() != ""; });
+
+    $(invalid_inputs).addClass('is-danger');
+    $(valid_inputs).removeClass('is-danger');
+
+    valid_selection_boxes = $('.cv_item:not(.template) .select:has(option:selected:not(.default_option))');
+    invalid_selection_boxes = $('.cv_item:not(.template) .select:has(option:selected.default_option)');
+
+    $(invalid_selection_boxes).addClass('is-danger');
+    $(valid_selection_boxes).removeClass('is-danger');
+
+    // If some inputs were invalid, don't try consolidate anything yet
+    if ($('.is-danger:not(.button)').length != 0) {
+      alert("Some inputs were invalid, please see the red boxes");
+      return;
+    }
+
+    // Get university details
+    university = $('#university_details input[name="university_name"]').val();
+    degree = $('#university_details input[name="degree_name"]').val();
+    degree_level = $('#university_details div[name="degree_level"] select option:selected').val();
+
+    // Get all a-levels
+    all_a_levels = $('.a_level:not(.template)');
+    a_level_details = []
+    $(all_a_levels).each(function() {
+      subject_name = $(this).find('input[name="subject_name"]').val();
+      grade = $(this).find('div[name="grade"] select option:selected').val();
+      a_level_details.push({
+        "Subject":subject_name,
+        "Grade":grade
+      });
+    });
+
+    // Get all Languages
+    all_languages = $('.language:not(.template)');
+    language_details = []
+    $(all_languages).each(function() {
+      language_name = $(this).find('input[name="language_name"]').val();
+      expertise = $(this).find('div[name="expertise"] select option:selected').val();
+      language_details.push({
+        "Language":language_name,
+        "Expertise":expertise
+      });
+    });
+
+    // Get all Employment
+    all_employment = $('.previous_employment:not(.template)');
+    employment_details = []
+    $(all_employment).each(function() {
+      company_name = $(this).find('input[name="company_name"]').val();
+      position_name = $(this).find('input[name="position_name"]').val();
+      years = $(this).find('input[name="years"]').val();
+      months = $(this).find('input[name="months"]').val();
+      employment_length = years+" years "+months+" months";
+      employment_details.push({
+        "Company":company_name,
+        "Position":position_name,
+        "Length of Employment":employment_length
+      });
+    });
+
+    // Get all Skills
+    all_skills = $('.skill:not(.template)');
+    skill_details = []
+    $(all_skills).each(function() {
+      skill_name = $(this).find('input[name="skill_name"]').val();
+      expertise = $(this).find('div[name="expertise"] select option:selected').val();
+      skill_details.push({
+        "Skill":skill_name,
+        "Expertise":expertise
+      });
+    });
+
+    // Get all Hobbies
+    all_hobbies = $('.hobby:not(.template)');
+    hobby_details = []
+    $(all_hobbies).each(function() {
+      hobby_name = $(this).find('input[name="hobby_name"]').val();
+      interest = $(this).find('div[name="interest"] select option:selected').val();
+      hobby_details.push({
+        "Name":hobby_name,
+        "Interest":interest
+      });
+    });
+
+    // Create JSON CV
+    var cv = {
+      "Name": "NAMETY NAME",
+      "Degree Qualification": degree,
+      "Degree Level": degree_level,
+      "University Attended": university,
+      "A-Level Qualifications": a_level_details,
+      "Languages Known": language_details,
+      "Previous Employment": employment_details,
+      "Skills": skill_details,
+      "Hobbies": hobby_details
+    };
+
+    alert(JSON.stringify(cv));
   }
 </script>
 <body class="has-navbar-fixed-top has-navbar-fixed-bottom">
@@ -28,39 +132,41 @@
 
   <nav class="navbar is-success is-fixed-bottom">
     <div class="navbar-brand">
-      <a class="button is-success subtitle has-text-weight-bold">
+      <a class="button is-success subtitle has-text-weight-bold" onclick="saveChanges()">
         Save Changes
       </a>
     </div>
   </nav>
 
-  <div class="box">
+  <div class="box" id="university_details">
     <p class="title">University</p>
     <div class="content">
-      <div class="field has-addons">
-        <p class="control is-expanded">
-          <input class="input is-rounded" type="text" placeholder="University Name" name="university_name">
-        </p>
-        <p class="control is-expanded">
-          <input class="input is-rounded" type="text" placeholder="Degree" name="degree_name">
-        </p>
-        <div class="control">
-          <div class="select is-rounded" name="degree_level">
-            <select>
-              <option>Level</option>
-              <option>1st</option>
-              <option>2:1</option>
-              <option>2:2</option>
-              <option>3rd</option>
-              <option>Pass</option>
-            </select>
+      <div class="cv_item">
+        <div class="field has-addons">
+          <p class="control is-expanded">
+            <input class="input is-rounded" type="text" placeholder="University Name" name="university_name">
+          </p>
+          <p class="control is-expanded">
+            <input class="input is-rounded" type="text" placeholder="Degree" name="degree_name">
+          </p>
+          <div class="control">
+            <div class="select is-rounded" name="degree_level">
+              <select>
+                <option class="default_option">Level</option>
+                <option>1st</option>
+                <option>2:1</option>
+                <option>2:2</option>
+                <option>3rd</option>
+                <option>Pass</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="box">
+  <div class="box" id="a_level_details">
     <p class="title">A-Levels</p>
     <div class="content">
       {% include 'cv_fields/a_level.html' %}
@@ -68,7 +174,7 @@
     </div>
   </div>
 
-  <div class="box">
+  <div class="box" id="language_details">
     <p class="title">Languages</p>
     <div class="content">
       {% include 'cv_fields/language.html' %}
@@ -76,7 +182,7 @@
     </div>
   </div>
 
-  <div class="box">
+  <div class="box" id="employment_details">
     <p class="title">Previous Employment</p>
     <div class="content">
       {% include 'cv_fields/employment.html' %}
@@ -84,7 +190,7 @@
     </div>
   </div>
 
-  <div class="box">
+  <div class="box" id="skill_details">
     <p class="title">Skills</p>
     <div class="content">
       {% include 'cv_fields/skill.html' %}
@@ -92,7 +198,7 @@
     </div>
   </div>
 
-  <div class="box">
+  <div class="box" id="hobby_details">
     <p class="title">Hobbies</p>
     <div class="content">
       {% include 'cv_fields/hobby.html' %}
