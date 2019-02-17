@@ -22,20 +22,17 @@
   }
   function saveChanges() {
 
-    // Basic error check for valid inputs
+    // Reset all errored out boxes
+    $('.is-danger:not(.button)').removeClass('is-danger');
+
+    // Null Input Checks (includes entering non-integer in years/months for employment)
     all_text_inputs = $('.cv_item:not(.template) input:not(.button)');
     invalid_inputs = $(all_text_inputs).filter(function() { return $(this).val() == ""; });
-    valid_inputs = $(all_text_inputs).filter(function() { return $(this).val() != ""; });
-
     $(invalid_inputs).addClass('is-danger');
-    $(valid_inputs).removeClass('is-danger');
-
-    valid_selection_boxes = $('.cv_item:not(.template) .select:has(option:selected:not(.default_option))');
     invalid_selection_boxes = $('.cv_item:not(.template) .select:has(option:selected.default_option)');
-
     $(invalid_selection_boxes).addClass('is-danger');
-    $(valid_selection_boxes).removeClass('is-danger');
 
+    // If there have been any errors thus far, don't try parsing data
     if ($('.is-danger:not(.button)').length != 0) {
       alert("Some details were not entered correctly, please see the red boxes");
       return;
@@ -64,8 +61,6 @@
         $(this).find('input[name="subject_name"]').addClass('is-danger');
         $(this).find('div[name="grade"]').addClass('is-danger');
       } else {
-        $(this).find('input[name="subject_name"]').removeClass('is-danger');
-        $(this).find('div[name="grade"]').removeClass('is-danger');
         a_level_details.push({
           "Subject":subject_name,
           "Grade":grade
@@ -91,8 +86,6 @@
         $(this).find('input[name="language_name"]').addClass('is-danger');
         $(this).find('div[name="expertise"]').addClass('is-danger');
       } else {
-        $(this).find('input[name="language_name"]').removeClass('is-danger');
-        $(this).find('div[name="expertise"]').removeClass('is-danger');
         language_details.push({
           "Language":language_name,
           "Expertise":expertise
@@ -123,10 +116,6 @@
         $(this).find('input[name="years"]').addClass('is-danger');
         $(this).find('input[name="months"]').addClass('is-danger');
       } else {
-        $(this).find('input[name="company_name"]').removeClass('is-danger');
-        $(this).find('input[name="position_name"]').removeClass('is-danger');
-        $(this).find('input[name="years"]').removeClass('is-danger');
-        $(this).find('input[name="months"]').removeClass('is-danger');
         employment_details.push({
           "Company":company_name,
           "Position":position_name,
@@ -153,8 +142,6 @@
         $(this).find('input[name="skill_name"]').addClass('is-danger');
         $(this).find('div[name="expertise"]').addClass('is-danger');
       } else {
-        $(this).find('input[name="skill_name"]').removeClass('is-danger');
-        $(this).find('div[name="expertise"]').removeClass('is-danger');
         skill_details.push({
           "Skill":skill_name,
           "Expertise":expertise
@@ -180,8 +167,6 @@
         $(this).find('input[name="hobby_name"]').addClass('is-danger');
         $(this).find('div[name="interest"]').addClass('is-danger');
       } else {
-        $(this).find('input[name="hobby_name"]').removeClass('is-danger');
-        $(this).find('div[name="interest"]').removeClass('is-danger');
         hobby_details.push({
           "Name":hobby_name,
           "Interest":interest
