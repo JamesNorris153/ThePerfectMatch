@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, Response
 from flask_cors import CORS
 #Example for importing methods
-from users import get_users, create_user, get_user, authenticate_user, get_cv
+from users import get_users, create_user, get_user, authenticate_user
 from admins import authenticate_admin
 from applicant import applicant
 
@@ -46,8 +46,9 @@ def show_applicant_cv_page():
 
 @app.route('/applicant/save_cv', methods=["POST"])
 def save_applicant_cv():
-	# cv = request.form.get('cv')
-	return "Success"
+    cv = request.form.get('cv')
+    # DO SOMETHING WITH JSON CV
+    return Response("Success", status=200, mimetype="text/html")
 
 ## Applicant Portal
 @app.route('/applicant/login', methods=["GET", "POST"])
