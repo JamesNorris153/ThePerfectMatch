@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, Response
+from flask import Flask, render_template, request, redirect, Response, session
 from flask_cors import CORS
 #Example for importing methods
 from users import get_users, create_user, get_user, authenticate_user
 from admins import authenticate_admin
 from applicant import applicant
+import os
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -61,7 +62,10 @@ def show_applicant_login_page():
 		password = request.form.get('password')
 		if authenticate_user(email, password):
 			response = Response("Success", status=200, mimetype="text/html")
-			response.set_cookie("logged_on", value="applicant")
+			# response.set_cookie("logged_on", value="applicant")
+			# Found these session variables which are easier to use in the front end, if you're happy using them
+			session['logged_on'] = 'applicant'
+			session['email'] = email
 			return response
 		else:
 			return Response("Incorrect username or password", status=200, mimetype="text/html")
@@ -107,4 +111,5 @@ def show_staff_candidates_page():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.secret_key = os.urandom(12)
+	app.run(debug=True)
