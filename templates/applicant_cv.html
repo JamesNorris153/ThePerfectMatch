@@ -218,17 +218,15 @@
       "Hobbies": hobby_details
     };
 
-    loadedModal('Success',JSON.stringify(cv));
-
-
-    // $.post('/applicant/save_cv', {cv:cv}, function(data) {
-    //   if (data == "Success") {
-    //     loadedModal("Success","All Changes Saved");
-    //   } else {
-    //     // Data will be error message returned from server
-    //     loadedModal("Failure",data);
-    //   }
-    // });
+    // loadedModal('Success',JSON.stringify(cv));
+    $.post('/applicant/save_cv', {cv: JSON.stringify(cv)}, function(data) {
+      if (data == "Success") {
+        loadedModal("Success","All Changes Saved");
+      } else {
+        // Data will be error message returned from server
+        loadedModal("Failure",data);
+      }
+    });
 
   }
 </script>
