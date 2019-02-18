@@ -43,7 +43,9 @@ def show_applicant_jobs_page():
 @app.route('/applicant/cv', methods=["GET"])
 def show_applicant_cv_page():
 	return render_template("applicant_cv.html")
-	# NEEDS TO RETURN TEMPLATE WITH CV + USER ID
+	# NEEDS TO RETURN TEMPLATE WITH CV
+	# cv = get_cv(user_id)
+	# return render_template("applicant_cv.html",cv=cv)
 
 @app.route('/applicant/save_cv', methods=["POST"])
 def save_applicant_cv():

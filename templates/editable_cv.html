@@ -1,0 +1,113 @@
+<style>
+  .template {
+    display:none;
+  }
+</style>
+<script>
+  function deleteItem(element) {
+    $(element).parent().parent().parent().remove();
+  }
+  function addItem(element) {
+    newItem = $(element).parent().find(".template").clone().removeClass('template');
+    $(newItem).insertBefore(element);
+  }
+  function closeApplicationLoadingModal() {
+    modal = $('#saving_cv_modal');
+    $(modal).removeClass('is-active');
+    $(modal).find('.modal-close').addClass('is-hidden');
+    $(modal).find('.progress').removeAttr('value').addClass('is-info').removeClass('is-success').removeClass('is-danger');
+    $(modal).find('.modal-background').attr('onclick','');
+    $(modal).find('.modal-message').html('LOADING...');
+  }
+  function showApplicationLoadingModal(state,message) {
+    modal = $('#saving_cv_modal');
+    if (state == "Success") {
+      $(modal).find('.progress').removeClass('is-info').addClass('is-success');
+    } else {
+      $(modal).find('.progress').removeClass('is-info').addClass('is-danger');
+    }
+    $(modal).find('.modal-close').removeClass('is-hidden');
+    $(modal).find('.progress').attr('value','100');
+    $(modal).find('.modal-background').attr('onclick','closeApplicationLoadingModal();');
+    $(modal).find('.modal-message').html(message);
+  }
+</script>
+
+<div class="modal" id="saving_cv_modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box has-text-centered">
+      <progress class="progress is-large is-info" max="100">50%</progress>
+      <div class="modal-message">LOADING...</div>
+      <button class="modal-close is-large is-hidden" aria-label="close" onclick="closeApplicationLoadingModal();"></button>
+    </div>
+  </div>
+</div>
+
+<div class="box" id="university_details">
+  <p class="title">University</p>
+  <div class="content">
+    <div class="cv_item">
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" placeholder="University Name" name="university_name">
+        </p>
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" placeholder="Degree" name="degree_name">
+        </p>
+        <div class="control">
+          <div class="select is-rounded" name="degree_level">
+            <select>
+              <option class="default_option">Level</option>
+              <option>1st</option>
+              <option>2:1</option>
+              <option>2:2</option>
+              <option>3rd</option>
+              <option>Pass</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="box" id="a_level_details">
+  <p class="title">A-Levels</p>
+  <div class="content">
+    {% include 'cv_fields/a_level.html' %}
+    <a class="button is-info is-rounded" onclick="addItem(this)">Add A-Level</a>
+  </div>
+</div>
+
+<div class="box" id="language_details">
+  <p class="title">Languages</p>
+  <div class="content">
+    {% include 'cv_fields/language.html' %}
+    <a class="button is-info is-rounded" onclick="addItem(this)">Add Language</a>
+  </div>
+</div>
+
+<div class="box" id="employment_details">
+  <p class="title">Previous Employment</p>
+  <div class="content">
+    {% include 'cv_fields/employment.html' %}
+    <a class="button is-info is-rounded" onclick="addItem(this)">Add Employment</a>
+  </div>
+</div>
+
+<div class="box" id="skill_details">
+  <p class="title">Skills</p>
+  <div class="content">
+    {% include 'cv_fields/skill.html' %}
+    <a class="button is-info is-rounded" onclick="addItem(this)">Add Skill</a>
+  </div>
+</div>
+
+<div class="box" id="hobby_details">
+  <p class="title">Hobbies</p>
+  <div class="content">
+    {% include 'cv_fields/hobby.html' %}
+    <a class="button is-info is-rounded" onclick="addItem(this)">Add Hobby</a>
+  </div>
+</div>
