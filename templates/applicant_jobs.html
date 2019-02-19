@@ -9,21 +9,162 @@
 </head>
 <style>
 </style>
+<body class="has-navbar-fixed-top">
+  {% include 'header.html' %}
+
+  <div class="modal" id="description_modal">
+    <div class="modal-background" onclick="closeDescriptionModal();"></div>
+    <div class="modal-content">
+      <div class="box has-text-centered">
+        <div class="modal-message">JOB DESCRIPTION</div>
+        <button class="modal-close is-large" aria-label="close" onclick="closeDescriptionModal();"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="application_modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Job</p>
+        <div class="is-hidden" id="cur_job_id"></div>
+      </header>
+      <section class="modal-card-body">
+        {% include 'editable_cv.html' %}
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" onclick="saveChanges();">Submit</button>
+        <button class="button" onclick="closeApplicationModal();">Cancel</button>
+      </footer>
+      </div>
+    </div>
+
+    <div class="modal" id="test_modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Job</p>
+          <div class="is-hidden" id="cur_job_id"></div>
+        </header>
+        <section class="modal-card-body">
+          BIG TEST HERE
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" onclick="saveChanges();">Submit</button>
+          <button class="button" onclick="closeApplicationModal();">Cancel</button>
+        </footer>
+        </div>
+      </div>
+
+
+  <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Location</th>
+      <th>Type</th>
+      <th>Deadline</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="5">
+      <td>Software Engineer</td>
+      <td>London</td>
+      <td>Full-Time</td>
+      <td>23/03/19</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr id="7">
+      <td>Analyst</td>
+      <td>Cambridge</td>
+      <td>Part-Time</td>
+      <td>21/02/19</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr id="10">
+      <td>CEO</td>
+      <td>Cambridge</td>
+      <td>Full-Time</td>
+      <td>15/02/19</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr id="15">
+      <td>Sales Rep</td>
+      <td>Oxford</td>
+      <td>Internship</td>
+      <td>15/05/19</td>
+      <td>
+        <div class="columns has-text-centered is-gapless">
+          <div class="column">
+            <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+          </div>
+          <div class="column">
+            <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <script>
 function closeDescriptionModal() {
   $('#description_modal').removeClass('is-active');
 }
-function showDescriptionModal() {
+function showDescriptionModal(job_id) {
+  // $.post("job/get_description",{id:job_id},function(data) {
+  //   $('#description_modal .modal-message').html(data);
+  // });
+  $('#description_modal .modal-message').html("JOB:"+job_id);
   $('#description_modal').addClass('is-active');
 }
 function closeApplicationModal() {
   $('#application_modal').removeClass('is-active');
 }
-function showApplicationModal() {
+function showApplicationModal(job_id) {
+  $('#application_modal .modal-card-title').html("JOB:"+job_id);
+  $('#application_modal #cur_job_id').html(job_id);
   $('#application_modal').addClass('is-active');
 }
-function submitCV() {
-  saveChanges();
+function closeCompletedApplicationModal() {
+  $('#saving_cv_modal .modal-close').attr('onclick','closeApplicationLoadingModal();');
+  closeApplicationLoadingModal();
+  closeApplicationModal();
+}
+function closeTestModal() {
+  $('#test_modal').removeClass('is-active');
+}
+function showTestModal(job_id) {
+  $('#test_modal .modal-card-title').html("JOB:"+job_id);
+  $('#test_modal #cur_job_id').html(job_id);
+  $('#test_modal').addClass('is-active');
 }
 function saveChanges() {
 
@@ -189,8 +330,7 @@ function saveChanges() {
 
   // Create JSON CV
   var cv = {
-    // NEED TO GET USER'S NAME AND ID FROM SOMEWHERE!!!
-    "User_ID": "100",
+    // NEED TO GET USER'S NAME AND FROM SOMEWHERE!!!
     "Name": "NAMETY NAME",
     "Degree Qualification": degree,
     "Degree Level": degree_level,
@@ -202,14 +342,24 @@ function saveChanges() {
     "Hobbies": hobby_details
   };
 
+  var job_id = $('#cur_job_id').html();
+
   // showApplicationLoadingModal('Success',JSON.stringify(cv));
   $.post('/applicant/save_cv', {cv: JSON.stringify(cv)}, function(data) {
     if (data == "Success") {
-      // showCompletedApplicationModal();
+      // $.post('applicant/apply_for_job' {job_id:job_id}, function(data) {
+      //   if (data == "Success") {
+      //     showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
+      //     $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
+      //     $(modal).find('.modal-close').attr('onclick','closeCompletedApplicationModal();');
+      //   } else {
+      //     showApplicationLoadingModal("Failure",data);
+      //   }
+      // });
       showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
       $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
       $(modal).find('.modal-close').attr('onclick','closeCompletedApplicationModal();');
-
+      $('#'+job_id+' .apply_button').removeClass('apply_button').addClass('test_button').html("Test");
     } else {
       // Data will be error message returned from server
       showApplicationLoadingModal("Failure",data);
@@ -217,118 +367,18 @@ function saveChanges() {
   });
 
 }
-function closeCompletedApplicationModal() {
-  $('#saving_cv_modal .modal-close').attr('onclick','closeApplicationLoadingModal();');
-  closeApplicationLoadingModal();
-  closeApplicationModal();
-}
+$('#job_table').on('click', '.apply_button', function(event) {
+  var job_id = $(this).parent().parent().parent().parent().attr('id');
+  showApplicationModal(job_id);
+});
+$('#job_table').on('click', '.view_button', function(event) {
+  var job_id = $(this).parent().parent().parent().parent().attr('id');
+  showDescriptionModal(job_id);
+});
+$('#job_table').on('click', '.test_button', function(event) {
+    var job_id = $(this).parent().parent().parent().parent().attr('id');
+    showTestModal(job_id);
+});
 </script>
-<body class="has-navbar-fixed-top">
-  {% include 'header.html' %}
-
-  <div class="modal" id="description_modal">
-    <div class="modal-background" onclick="closeDescriptionModal();"></div>
-    <div class="modal-content">
-      <div class="box has-text-centered">
-        <div class="modal-message">JOB DESCRIPTION</div>
-        <button class="modal-close is-large" aria-label="close" onclick="closeDescriptionModal();"></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="application_modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Your CV</p>
-      </header>
-      <section class="modal-card-body">
-        {% include 'editable_cv.html' %}
-      </section>
-      <footer class="modal-card-foot">
-        <button class="button is-success" onclick="submitCV();">Submit</button>
-        <button class="button" onclick="closeApplicationModal();">Cancel</button>
-      </footer>
-      </div>
-    </div>
-
-
-  <table class="table is-hoverable is-fullwidth is-bordered is-striped">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Location</th>
-      <th>Type</th>
-      <th>Deadline</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Software Engineer</td>
-      <td>London</td>
-      <td>Full-Time</td>
-      <td>23/03/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showDescriptionModal();" style="margin:2px">View</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showApplicationModal();" style="margin:2px">Apply</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Analyst</td>
-      <td>Cambridge</td>
-      <td>Part-Time</td>
-      <td>21/02/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showDescriptionModal();" style="margin:2px">View</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showApplicationModal();" style="margin:2px">Apply</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>CEO</td>
-      <td>Cambridge</td>
-      <td>Full-Time</td>
-      <td>15/02/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showDescriptionModal();" style="margin:2px">View</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showApplicationModal();" style="margin:2px">Apply</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Sales Rep</td>
-      <td>Oxford</td>
-      <td>Internship</td>
-      <td>15/05/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showDescriptionModal();" style="margin:2px">View</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" onclick="showApplicationModal();" style="margin:2px">Apply</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
 </body>
 </html>
