@@ -7,54 +7,9 @@
   <link rel="stylesheet" type="text/css" href="/static/css/login.css">
   <title>Staff Portal</title>
 </head>
-<script>
-// Login staff member
-function login(email_input,password_input) {
-
-  // Get user inputs
-  email = $(email_input).val();
-  password = $(password_input).val();
-
-  // Check if email has been entered
-  if (email == "") {
-    $(email_input).addClass("is-danger");
-  } else {
-    $(email_input).removeClass("is-danger");
-  }
-
-  // Check if password has been entered
-  if (password == "") {
-    $(password_input).addClass("is-danger");
-  } else {
-    $(password_input).removeClass("is-danger");
-  }
-
-  // Check if any of the inputs have errors, stop processing if so
-  if ($(email_input).parent().find('.is-danger').length != 0) {
-    return false;
-  }
-
-  // Send data to server to create user
-  $.post("/staff/login",
-  {email:email, password:password},
-   function(data) {
-     // If user successfully logged in, send user to candidates page, else show the error message
-     if (data == "Success") {
-       window.location.href = "/staff/candidates";
-     } else {
-       $('#login_error').html(data);
-     }
-  });
-
-  // Prevent page reload
-  return false;
-
-}
-</script>
 <body>
   <div class="hero">
     <div class="hero-head">
-      <a class="tag" href="/applicant/jobs">Back to jobs</a>
       <a class="tag" href="/applicant/login">Looking for the applicant portal?</a>
     </div>
     <div class="hero-body">
@@ -64,7 +19,7 @@ function login(email_input,password_input) {
           <input class="input is-rounded" type="text" placeholder="Email Address" name="email">
           <input class="input is-rounded" type="password" placeholder="Password" name="password">
           <input class="button is-info is-rounded" type="submit" value="Login">
-		      <p id="login_error" class="has-text-danger">{{ error }}</p>
+          <p id="login_error" class="has-text-danger"></p>
           <div class="level">
             <a class="is-info is-rounded is-small">Forgot your password?</a>
           </div>
@@ -72,5 +27,49 @@ function login(email_input,password_input) {
       </div>
     </div>
   </div>
+  <script>
+  // Login staff member
+  function login(email_input,password_input) {
+
+    // Get user inputs
+    email = $(email_input).val();
+    password = $(password_input).val();
+
+    // Check if email has been entered
+    if (email == "") {
+      $(email_input).addClass("is-danger");
+    } else {
+      $(email_input).removeClass("is-danger");
+    }
+
+    // Check if password has been entered
+    if (password == "") {
+      $(password_input).addClass("is-danger");
+    } else {
+      $(password_input).removeClass("is-danger");
+    }
+
+    // Check if any of the inputs have errors, stop processing if so
+    if ($(email_input).parent().find('.is-danger').length != 0) {
+      return false;
+    }
+
+    // Send data to server to create user
+    $.post("/staff/login",
+    {email:email, password:password},
+    function(data) {
+      // If user successfully logged in, send user to candidates page, else show the error message
+      if (data == "Success") {
+        window.location.href = "/staff/candidates";
+      } else {
+        $('#login_error').html(data);
+      }
+    });
+
+    // Prevent page reload
+    return false;
+
+  }
+  </script>
 </body>
 </html>
