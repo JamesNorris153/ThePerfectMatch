@@ -1,0 +1,68 @@
+<style>
+  .template {
+    display:none;
+  }
+</style>
+<script>
+  function deleteItem(element) {
+    $(element).parent().parent().parent().remove();
+  }
+  function addItem(element) {
+    newItem = $(element).parent().find(".template").clone().removeClass('template');
+    $(newItem).insertBefore(element);
+  }
+</script>
+
+<div class="box" id="university_details">
+  <p class="title">University</p>
+  <div class="content">
+    <div class="cv_item">
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" name="university_name" readonly>
+        </p>
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" name="degree_name" readonly>
+        </p>
+        <p class="control">
+          <input class="input is-rounded" type="text" name="degree_level" readonly>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="box" id="a_level_details">
+  <p class="title">A-Levels</p>
+  <div class="content">
+    {% include 'readable_cv_fields/a_level.html' %}
+  </div>
+</div>
+
+<div class="box" id="language_details">
+  <p class="title">Languages</p>
+  <div class="content">
+    {% include 'readable_cv_fields/language.html' %}
+  </div>
+</div>
+
+<div class="box" id="employment_details">
+  <p class="title">Previous Employment</p>
+  <div class="content">
+    {% include 'readable_cv_fields/employment.html' %}
+  </div>
+</div>
+
+<div class="box" id="skill_details">
+  <p class="title">Skills</p>
+  <div class="content">
+    {% include 'readable_cv_fields/skill.html' %}
+  </div>
+</div>
+
+<div class="box" id="hobby_details">
+  <p class="title">Hobbies</p>
+  <div class="content">
+    {% include 'readable_cv_fields/hobby.html' %}
+  </div>
+</div>

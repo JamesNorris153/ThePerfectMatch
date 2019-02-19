@@ -11,7 +11,33 @@
 </style>
 <body class="has-navbar-fixed-top">
   {% include 'header.html' %}
-  <table class="table is-hoverable is-fullwidth is-bordered is-striped">
+
+  <div class="modal" id="cv_modal">
+    <div class="modal-background" onclick="closeCVModal();"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">NAMETY NAME</p>
+      </header>
+      <section class="modal-card-body">
+        {% include 'readable_cv.html' %}
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button" onclick="closeCVModal();">Cancel</button>
+      </footer>
+      </div>
+    </div>
+
+    <div class="modal" id="error_modal">
+      <div class="modal-background" onclick="$(this).parent().removeClass('is-active');"></div>
+      <div class="modal-content">
+        <div class="box has-text-centered">
+          <div class="modal-message">ERROR MESSAGE</div>
+          <button class="modal-close is-large" aria-label="close" onclick="$(this).parent().parent().parent().removeClass('is-active');"></button>
+        </div>
+      </div>
+    </div>
+
+  <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="candidates_table">
   <thead>
     <tr>
       <th>Job</th>
@@ -23,61 +49,82 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
+    <tr id="5">
       <td>Software Engineer</td>
       <td>John Smith</td>
       <td>500</td>
       <td>
         <div class="columns has-text-centered is-gapless">
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Show CV</a>
+            <a class="button is-rounded is-small cv_button" style="margin:2px">Show CV</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Like</a>
+            <a class="button is-rounded is-small like_button" style="margin:2px">Like</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Dislike</a>
+            <a class="button is-rounded is-small dislike_button" style="margin:2px">Dislike</a>
           </div>
         </div>
       </td>
     </tr>
-    <tr>
+    <tr id="43">
       <td>Analyst</td>
       <td>Jack Daniels</td>
       <td>430</td>
       <td>
         <div class="columns has-text-centered is-gapless">
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Show CV</a>
+            <a class="button is-rounded is-small cv_button" style="margin:2px">Show CV</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Like</a>
+            <a class="button is-rounded is-small like_button" style="margin:2px">Like</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Dislike</a>
+            <a class="button is-rounded is-small dislike_button" style="margin:2px">Dislike</a>
           </div>
         </div>
       </td>
     </tr>
-    <tr>
+    <tr id="52">
       <td>Software Engineer</td>
       <td>Jane Doe</td>
       <td>300</td>
       <td>
         <div class="columns has-text-centered is-gapless">
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Show CV</a>
+            <a class="button is-rounded is-small cv_button" style="margin:2px">Show CV</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Like</a>
+            <a class="button is-rounded is-small like_button" style="margin:2px">Like</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Dislike</a>
+            <a class="button is-rounded is-small dislike_button" style="margin:2px">Dislike</a>
           </div>
         </div>
       </td>
     </tr>
   </tbody>
 </table>
+<script>
+function showCVModal(candidate_id) {
+  $.post("/applicant/get_cv", {user_id:candidate_id}, function(data) {
+    if (data == "Failure") {
+      showErrorModal("There was an error retrieving this user's CV.<br>Please try again.");
+    } else {
+      $('#cv_modal').addClass('is-active');
+    }
+  });
+}
+function showErrorModal(message) {
+  $('#error_modal').addClass('is-active').find('.modal-message').html(message);
+}
+function closeCVModal() {
+  $('#cv_modal').removeClass('is-active');
+}
+$('#candidates_table').on('click', '.cv_button', function(event) {
+  var candidate_id = $(this).parent().parent().parent().parent().attr('id');
+  showCVModal(candidate_id);
+});
+</script>
 </body>
 </html>
