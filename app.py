@@ -53,6 +53,14 @@ def save_applicant_cv():
     # DO SOMETHING WITH JSON CV
     return Response("Success", status=200, mimetype="text/html")
 
+@app.route('/applicant/get_cv', methods=["POST"])
+def get_applicant_cv():
+	user_id = request.form.get('user_id')
+	#GET CV FROM DATABASE IN JSON FORM
+	#return Response(cv, status=200, mimetype="text/html")
+	# return "Failure"
+	return "Success"
+
 ## Applicant Portal
 @app.route('/applicant/login', methods=["GET", "POST"])
 def show_applicant_login_page():
