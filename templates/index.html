@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="/static/css/bulma_min.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/login.css">
   <script src="/static/js/jquery-3.3.1.min.js"></script>
   <title>Landing Page</title>
 </head>
 <style>
 </style>
 <body>
-  <h1>LANDING PAGE</h1>
-  <p>{{error}}</p>
+  <div class="hero">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <p class="title">
+          LOGO
+        </p>
+        <p class="subtitle">Are you an appliant or a staff member?</p>
+        <a class="button is-rounded is-info is-large" href="applicant/login">Applicant</a>
+        <a class="button is-rounded is-info is-large" href="staff/login">Staff</a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
