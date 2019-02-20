@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="/static/css/bulma_min.css">
   <link rel="stylesheet" type="text/css" href="/static/css/tables.css">
-  <script src="/static/js/jquery-3.3.1.min.js"></script>
   <title>BRAND Candidates</title>
 </head>
 <style>
@@ -105,26 +104,7 @@
     </tr>
   </tbody>
 </table>
-<script>
-function showCVModal(candidate_id) {
-  $.post("/applicant/get_cv", {user_id:candidate_id}, function(data) {
-    if (data == "Failure") {
-      showErrorModal("There was an error retrieving this user's CV.<br>Please try again.");
-    } else {
-      $('#cv_modal').addClass('is-active');
-    }
-  });
-}
-function showErrorModal(message) {
-  $('#error_modal').addClass('is-active').find('.modal-message').html(message);
-}
-function closeCVModal() {
-  $('#cv_modal').removeClass('is-active');
-}
-$('#candidates_table').on('click', '.cv_button', function(event) {
-  var candidate_id = $(this).parent().parent().parent().parent().attr('id');
-  showCVModal(candidate_id);
-});
-</script>
 </body>
+<script src="/static/js/jquery-3.3.1.min.js"></script>
+<script src="/static/js/staff_candidates.js"></script>
 </html>
