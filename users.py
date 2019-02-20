@@ -344,4 +344,12 @@ def apply_job(cvID,jobID):
     con = sql.connect(path.join(ROOT, 'test.db'))
     cur = con.cursor()
     cur.execute('INSERT into job_cv values (?,?,?,?)',(jobID,cvID,0,0))
+    con.commit()
+    con.close()
+
+def change_level(jobID,table,name,level):
+    con = sql.connect(path.join(ROOT, 'test.db'))
+    cur = con.cursor()
+    cur.execute('UPDATE (?) SET level=(?) WHERE Job_ID=(?) and name=(?)',(table,),(level,),(jobID,),(name,))
+    con.commit()
     con.close()
