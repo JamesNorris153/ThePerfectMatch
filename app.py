@@ -256,7 +256,18 @@ def save_applicant_cv():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
-
+# Allows Applicant to Apply for a Job
+# Receives: Job_id for job being applied for
+# Returns: Success/Failure
+# Actions: Applies user for job with their current CV in db
+@app.route('/applicant/apply_for_job', methods=["POST"])
+def apply_for_job():
+	if login_check() == "Applicant":
+		user_id = session['user_id']
+		job_id = request.form.get('job_id')
+		# APPLY USER FOR JOB WITH THEIR CURRENT CV
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
 
 
 ## SETUP APP

@@ -35,72 +35,87 @@
         <button class="button is-success" onclick="saveChanges();">Submit</button>
         <button class="button" onclick="closeApplicationModal();">Cancel</button>
       </footer>
-      </div>
     </div>
+  </div>
 
-    <div class="modal" id="test_modal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Job</p>
-          <div class="is-hidden" id="cur_job_id"></div>
-        </header>
-        <section class="modal-card-body">
-          BIG TEST HERE
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success" onclick="saveChanges();">Submit</button>
-          <button class="button" onclick="closeApplicationModal();">Cancel</button>
-        </footer>
-        </div>
-      </div>
+  <div class="modal" id="test_modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Job</p>
+        <div class="is-hidden" id="cur_job_id"></div>
+      </header>
+      <section class="modal-card-body">
+        BIG TEST HERE
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" onclick="submitTest();">Submit</button>
+        <button class="button" onclick="closeTestModal();">Cancel</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="modal" id="feedback_modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Job</p>
+      </header>
+      <section class="modal-card-body">
+        BIG FEEDBACK HERE
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button" onclick="closeFeedbackModal();">Cancel</button>
+      </footer>
+    </div>
+  </div>
 
 
   <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Location</th>
-      <th>Type</th>
-      <th>Deadline</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr id="5">
-      <td>Software Engineer</td>
-      <td>London</td>
-      <td>Full-Time</td>
-      <td>23/03/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Deadline</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="5">
+        <td>Software Engineer</td>
+        <td>London</td>
+        <td>Full-Time</td>
+        <td>23/03/19</td>
+        <td>
+          <div class="columns has-text-centered is-gapless">
+            <div class="column">
+              <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+            </div>
+            <div class="column">
+              <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+            </div>
           </div>
-          <div class="column">
-            <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+        </td>
+      </tr>
+      <tr id="7">
+        <td>Analyst</td>
+        <td>Cambridge</td>
+        <td>Part-Time</td>
+        <td>21/02/19</td>
+        <td>
+          <div class="columns has-text-centered is-gapless">
+            <div class="column">
+              <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+            </div>
+            <div class="column">
+              <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>
-    <tr id="7">
-      <td>Analyst</td>
-      <td>Cambridge</td>
-      <td>Part-Time</td>
-      <td>21/02/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 <script src="/static/js/jquery-3.3.1.min.js"></script>
 <script src="/static/js/applicant_jobs.js"></script>
