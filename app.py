@@ -1,28 +1,47 @@
 from flask import Flask, render_template, request, redirect, Response, session
 from flask_cors import CORS
-#Example for importing methods
-from users import get_users, create_user, get_user, authenticate_user
-from admins import authenticate_admin
-from applicant import applicant
+
+from users import *
+from admins import *
 import os
+
+## Session variables
+# account_type : "Admin"/"Applicant"/None : Shows type of account logged in user has, or shows user isn't logged in
+# user_id : Stores logged in user id from database
+
+## NOTE: WHEN CONNECTING TO THE DATABASE, USE TRY EXCEPT BLOCKS INCASE OF DATABASE DISCONNECT OR ANY OTHER ISSUE
 
 app = Flask(__name__, static_url_path='/static')
 
 CORS(app)
 
+# Function to check whether user is logged in
+# Returns account_type or None if not logged in
+# If either session variable has been lost, log user out and return None
+def login_check():
+	if 'user_id' in session:
+		if session['user_id'] is None:
+			logout()
+		if 'account_type' in session:
+			type = session['account_type']
+			if type is None:
+				logout()
+			else:
+				return type
+		else:
+			logout()
+	else:
+		logout()
+	return None
+
+# Function to reset all session variables
+def logout():
+	session.clear()
+
 ## Sends static files when necessary
 @app.route('/static/<path:path>')
 def send_js(path):
 	return send_from_directory('static',path)
-
-## Landing page
-@app.route('/')
-def index():
-	if request.cookies.get("logged_on") == "applicant":
-		return redirect("/applicant/jobs")
-	if request.cookies.get("logged_on") == "admin":
-		return redirect("/staff/candidates")
-	return render_template("index.html")
 
 ## Internal server error
 @app.errorhandler(500)
@@ -34,91 +53,168 @@ def internal_server_error(e):
 def page_not_found(e):
     return render_template("404.html")
 
-## Jobs page - default page for users not logged in
-@app.route("/applicant/jobs")
-def show_applicant_jobs_page():
-	return render_template("applicant_jobs.html")
+## Landing page
+@app.route('/')
+def index():
+	account_type = login_check()
+	if account_type is None:
+		return render_template("index.html")
+	elif account_type == "Admin":
+		return redirect("/staff/candidates")
+	else:
+		return redirect("/applicant/jobs")
 
-## CV Page - Let user edit/view their cv
-@app.route('/applicant/cv', methods=["GET"])
-def show_applicant_cv_page():
-	return render_template("applicant_cv.html")
-	# NEEDS TO RETURN TEMPLATE WITH CV
-	# cv = get_cv(user_id)
-	# return render_template("applicant_cv.html",cv=cv)
+## Logout user
+@app.route('/logout')
+def logout_user():
+	session.clear()
+	return redirect("/")
 
-@app.route('/applicant/save_cv', methods=["POST"])
-def save_applicant_cv():
-    cv = request.form.get('cv')
-    # DO SOMETHING WITH JSON CV
-    return Response("Success", status=200, mimetype="text/html")
+## Staff Pages
 
-@app.route('/applicant/get_cv', methods=["POST"])
-def get_applicant_cv():
-	user_id = request.form.get('user_id')
-	#GET CV FROM DATABASE IN JSON FORM
-	#return Response(cv, status=200, mimetype="text/html")
-	# return "Failure"
-	return "Success"
+# Staff Login Page
+# GET: Return staff_portal page
+# POST: Try to authenticate staff member
+@app.route('/staff/login', methods=["GET","POST"])
+def staff_login():
 
-## Applicant Portal
-@app.route('/applicant/login', methods=["GET", "POST"])
-def show_applicant_login_page():
+	# Requesting Page
 	if request.method == "GET":
-		return render_template("applicant_portal.html")
+		# If staff already logged in, go to homepage
+		if login_check() == "Admin":
+			return redirect("/staff/candidates")
+		return render_template('staff_portal.html')
 
+	# Receives: Email + Password
+	# Returns: Success/Failure
+	# Actions: Set SESSION account_type + user_id
 	if request.method == "POST":
 		email = request.form.get('email')
 		password = request.form.get('password')
-		if authenticate_user(email, password):
-			response = Response("Success", status=200, mimetype="text/html")
-			# response.set_cookie("logged_on", value="applicant")
-			# Found these session variables which are easier to use in the front end, if you're happy using them
-			session['logged_on'] = 'applicant'
-			session['email'] = email
-			return response
-		else:
-			return Response("Incorrect username or password", status=200, mimetype="text/html")
+		try:
+			# Check if valid login -> Method should return user_id OR None
+			user_id = authenticate_admin(email,password)
+			if user_id is None:
+				# if None returned, email or password is incorrect
+				return Response("Incorrect username or password", status=200, mimetype="text/html")
+			else:
+				session['account_type'] = "Admin"
+				session['user_id'] = user_id
+				return Response("Success", status=200, mimetype="text/html")
+		except:
+			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
 
+## Staff Jobs Page
+@app.route('/staff/jobs')
+def show_staff_jobs_page():
+	if login_check() == "Admin":
+		return render_template("staff_jobs.html")
+	return redirect("/")
+
+## Staff Candidates Page
+@app.route('/staff/candidates')
+def show_staff_candidates_page():
+	if login_check() == "Admin":
+		return render_template("staff_candidates.html")
+	return redirect("/")
+
+
+
+## Applicant Pages
+
+# Applicant Login Page
+# GET: Return applicant_portal page
+# POST: Try to authenticate applicant
+@app.route('/applicant/login', methods=["GET","POST"])
+def applicant_login():
+
+	# Requesting Page
+	if request.method == "GET":
+		# If applicant already logged in, go to homepage
+		if login_check() == "Applicant":
+			return redirect("/applicant/jobs")
+		return render_template('applicant_portal.html')
+
+	# Receives: Email + Password
+	# Returns: Success/Failure
+	# Actions: Set SESSION account_type + user_id
+	if request.method == "POST":
+		email = request.form.get('email')
+		password = request.form.get('password')
+		try:
+			# Check if valid user logging in -> Method should return user_id OR None
+			# user_id = authenticate_user(email,password)
+			user_id = 5
+			if user_id is None:
+				# if None returned, email or password is incorrect
+				return Response("Incorrect username or password", status=200, mimetype="text/html")
+			else:
+				session['account_type'] = "Applicant"
+				session['user_id'] = user_id
+				return Response("Success", status=200, mimetype="text/html")
+		except:
+			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
+
+# Applicant Registration POST Method
+# Receives: email, password, first name, last name
+# Returns: Success/Failure
+# Actions: Create new applicant in database + Set SESSION variables
 @app.route('/applicant/register', methods=["POST"])
 def register_applicant():
-	# TODO: check whether a user is already registered under this email
 	email = request.form.get('email')
 	password = request.form.get('password')
 	first_name = request.form.get('first_name')
 	last_name = request.form.get('last_name')
-	new = applicant(first_name, last_name, email, password)
-	user_id = create_user(new)
+	try:
+		# If the email address is taken, return an error
+		if check_mail(email):
+			return Response("This email address is taken", status=200, mimetype="text/html")
+		new_applicant = applicant(first_name, last_name, email, password)
+		user_id = create_user(new_applicant)
+		session['account_type'] = "Applicant"
+		session['user_id'] = user_id
+		return Response("Success", status=200, mimetype="text/html")
+	except:
+		return Response("There was an error creating your account, please try again", status=200, mimetype="text/html")
 
-	response = Response("Success", status=200, mimetype="text/html")
-	response.set_cookie("logged_on", value="applicant")
-	return response
+## Applicant Jobs Page
+@app.route("/applicant/jobs")
+def show_applicant_jobs_page():
+	if login_check() == "Applicant":
+		return render_template("applicant_jobs.html")
+	return redirect("/")
 
-# Staff Portal
-@app.route('/staff/login', methods=["GET", "POST"])
-def show_staff_login_page():
-	if request.method == "GET":
-		return render_template("staff_portal.html")
+## Applicant CV Editing page
+@app.route('/applicant/cv')
+def show_applicant_cv_page():
+	if login_check() == "Applicant":
+		user_id = session['user_id']
+		# GET USERS CURRENT CV HERE
+		# FINAL RETURN VALUE = return render_template("applicant_cv.html",cv=cv)
+		return render_template("applicant_cv.html")
+	return redirect("/")
 
-	if request.method == "POST":
-		email = request.form.get('email')
-		password = request.form.get('password')
-		if authenticate_admin(email, password):
-			response = Response("Success", status=200, mimetype="text/html")
-			response.set_cookie("logged_on", value="admin")
-			return response
-		else:
-			return Response("Incorrect username or password", status=200, mimetype="text/html")
+## Saving CV Changes
+# Receives: CV in JSON format
+# Returns: Success/Failure for creating CV in db
+@app.route('/applicant/save_cv', methods=["POST"])
+def save_applicant_cv():
+    cv = request.form.get('cv')
+    #  ADD CV TO DATABASE HERE
+    return Response("Success", status=200, mimetype="text/html")
 
-## Staff jobs page
-@app.route('/staff/jobs')
-def show_staff_jobs_page():
-    return render_template("staff_jobs.html")
+## Get a CV from database to view
+# Receives: user_id
+# Returns: CV in JSON/Text Format
+@app.route('/applicant/get_cv', methods=["POST"])
+def get_applicant_cv():
+	user_id = request.form.get('user_id')
+	# GET CV FROM USER ID HERE
+	# FINAL RETURN VALUE = return Response(cv, status=200, mimetype="text/html")
+	return "Success"
 
-@app.route('/staff/candidates')
-def show_staff_candidates_page():
-    return render_template("staff_candidates.html")
 
+## SETUP APP
 
 if __name__ == '__main__':
 	app.secret_key = os.urandom(12)
