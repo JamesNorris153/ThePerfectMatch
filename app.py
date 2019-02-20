@@ -111,12 +111,44 @@ def show_staff_jobs_page():
 		return render_template("staff_jobs.html")
 	return redirect("/")
 
+## Get All Jobs - Staff
+# Returns: All jobs created by this user in JSON/Text Format
+@app.route("/staff/get_jobs")
+def get_staff_jobs():
+	if login_check() == "Admin":
+		user_id = session['user_id']
+		# GET ALL JOBS CREATED BY THIS USER IN JSON FORMAT
+		jobs = ""
+		return Response(jobs, status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 ## Staff Candidates Page
 @app.route('/staff/candidates')
 def show_staff_candidates_page():
 	if login_check() == "Admin":
 		return render_template("staff_candidates.html")
 	return redirect("/")
+
+## Get All Candidates - Staff
+# Returns: All candidates for jobs by this user in JSON/Text format
+@app.route('/staff/get_candidates')
+def get_candidates():
+	if login_check() == "Admin":
+		user_id = session['user_id']
+		# GET ALL CANDIDATES FOR JOBS CREATED BY THIS USER IN JSON FORMAT
+		candidates = ""
+		return Response(candidates, status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
+## Get a CV from database to view
+# Receives: user_id
+# Returns: CV in JSON/Text Format
+@app.route('/staff/get_cv', methods=["POST"])
+def get_cv_by_user_id():
+	user_id = request.form.get('user_id')
+	# GET CV FROM USER ID HERE
+	# FINAL RETURN VALUE = return Response(cv, status=200, mimetype="text/html")
+	return "Success"
 
 
 
@@ -184,34 +216,47 @@ def show_applicant_jobs_page():
 		return render_template("applicant_jobs.html")
 	return redirect("/")
 
+## Get All Jobs - Applicant
+@app.route("/applicant/get_jobs")
+def get_applicant_jobs():
+	if login_check() == "Applicant":
+		user_id = session['user_id']
+		# GET ALL JOBS HERE in JSON format - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
+		jobs = ""
+		return Response(jobs, status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 ## Applicant CV Editing page
 @app.route('/applicant/cv')
 def show_applicant_cv_page():
 	if login_check() == "Applicant":
-		user_id = session['user_id']
-		# GET USERS CURRENT CV HERE
-		# FINAL RETURN VALUE = return render_template("applicant_cv.html",cv=cv)
 		return render_template("applicant_cv.html")
 	return redirect("/")
+
+# Get Applicant's Current CV
+# Returns: User's CV in JSON/Text Format
+@app.route('/applicant/get_cv')
+def get_applicant_cv():
+	if login_check() == "Applicant":
+		user_id = session['user_id']
+		# GET USERS CURRENT CV HERE
+		cv = ""
+		return Response(cv, status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Saving CV Changes
 # Receives: CV in JSON format
 # Returns: Success/Failure for creating CV in db
 @app.route('/applicant/save_cv', methods=["POST"])
 def save_applicant_cv():
-    cv = request.form.get('cv')
-    #  ADD CV TO DATABASE HERE
-    return Response("Success", status=200, mimetype="text/html")
+	if login_check() == "Applicant":
+		user_id = session['user_id']
+		cv = request.form.get('cv')
+    	#  SAVE USER'S CV TO DATABASE HERE
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
 
-## Get a CV from database to view
-# Receives: user_id
-# Returns: CV in JSON/Text Format
-@app.route('/applicant/get_cv', methods=["POST"])
-def get_applicant_cv():
-	user_id = request.form.get('user_id')
-	# GET CV FROM USER ID HERE
-	# FINAL RETURN VALUE = return Response(cv, status=200, mimetype="text/html")
-	return "Success"
+
 
 
 ## SETUP APP
