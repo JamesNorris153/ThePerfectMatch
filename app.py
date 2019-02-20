@@ -141,15 +141,43 @@ def get_candidates():
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Get a CV from database to view
-# Receives: user_id
+# Receives: user_id + job_id
 # Returns: CV in JSON/Text Format
 @app.route('/staff/get_cv', methods=["POST"])
 def get_cv_by_user_id():
-	user_id = request.form.get('user_id')
-	# GET CV FROM USER ID HERE
-	# FINAL RETURN VALUE = return Response(cv, status=200, mimetype="text/html")
-	return "Success"
+	if login_check() == "Admin":
+		user_id = request.form.get('user_id')
+		job_id = request.form.get('job_id')
+		# GET CV FROM USER AND JOB ID
+		# FINAL RETURN VALUE = return Response(cv, status=200, mimetype="text/html")
+		return "Success"
+	return Response("You are not logged in", status=200, mimetype="text/html")
 
+## Like a candidate for a role
+# Receives: user_id + job_id
+# Returns: Success/Failure
+# Actions: Likes candidate in DB to adapt ML
+@app.route('/staff/like_candidate', methods=["POST"])
+def like_candidate():
+	if login_check() == "Admin":
+		user_id = request.form.get('user_id')
+		job_id = request.form.get('job_id')
+		# LIKE CANDIDATE FOR ROLE
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
+## Dislike a candidate for a role
+# Receives: user_id + job_id
+# Returns: Success/Failure
+# Actions: Dislikes candidate in DB to adapt ML
+@app.route('/staff/dislike_candidate', methods=["POST"])
+def dislike_candidate():
+	if login_check() == "Admin":
+		user_id = request.form.get('user_id')
+		job_id = request.form.get('job_id')
+		# DISLIKE CANDIDATE FOR ROLE
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
 
 
 ## Applicant Pages
