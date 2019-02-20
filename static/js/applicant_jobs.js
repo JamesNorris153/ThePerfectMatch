@@ -2,12 +2,10 @@ function closeDescriptionModal() {
   $('#description_modal').removeClass('is-active');
 }
 function showDescriptionModal(job_id) {
-  // $.post("job/get_description",{id:job_id},function(data) {
-  //   $('#description_modal .modal-message').html(data);
-  // });
   $('#description_modal .modal-message').html("JOB:"+job_id);
   $('#description_modal').addClass('is-active');
 }
+
 function closeApplicationModal() {
   $('#application_modal').removeClass('is-active');
 }
@@ -21,6 +19,7 @@ function closeCompletedApplicationModal() {
   closeApplicationLoadingModal();
   closeApplicationModal();
 }
+
 function closeTestModal() {
   $('#test_modal').removeClass('is-active');
 }
@@ -29,6 +28,21 @@ function showTestModal(job_id) {
   $('#test_modal #cur_job_id').html(job_id);
   $('#test_modal').addClass('is-active');
 }
+function submitTest() {
+  $('#test_modal').removeClass('is-active');
+  job_id = $('#cur_job_id').html();
+  $('#'+job_id+' .test_button').removeClass('test_button').addClass('feedback_button').html("Feedback");
+  closeTestModal();
+}
+
+function closeFeedbackModal() {
+  $('#feedback_modal').removeClass('is-active');
+}
+function showFeedbackModal(job_id) {
+  $('#feedback_modal .modal-card-title').html("JOB:"+job_id);
+  $('#feedback_modal').addClass('is-active');
+}
+
 function saveChanges() {
 
   $('#saving_cv_modal').addClass('is-active');
@@ -193,7 +207,7 @@ function saveChanges() {
 
   // Create JSON CV
   var cv = {
-    // NEED TO GET USER'S NAME AND FROM SOMEWHERE!!!
+    // NEED TO GET USER'S NAME FROM SOMEWHERE
     "Name": "NAMETY NAME",
     "Degree Qualification": degree,
     "Degree Level": degree_level,
@@ -207,22 +221,18 @@ function saveChanges() {
 
   var job_id = $('#cur_job_id').html();
 
-  // showApplicationLoadingModal('Success',JSON.stringify(cv));
   $.post('/applicant/save_cv', {cv: JSON.stringify(cv)}, function(data) {
     if (data == "Success") {
-      // $.post('applicant/apply_for_job' {job_id:job_id}, function(data) {
-      //   if (data == "Success") {
-      //     showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
-      //     $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
-      //     $(modal).find('.modal-close').attr('onclick','closeCompletedApplicationModal();');
-      //   } else {
-      //     showApplicationLoadingModal("Failure",data);
-      //   }
-      // });
-      showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
-      $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
-      $(modal).find('.modal-close').attr('onclick','closeCompletedApplicationModal();');
-      $('#'+job_id+' .apply_button').removeClass('apply_button').addClass('test_button').html("Test");
+      $.post('/applicant/apply_for_job', {job_id:job_id}, function(data) {
+        if (data == "Success") {
+          showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
+          $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
+          $(modal).find('.modal-close').attr('onclick','closeCompletedApplicationModal();');
+          $('#'+job_id+' .apply_button').removeClass('apply_button').addClass('test_button').html("Test");
+        } else {
+          showApplicationLoadingModal("Failure",data);
+        }
+      });
     } else {
       // Data will be error message returned from server
       showApplicationLoadingModal("Failure",data);
@@ -242,3 +252,13 @@ $('#job_table').on('click', '.test_button', function(event) {
     var job_id = $(this).parent().parent().parent().parent().attr('id');
     showTestModal(job_id);
 });
+$('#job_table').on('click', '.feedback_button', function(event) {
+    var job_id = $(this).parent().parent().parent().parent().attr('id');
+    showFeedbackModal(job_id);
+});
+
+// $(document).ready(function() {
+//   $.post("/applicant/get_jobs", function(data) {
+//     // CONVERT JSON DATA TO ROWS IN TABLE
+//   });
+// });
