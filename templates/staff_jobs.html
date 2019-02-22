@@ -8,21 +8,38 @@
 </head>
 <body class="has-navbar-fixed-top">
   {% include 'header.html' %}
-  <table class="table is-hoverable is-fullwidth is-bordered is-striped">
+
+  <div class="modal" id="job_modal">
+    <div class="modal-background" onclick="closeJobModal();"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">JOB TITLE</p>
+      </header>
+      <section class="modal-card-body">
+        {% include 'new_job.html' %}
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button" onclick="saveChanges();">Save</button>
+        <button class="button" onclick="closeJobModal();">Cancel</button>
+      </footer>
+      </div>
+    </div>
+
+  <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table">
   <thead>
     <tr>
       <th>Title</th>
       <th>Location</th>
-      <th>Type</th>
+      <th>Position</th>
       <th>Deadline</th>
       <th>
         Actions
-        <a class="button is-rounded is-small">Add Job</a>
+        <a class="button is-rounded is-small add_button" onclick="showJobModal(-1);">Add Job</a>
       </th>
     </tr>
   </thead>
   <tbody>
-    <tr>
+    <tr id="10">
       <td>Software Engineer</td>
       <td>London</td>
       <td>Full-Time</td>
@@ -30,18 +47,15 @@
       <td>
         <div class="columns has-text-centered is-gapless">
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Edit</a>
+            <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Delete</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Test</a>
+            <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
           </div>
         </div>
       </td>
     </tr>
-    <tr>
+    <tr id="12">
       <td>Analyst</td>
       <td>Cambridge</td>
       <td>Part-Time</td>
@@ -49,51 +63,10 @@
       <td>
         <div class="columns has-text-centered is-gapless">
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Edit</a>
+            <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
           </div>
           <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Delete</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Test</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>CEO</td>
-      <td>Cambridge</td>
-      <td>Full-Time</td>
-      <td>15/02/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Edit</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Delete</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Test</a>
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Sales Rep</td>
-      <td>Oxford</td>
-      <td>Internship</td>
-      <td>15/05/19</td>
-      <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Edit</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Delete</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small" style="margin:2px">Test</a>
+            <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
           </div>
         </div>
       </td>
@@ -102,4 +75,29 @@
 </table>
 </body>
 <script src="/static/js/jquery-3.3.1.min.js"></script>
+<script>
+function closeJobModal() {
+  $('#job_modal').removeClass('is-active');
+}
+function showJobModal(job_id) {
+  $('#job_modal .modal-card-title').html("JOB:"+job_id);
+  $('#job_modal #cur_job_id').html(job_id);
+  $('#job_modal').addClass('is-active');
+}
+function closeCompletedJobModal() {
+  $('#saving_job_modal .modal-close').attr('onclick','closeJobLoadingModal();');
+  closeJobLoadingModal();
+  closeJobModal();
+}
+
+
+$('#job_table').on('click', '.edit_button', function(event) {
+  var job_id = $(this).parent().parent().parent().parent().attr('id');
+  showJobModal(job_id);
+});
+$('#job_table').on('click', '.delete_button', function(event) {
+    var job_id = $(this).parent().parent().parent().parent().attr('id');
+    // DELETE JOB
+});
+</script>
 </html>

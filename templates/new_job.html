@@ -1,0 +1,82 @@
+<style>
+.template {
+  display:none;
+}
+</style>
+<div class="modal" id="saving_job_modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box has-text-centered">
+      <progress class="progress is-large is-info" max="100">50%</progress>
+      <div class="modal-message">LOADING...</div>
+      <button class="modal-close is-large is-hidden" aria-label="close" onclick="closeJobLoadingModal();"></button>
+    </div>
+  </div>
+</div>
+
+<div class="box" id="job_details">
+  <p class="title">Job Details</p>
+  <div class="content">
+    <div class="job_item">
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" placeholder="Name" name="job_name">
+        </p>
+        <div class="control">
+          <div class="select is-rounded" name="job_position">
+            <select>
+              <option class="default_option">Position</option>
+              <option>Full-Time</option>
+              <option>Part-Time</option>
+              <option>Internship</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="job_item">
+      <div class="field has-addons">
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" placeholder="Location" name="job_location">
+        </p>
+        <p class="control is-expanded">
+          <input class="input is-rounded" type="text" placeholder="Deadline (dd/mm/yyyy)" name="job_deadline">
+        </p>
+      </div>
+    </div>
+    <div class="job_item">
+      <div class="field">
+        <textarea class="textarea job_description_box" placeholder="Job Description"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="box" id="job_test">
+  <p class="title">Test</p>
+  <div class="content">
+
+    <div class="test_question job_item notification template">
+      <button class="delete has-background-danger" onclick="deleteItem(this)"></button>
+      <p>
+        <input class="input is-rounded" type="text" placeholder="Question" name="question">
+      </p>
+      <p>
+        <input class="input is-rounded has-background-success" type="text" placeholder="Correct Answer" name="correct_answer">
+      </p>
+      <p>
+        <input class="input is-rounded has-background-danger has-text-white" type="text" placeholder="Incorrect Answer" name="incorrect_answer">
+      </p>
+      <p>
+        <input class="input is-rounded has-background-danger has-text-white" type="text" placeholder="Incorrect Answer" name="incorrect_answer">
+      </p>
+      <p>
+        <input class="input is-rounded has-background-danger has-text-white" type="text" placeholder="Incorrect Answer" name="incorrect_answer">
+      </p>
+    </div>
+
+    <a class="button is-info is-rounded" onclick="addItem(this)">Add Question</a>
+
+  </div>
+</div>
+<script src="/static/js/new_job.js"></script>

@@ -179,6 +179,38 @@ def dislike_candidate():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
+## Create/Edit A Job
+# Receives: job_id + job details in JSON Format (If new job, job_id passed is -1)
+#	var job = {
+#		"Name":job_name,
+#		"Description":job_description,
+#		"Deadline":job_deadline,
+#		"Location":job_location,
+#		"Position":job_position,
+#		"Questions":[{
+#			"Question":question,
+#			"Correct":correct_answer,
+#			"Incorrect":[{
+#				"Answer":answer
+#			}]
+#		}]
+#	};
+# Returns: Success/Failure
+# Actions: Add Job to database or update it's details
+@app.route('/staff/save_job', methods=["POST"])
+def save_job():
+	if login_check() == "Admin":
+		user_id = session['user_id']
+		job_id = request.form.get('job_id')
+		job_details = request.form.get('job')
+		if job_id == -1:
+			# NEW JOB -> CREATE
+			return Response("Success", status=200, mimetype="text/html")
+		else:
+			# EXISTING JOB -> UPDATE
+			return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 
 ## Applicant Pages
 
@@ -296,6 +328,10 @@ def apply_for_job():
 		# APPLY USER FOR JOB WITH THEIR CURRENT CV
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
+
+
+## TEMP PAGES
+
 
 
 ## SETUP APP
