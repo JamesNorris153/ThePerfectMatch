@@ -211,6 +211,14 @@ def save_job():
 			return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
+@app.route('/staff/delete_job', methods=["POST"])
+def delete_job():
+	if login_check() == "Admin":
+		job_id = request.form.get('job_id')
+		# DELETE JOB IN DATABASE
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 
 ## Applicant Pages
 

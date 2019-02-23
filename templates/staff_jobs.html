@@ -98,6 +98,13 @@ $('#job_table').on('click', '.edit_button', function(event) {
 $('#job_table').on('click', '.delete_button', function(event) {
     var job_id = $(this).parent().parent().parent().parent().attr('id');
     // DELETE JOB
+    $.post("/staff/delete_job",{job_id:job_id},function(data) {
+      if (data == "Success") {
+        $('#'+job_id).remove();
+      } else {
+        alert(data);
+      }
+    });
 });
 </script>
 </html>
