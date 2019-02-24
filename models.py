@@ -7,6 +7,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
 class Users(db.Model):
+    __tablename__='users'
     id = db.Column(db.Integer, primary_key=True)
     FName = db.Column(db.String(30), unique=False, nullable=False)
     LName = db.Column(db.String(30), unique=False, nullable=False)
@@ -17,7 +18,17 @@ class Users(db.Model):
     def __repr__(self):
         return f"User('{self.FName}', '{self.LName}', '{self.email}')"
 
+class Admins(db.Model):
+    __tablename__='admins'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), unique=False, nullable=False)
+    password = db.Column(db.String(30), unique=False, nullable=False)
+
+    def __repr__(self):
+        return f"Users('{self.id}', '{self.username}')"
+
 class Jobs(db.Model):
+    __tablename__='jobs'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=False, nullable=False)
     description = db.Column(db.Text, unique=False, nullable=False)
@@ -33,7 +44,7 @@ class Jobs(db.Model):
     tests=db.relationship('Tests',backref='job',lazy=True)
 
     def __repr__(self):
-        return f"User('{self.name}', '{self.description}', '{self.deadline}', '{self.location}', '{self.position}')"
+        return f"Jobs('{self.name}', '{self.description}', '{self.deadline}', '{self.location}', '{self.position}')"
 
 class ALevel(db.Model):
     __tablename__='alevel'
@@ -44,7 +55,7 @@ class ALevel(db.Model):
     b=db.relationship('CVs',secondary="alevel_cv")
 
     def __repr__(self):
-        return f"User('{self.subject}')"
+        return f"ALevel('{self.subject}')"
 
 class Skills(db.Model):
     __tablename__='skills'
@@ -55,7 +66,7 @@ class Skills(db.Model):
     b=db.relationship('CVs',secondary="skills_cv")
 
     def __repr__(self):
-        return f"User('{self.skill}')"
+        return f"Skills('{self.skill}')"
 
 class Employment(db.Model):
     __tablename__="employment"
@@ -67,7 +78,7 @@ class Employment(db.Model):
     b=db.relationship('CVs',secondary="employment_cv")
 
     def __repr__(self):
-        return f"User('{self.company}','{self.position}')"
+        return f"Employment('{self.company}','{self.position}')"
 
 class CVs(db.Model):
     __tablename__='cvs'
@@ -76,7 +87,7 @@ class CVs(db.Model):
     a=db.relationship('ALevel',secondary="alevel_cv")
 
     def __repr__(self):
-        return f"User('{self.id}', '{self.User_ID}')"
+        return f"CVs('{self.id}', '{self.User_ID}')"
 
 class Languages(db.Model):
     __tablename__="languages"
@@ -87,7 +98,7 @@ class Languages(db.Model):
     b=db.relationship('CVs',secondary="language_cv")
 
     def __repr__(self):
-        return f"User('{self.language}')"
+        return f"Languages('{self.language}')"
 
 class Hobbies(db.Model):
     __tablename__="hobbies"
@@ -98,7 +109,7 @@ class Hobbies(db.Model):
     b=db.relationship('CVs',secondary="hobby_cv")
 
     def __repr__(self):
-        return f"User('{self.hobby}')"
+        return f"Hobbies('{self.hobby}')"
 
 class Degrees(db.Model):
     __tablename__="degrees"
@@ -110,7 +121,7 @@ class Degrees(db.Model):
     b=db.relationship('CVs',secondary="degree_cv")
 
     def __repr__(self):
-        return f"User('{self.university}','{self.course}')"
+        return f"Degees('{self.university}','{self.course}')"
 
 class Tests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -119,9 +130,9 @@ class Tests(db.Model):
 
 class ALevel_CV(db.Model):
     __tablename__ = 'alevel_cv'
-    CV_ID= db.Column(db.Integer, db.ForeignKey('cvs.id'))
-    ALevel_ID = db.Column(db.Integer, db.ForeignKey('alevel.id'))
-    grade = db.Column(db.Integer, unique=False, nullable=False)
+    CV_ID= db.Column(db.Integer, db.ForeignKey('cvs.id'), primary_key=True)
+    ALevel_ID = db.Column(db.Integer, db.ForeignKey('alevel.id'), primary_key=True)
+    grade = db.Column(db.String(10), unique=False, nullable=False)
     aa = relationship(ALevel,backref=backref("alevel_cv", cascade="all, delete-orphan"))
     cc = relationship(CVs, backref=backref("alevel_cv", cascade="all, delete-orphan"))
 
@@ -169,8 +180,8 @@ class Job_CV(db.Model):
 class Degree_CV(db.Model):
     __tablename__ = 'degree_cv'
     Degree_ID = db.Column(db.Integer, db.ForeignKey('degrees.id'), nullable=False, primary_key=True)
-    CV_ID= db.Column(db.Integer, db.ForeignKey('cvs.id'), nullable=False)
-    grade = db.Column(db.Integer, unique=False, nullable=False)
+    CV_ID= db.Column(db.Integer, db.ForeignKey('cvs.id'), nullable=False, primary_key=True)
+    grade = db.Column(db.String(30), unique=False, nullable=False)
     dd = relationship(Degrees,backref=backref("degree_cv", cascade="all, delete-orphan"))
     cc = relationship(CVs, backref=backref("degree_cv", cascade="all, delete-orphan"))
 
@@ -182,4 +193,4 @@ class Question_Test(db.Model):
     answer = db.Column(db.Text, unique=False, nullable=False)
 
     def __repr__(self):
-        return f"User('{self.question}','{self.answer}')"
+        return f"Question_Test('{self.question}','{self.answer}')"
