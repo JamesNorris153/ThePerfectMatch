@@ -43,15 +43,15 @@ class CV:
     ALevels = []
     employment = []
     skills = []
-    def __init__(self, FName, LName, hobbies, languages, degrees, ALevels, employment, skills):
-        self.FName = FName
-        self.LName = LName
-        self.degrees = degrees
-        self.languages = languages
-        self.hobbies = hobbies
-        self.ALevels = ALevels
-        self.employment = employment
-        self.skills = skills
+    # def __init__(self, FName, LName, hobbies, languages, degrees, ALevels, employment, skills):
+    #     self.FName = FName
+    #     self.LName = LName
+    #     self.degrees = degrees
+    #     self.languages = languages
+    #     self.hobbies = hobbies
+    #     self.ALevels = ALevels
+    #     self.employment = employment
+    #     self.skills = skills
 
 class Form:
 
@@ -84,10 +84,10 @@ class Emp:
     position = ""
     length = ""
 
-    def __init__(self,company,positon,length):
-        self.name=company
-        self.position=position
-        self.length=self.length
+    # def __init__(self,company,positon,length):
+    #     self.name=company
+    #     self.position=position
+    #     self.length=self.length
 
 class Edu:
 
@@ -95,10 +95,10 @@ class Edu:
     course = ""
     grade = ""
 
-    def __init__(self,university,course,grade):
-        self.name=university
-        self.course=course
-        self.grade=self.grade
+    # def __init__(self,university,course,grade):
+    #     self.name=university
+    #     self.course=course
+    #     self.grade=self.grade
 
 #Example Methods
 def create_user(applicant):
@@ -194,52 +194,53 @@ def get_CV(cvID):
     cur = con.cursor()
     cur.execute('SELECT User_ID from cvs WHERE id=(?)',(cvID,))
     user = cur.fetchone()[0]
-    result=cur.execute('SELECT FName,LName from users where id=(?)',(user,))
-    info.FName = result['FName']
-    info.LName = result['LName']
+    cur.execute('SELECT FName,LName from users where id=(?)',(user,))
+    result = cur.fetchone()
+    info.FName = result[0]
+    info.LName = result[1]
     cur.execute('SELECT grade,name from alevel_cv join alevel on alevel.id = alevel_cv.ALevel_ID WHERE CV_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Trait()
-        put.name = row['name']
-        put.level = row['grade']
+        put.name = row[1]
+        put.level = row[0]
         info.ALevels.append(put)
     cur.execute('SELECT expertise,name from skills_cv join skills on skills.id = skills_cv.Skills_ID WHERE CV_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Trait()
-        put.name = row['name']
-        put.level = row['expertise']
+        put.name = row[1]
+        put.level = row[0]
         info.skills.append(put)
-    cur.execute('SELECT expertise,name from languages_cv join languages on languages.id = languages_cv.Language_ID WHERE CV_ID=(?)',(cvID,))
+    cur.execute('SELECT expertise,name from language_cv join languages on languages.id = language_cv.Language_ID WHERE CV_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Trait()
-        put.name = row['name']
-        put.level = row['expertise']
+        put.name = row[1]
+        put.level = row[0]
         info.languages.append(put)
-    cur.execute('SELECT interest,name from hobby_cv join hobbbies on hobbies.id = hobby_cv.Hobby_ID WHERE CV_ID=(?)',(cvID,))
+    cur.execute('SELECT interest,name from hobby_cv join hobbies on hobbies.id = hobby_cv.Hobby_ID WHERE CV_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Trait()
-        put.name = row['name']
-        put.level = row['expertise']
+        put.name = row[1]
+        put.level = row[0]
         info.hobbies.append(put)
     cur.execute('SELECT company,position,length from employment_cv join employment on employment.id = employment_cv.Employment_ID WHERE CV_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Emp()
-        put.name = row['company']
-        put.position = row['position']
-        put.length = row['length']
+        put.name = row[0]
+        put.position = row[1]
+        put.length = row[2]
         info.employment.append(put)
-    cur.execute('SELECT university,course,grade from degree_cv join degrees on degrees.id = degrees_cv.Degree_ID WHERE CV_ID=(?)',(cvID,))
+    cur.execute('SELECT university,course,grade from degree_cv join degrees on degrees.id = degree_cv.Degree_ID WHERE CV_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Edu()
-        put.name = row['university']
-        put.course = row['course']
-        put.grade = row['grade']
+        put.name = row[0]
+        put.course = row[1]
+        put.grade = row[2]
         info.degrees.append(put)
     con.close()
     return info
@@ -281,7 +282,7 @@ def new_employment(jobID,company,position):
     con.commit()
     con.close()
 
-def get_degree_level(table, jobID):
+def get_degree_level(jobID):
     con = sql.connect(path.join(ROOT, 'test.db'))
     cur = con.cursor()
     cur.execute('SELECT university,course,level FROM degrees WHERE Job_ID=(?)',(jobID,))
@@ -289,7 +290,7 @@ def get_degree_level(table, jobID):
     con.close()
     return user
 
-def get_employment_level(table, jobID):
+def get_employment_level(jobID):
     con = sql.connect(path.join(ROOT, 'test.db'))
     cur = con.cursor()
     cur.execute('SELECT company,position,level FROM employment WHERE Job_ID=(?)',(jobID,))
