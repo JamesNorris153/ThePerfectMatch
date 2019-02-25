@@ -108,6 +108,8 @@ def create_user(applicant):
         cur.execute('INSERT INTO users VALUES (NULL,?,?,?,?)',(applicant.FName,applicant.LName,bcrypt.hashpw(applicant.password.encode("utf8"),bcrypt.gensalt()),applicant.email))
     con.commit()
     con.close()
+	# TODO: return user_id on creation
+	# return user_id
 
 def get_users():
     con = sql.connect(path.join(ROOT, 'test.db'))
@@ -121,9 +123,9 @@ def get_jobs():
     con = sql.connect(path.join(ROOT, 'test.db'))
     cur = con.cursor()
     cur.execute('SELECT * FROM jobs')
-    users = cur.fetchall()
+    jobs = cur.fetchall()
     con.close()
-    return users
+    return jobs
 
 def check_mail(email):
     con = sql.connect(path.join(ROOT, 'test.db'))
