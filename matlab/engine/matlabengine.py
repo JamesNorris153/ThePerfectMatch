@@ -1,4 +1,4 @@
-#Copyright 2014-2016 MathWorks, Inc.
+#Copyright 2014-2017 MathWorks, Inc.
 
 """
 MatlabEngine: The class name of MATLAB Engine.  You can call MATLAB software as
@@ -12,13 +12,12 @@ from matlab.engine import RejectedExecutionError
 from matlab.engine import MatlabExecutionError
 import weakref
 import shlex
-
+from matlab.engine import enginehelper
 
 try:
     import StringIO as sIO
 except ImportError:
     import io as sIO
-
 
 class MatlabFunc(object):
     """
@@ -43,41 +42,29 @@ class MatlabFunc(object):
         nargs = kwargs.pop('nargout', 1)
 
         if not isinstance(nargs, int):
-            raise TypeError(pythonengine.getMessage('NargoutMustBeInt') + ' %s' %
-                            type(nargs).__name__)
+            raise TypeError(pythonengine.getMessage('NargoutMustBeInt',  type(nargs).__name__))
 
         if nargs < 0:
             raise ValueError(pythonengine.getMessage('NargoutCannotBeLessThanZero'))
 
-        async = kwargs.pop('async', False)
-        if not isinstance(async, bool):
-            raise TypeError(pythonengine.getMessage('AsyncMustBeBool') + ' %s' %
-                            type(async).__name__)
-
         _stdout = kwargs.pop('stdout', None)
         _stderr = kwargs.pop('stderr', None)
+
+        background = enginehelper._get_async_or_background_argument(kwargs)
         
-        if kwargs:
-            raise TypeError((pythonengine.getMessage('InvalidKwargs') + ' %r') % (list(kwargs.keys())[0]))
-        
+        _sIO_info = '{0}.{1}'.format(sIO.__name__, sIO.StringIO.__name__);
         if (_stdout is not None) and (not isinstance(_stdout, sIO.StringIO)):
-                raise TypeError((pythonengine.getMessage('StdoutMustBe') + ' %s.%s, '
-                                + pythonengine.getMessage('NOT') +' %s.%s ') %
-                                (sIO.__name__, sIO.StringIO.__name__,
-                                _stdout.__class__.__module__,
-                                _stdout.__class__.__name__))
+            _stdout_info = '{0}.{1}'.format(_stdout.__class__.__module__, _stdout.__class__.__name__);
+            raise TypeError(pythonengine.getMessage('StdoutMustBeStringIO', _sIO_info, _stdout_info))
 
         if (_stderr is not None) and (not isinstance(_stderr, sIO.StringIO)):
-                raise TypeError((pythonengine.getMessage('StderrMustBe') + ' %s.%s, '
-                                + pythonengine.getMessage('NOT') + ' %s.%s ') %
-                                (sIO.__name__, sIO.StringIO.__name__,
-                                _stderr.__class__.__module__,
-                                _stderr.__class__.__name__))
+            _stderr_info = '{0}.{1}'.format(_stderr.__class__.__module__, _stderr.__class__.__name__);
+            raise TypeError(pythonengine.getMessage('StderrMustBeStringIO', _sIO_info, _stderr_info))
 
         future = pythonengine.evaluateFunction(self._engine()._matlab,
                                                self._name, nargs,args,
                                                out=_stdout, err=_stderr)
-        if async:
+        if background:
             return FutureResult(self._engine(), future, nargs, _stdout, _stderr, feval=True)
         else:
             return FutureResult(self._engine(), future, nargs, _stdout,
@@ -154,8 +141,7 @@ class MatlabWorkSpace(object):
 
     def __validate_identity(self, attr):
         if not isinstance(attr, str):
-            raise TypeError(pythonengine.getMessage('VarNameMustBeStr') + " %s"
-                            % type(attr).__name__)
+            raise TypeError(pythonengine.getMessage('VarNameMustBeStr',  type(attr).__name__))
         if not pythonengine.validateIdentity(attr):
             raise ValueError(pythonengine.getMessage('VarNameNotValid'))
       
@@ -169,7 +155,7 @@ class MatlabEngine(object):
     functions are dynamically added to a MatlabEngine object as callable 
     attributes.  The function name <matlabfunc> is a replaceable MATLAB 
     function name (for example, sqrt). The function signature is the same as in
-    MATLAB, with optional named arguments nargout, async, stdout, and stderr.
+    MATLAB, with optional named arguments nargout, async|background, stdout, and stderr.
 
     workspace['<matlabvar>']
         A property to represent the MATLAB workspace.  Variables in
@@ -178,14 +164,15 @@ class MatlabEngine(object):
 
 
     <matlabfunc>(*args, nargout=1, async=False, stdout=sys.stdout, stderr=sys.stderr)
+    <matlabfunc>(*args, nargout=1, background=False, stdout=sys.stdout, stderr=sys.stderr)
 
         The invocation of a MATLAB statement can be either synchronous
         or asynchronous.  While a synchronous function call returns
         the result after it finishes executing, an asynchronous
-        function call returns a FutureResult immediately.  This
-        FutureResult object can be used to retrieve the actual result
-        later.  If there are any output or error messages generated
-        from <matlabfunc>, by default they will be redirected to the
+        function call is performed in the background and returns a FutureResult
+        immediately.  This FutureResult object can be used to retrieve the 
+        actual result later.  If there are any output or error messages 
+        generated from <matlabfunc>, by default they will be redirected to the
         standard output or standard error of the Python console.
 
         Please note that you can call an arbitrary MATLAB function
@@ -197,10 +184,11 @@ class MatlabEngine(object):
             nargout: int
                 By default, the number of output is 1.  If the number of output
             is more than 1, a tuple is returned.
-            async: bool
+            async, background: bool
                 This parameter is used to specify how the MATLAB command is
-            evaluated: asynchronously or synchronously. By default, async is
-            chosen to be False so the MATLAB command is evaluated synchronously.
+            evaluated: asynchronously or synchronously. By default, async|background
+            is chosen to be False so the MATLAB command is evaluated synchronously.
+            "async" is a synonym for "background" that will be removed in a future release.
             stdout: StringIO.StringIO (Python 2.7),  io.StringIO (Python 3)
                 Stream used to capture the output of the MATLAB command.  By
             default, the system standard output sys.stdout is used.
@@ -209,9 +197,8 @@ class MatlabEngine(object):
             By default, the system standard error output sys.stderr is used.
 
         Returns
-
             The type of the return value of this function varies based on the
-            value of parameter async.  For the case of synchronously invocation,
+            value of parameter async or background.  For the case of synchronously invocation,
             the result of the MATLAB command is returned directly.  For the case
             of asynchronous invocation, a FutureResult is returned which can be
             used to retrieve the actual result, check completion status, and
