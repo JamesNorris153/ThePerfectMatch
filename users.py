@@ -162,6 +162,71 @@ def insert_job(job):
     con.commit()
     con.close()
 
+def selectAllSkills():
+    skills = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    result = cur.execute('select * from skills where job_id=1')
+    result = cur.fetchall()
+    for item in result:
+        skills.append(item[2])
+    con.commit()
+    con.close()
+
+    return skills
+
+def selectAllLanguages():
+    languages = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    result = cur.execute('select * from languages where job_id=1')
+    result = cur.fetchall()
+    for item in result:
+        languages.append(item[2])
+    con.commit()
+    con.close()
+
+    return languages
+
+def selectAllAlevels():
+    Alevels = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    result = cur.execute('select * from ALevel where job_id=1')
+    result = cur.fetchall()
+    for item in result:
+        Alevels.append(item[2])
+    con.commit()
+    con.close()
+
+    return Alevels
+
+def selectAllHobbies():
+    Hobbies = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    result = cur.execute('select * from Hobbies where job_id=1')
+    result = cur.fetchall()
+    for item in result:
+        Hobbies.append(item[2])
+    con.commit()
+    con.close()
+
+    return Hobbies
+
+def selectAllEmployment():
+    Employment = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    result = cur.execute('select * from Employment where job_id=1')
+    result = cur.fetchall()
+    for item in result:
+        Employment.append(item[2])
+    con.commit()
+    con.close()
+
+    return Employment
+
 # ALevel/Hobbies/Skills/Languages
 def insert_trait_dependency(table, jobID, name, level):
     con = sql.connect(path.join(ROOT, 'database.db'))
