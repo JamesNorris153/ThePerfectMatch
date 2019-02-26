@@ -75,6 +75,7 @@ y2 = numpy.array(state2)
 
 
 eng = matlab.engine.start_matlab()
+eng.addpath(r'./functions',nargout=0)
 t = eng.main(X1.tolist(), y1.tolist(), g_numOfCVs, X2.tolist(), y2.tolist())
 for i in range(0, 101):
     users.update_status(1, i + 1, 1)
