@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from users import *
 from job import job
+from admin import admin
 import os
 
 ## Session variables
@@ -70,13 +71,16 @@ def logout_user():
 	session.clear()
 	return redirect("/")
 
-## Staff Pages
+## Staff Pages ##
 
-# Staff Login Page
+## Staff Login Page
 # GET: Return staff_portal page
 # POST: Try to authenticate staff member
 @app.route("/staff/login", methods=["GET", "POST"])
 def staff_login():
+	# creates a dummy admin with username "test" and password "test" for testing
+	# test = admin("test", "test")
+	# create_admin(test)
 
 	# Requesting Page
 	if request.method == "GET":
@@ -118,6 +122,7 @@ def get_staff_jobs():
 	if login_check() == "Admin":
 		# GET ALL JOBS CREATED BY THIS USER IN JSON FORMAT
 		jobs = get_jobs()
+		print(jobs)
 		return Response(jobs, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -255,8 +260,7 @@ def applicant_login():
 		password = request.form.get("password")
 		try:
 			# Check if valid user logging in -> Method should return user_id OR None
-			# user_id = authenticate_user(email,password)
-			user_id = 5
+			user_id = authenticate_user(email, password)
 			if user_id is None:
 				# if None returned, email or password is incorrect
 				return Response("Incorrect username or password", status=200, mimetype="text/html")

@@ -181,14 +181,15 @@ def insert_special_dependency(table, jobID, name, second, level):
 def authenticate_user(email, password):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT password from users where email=(?)',(email,))
+    cur.execute('SELECT id,password from users where email=(?)',(email,))
     passw = cur.fetchone()
-    if bcrypt.checkpw(password, passw):
+    if passw == None: return None
+    if bcrypt.checkpw(password, passw[1].encode("utf8")):
         con.close()
-        return True
+        return passw[0]
     else:
         con.close()
-        return False
+        return None
 
 def get_CV(cvID):
     info = CV()
@@ -396,14 +397,15 @@ def change_level(jobID,table,name,level):
 def authenticate_admin(username, password):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT password from admins where username=(?)',(username,))
+    cur.execute('SELECT id,password from admins where username=(?)',(username,))
     passw = cur.fetchone()
-    if bcrypt.checkpw(password,passw):
+    if passw == None: return None
+    if bcrypt.checkpw(password.encode("utf8"),passw[1].encode("utf8")):
         con.close()
-        return True
+        return passw[0]
     else:
         con.close()
-        return False
+        return None
 
 def create_admin(admin):
     con = sql.connect(path.join(ROOT, 'database.db'))
