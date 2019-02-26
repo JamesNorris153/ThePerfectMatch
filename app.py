@@ -232,7 +232,6 @@ def delete_job():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
-
 ## Applicant Pages
 
 # Applicant Login Page
