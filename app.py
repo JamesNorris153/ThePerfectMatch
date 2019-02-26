@@ -62,7 +62,7 @@ def index():
 	if account_type is None:
 		return render_template("index.html")
 	elif account_type == "Admin":
-		return redirect("/staff/candidates")
+		return redirect("/staff/jobs")
 	else:
 		return redirect("/applicant/jobs")
 
@@ -87,7 +87,7 @@ def staff_login():
 	if request.method == "GET":
 		# If staff already logged in, go to homepage
 		if login_check() == "Admin":
-			return redirect("/staff/candidates")
+			return redirect("/staff/jobs")
 		return render_template("staff_portal.html")
 
 	# Receives: Email + Password

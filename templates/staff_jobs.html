@@ -45,13 +45,11 @@
       <td>Full-Time</td>
       <td>23/03/19</td>
       <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
-          </div>
+        <div>
+          <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
+          <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
+          <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
+          <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
         </div>
       </td>
     </tr>
@@ -61,13 +59,11 @@
       <td>Part-Time</td>
       <td>21/02/19</td>
       <td>
-        <div class="columns has-text-centered is-gapless">
-          <div class="column">
-            <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
-          </div>
-          <div class="column">
-            <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
-          </div>
+        <div>
+          <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
+          <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
+          <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
+          <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
         </div>
       </td>
     </tr>
@@ -92,11 +88,11 @@ function closeCompletedJobModal() {
 
 
 $('#job_table').on('click', '.edit_button', function(event) {
-  var job_id = $(this).parent().parent().parent().parent().attr('id');
+  var job_id = $(this).parent().parent().parent().attr('id');
   showJobModal(job_id);
 });
 $('#job_table').on('click', '.delete_button', function(event) {
-    var job_id = $(this).parent().parent().parent().parent().attr('id');
+    var job_id = $(this).parent().parent().parent().attr('id');
     // DELETE JOB
     $.post("/staff/delete_job",{job_id:job_id},function(data) {
       if (data == "Success") {
@@ -105,6 +101,10 @@ $('#job_table').on('click', '.delete_button', function(event) {
         alert(data);
       }
     });
+});
+$('#job_table').on('click', '.candidates_button', function(event) {
+  var job_id = $(this).parent().parent().parent().attr('id');
+  window.location.href="/staff/candidates?id="+job_id;
 });
 </script>
 </html>
