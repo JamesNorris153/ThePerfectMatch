@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, Response, session
 from flask_cors import CORS
+import json
 
 from users import *
 from job import job
@@ -122,8 +123,8 @@ def get_staff_jobs():
 	if login_check() == "Admin":
 		# GET ALL JOBS CREATED BY THIS USER IN JSON FORMAT
 		jobs = get_jobs()
-		print(jobs)
-		return Response(jobs, status=200, mimetype="text/html")
+		jobs_json = json.dumps(jobs)
+		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Staff Candidates Page
@@ -138,25 +139,29 @@ def show_staff_candidates_page():
 @app.route("/staff/get_candidates")
 def get_candidates():
 	if login_check() == "Admin":
-		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
 		candidates = show_best_candidates(job_id)
-		return Response(candidates, status=200, mimetype="text/html")
+		candidates_json = json.dumps(candidates)
+		return Response(candidates_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Get a CV from database to view
 # Receives: user_id + job_id
 # Returns: CV in JSON/Text Format
-@app.route("/staff/get_cv", methods=["POST"])
+#@app.route("/staff/get_cv", methods=["POST"])
+@app.route("/staff/get_cv")
 def get_cv_by_user_id():
 	if login_check() == "Admin":
 		user_id = session["user_id"]
 
+		#user_id = request.form.get("user_id")
+		user_id = 4
 		# GET CV FROM USER AND JOB ID
 		cv = get_CV(user_id)
-		return Response(cv, status=200, mimetype="text/html")
+		cv_json = json.dumps(cv)
+		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Like a candidate for a role
@@ -216,7 +221,7 @@ def save_job():
 		deadline = request.form.get("deadline")
 		location = request.form.get("location")
 		position = request.form.get("position")
-		job = job(job_id, description, deadline, location, position)
+		job = Job(job_id, description, deadline, location, position)
 
 		if job_id == -1:
 			insert_job(job)

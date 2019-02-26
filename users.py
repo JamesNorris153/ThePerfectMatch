@@ -33,6 +33,12 @@ class Applicant:
         self.password = password
         self.email = email
 
+class Admin:
+
+	def __init(self, username, password):
+		self.username = username
+		self.password = password
+
 class CV:
 
     FName = ""
