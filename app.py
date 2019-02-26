@@ -242,6 +242,14 @@ def delete_job():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
+@app.route("/staff/retrain_job", methods=["POST"])
+def retrain_job():
+	if login_check() == "Admin":
+		job_id = request.form.get("job_id")
+		# PERFORM ML RETRAINING
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 ## Applicant Pages
 
 # Applicant Login Page
