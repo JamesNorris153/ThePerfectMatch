@@ -30,7 +30,7 @@ function login(email_input,password_input) {
   function(data) {
     // If user successfully logged in, send user to candidates page, else show the error message
     if (data == "Success") {
-      window.location.href = "/staff/candidates";
+      window.location.href = "/staff/jobs";
     } else {
       $('#login_error').html(data);
     }
