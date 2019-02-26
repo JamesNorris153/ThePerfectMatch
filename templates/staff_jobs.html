@@ -5,6 +5,11 @@
   <link rel="stylesheet" type="text/css" href="/static/css/bulma_min.css">
   <link rel="stylesheet" type="text/css" href="/static/css/tables.css">
   <title>BRAND Jobs</title>
+  <style>
+    .template {
+      display:none;
+    }
+  </style>
 </head>
 <body class="has-navbar-fixed-top">
   {% include 'header.html' %}
@@ -39,7 +44,22 @@
     </tr>
   </thead>
   <tbody>
-    <tr id="10">
+    <tr class="job template">
+      <td class="job_title"></td>
+      <td class="job_location"></td>
+      <td class="job_position"></td>
+      <td class="job_deadline"></td>
+      <td>
+        <div>
+          <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
+          <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
+          <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
+          <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
+        </div>
+      </td>
+    </tr>
+
+    <tr id="1">
       <td>Software Engineer</td>
       <td>London</td>
       <td>Full-Time</td>
@@ -106,5 +126,12 @@ $('#job_table').on('click', '.candidates_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
   window.location.href="/staff/candidates?id="+job_id;
 });
+
+$(document).ready(function() {
+  $.get("/staff/get_jobs", function(data) {
+    alert(data);
+  });
+});
+
 </script>
 </html>
