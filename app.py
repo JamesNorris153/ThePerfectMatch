@@ -160,7 +160,7 @@ def get_cv_by_user_id():
 		user_id = 4
 		# GET CV FROM USER AND JOB ID
 		cv = get_CV(user_id)
-		cv_json = json.dumps(cv)
+		cv_json = json.dumps(cv.__dict__)
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -217,11 +217,13 @@ def save_job():
 	if login_check() == "Admin":
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
-		description = request.form.get("description")
-		deadline = request.form.get("deadline")
-		location = request.form.get("location")
-		position = request.form.get("position")
-		job = Job(job_id, description, deadline, location, position)
+		job_json = json.loads(request.form.get("job"))
+		job = Job(
+			job_json["Name"],
+			job_json["Description"],
+			job_json["Deadline"],
+			job_json["Location"],
+			job_json["Position"])
 
 		if job_id == -1:
 			insert_job(job)
@@ -290,15 +292,18 @@ def applicant_login():
 # Actions: Create new applicant in database + Set SESSION variables
 @app.route("/applicant/register", methods=["POST"])
 def register_applicant():
-	email = request.form.get("email")
-	password = request.form.get("password")
+
 	FName = request.form.get("first_name")
 	LName = request.form.get("last_name")
+	email = request.form.get("email")
+	password = request.form.get("password")
+
 	try:
 		# If the email address is taken, return an error
 		if check_mail(email):
 			return Response("This email address is taken", status=200, mimetype="text/html")
-		new_applicant = applicant(first_name, last_name, email, password)
+
+		new_applicant = Applicant(FName, LName, email, password)
 		user_id = create_user(new_applicant)
 		session["account_type"] = "Applicant"
 		session["user_id"] = user_id
