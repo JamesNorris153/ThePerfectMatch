@@ -1,12 +1,13 @@
-#Copyright 2014-2015 MathWorks, Inc.
+#Copyright 2014-2017 MathWorks, Inc.
 
 """
 The MATLAB Engine enables you to call any MATLAB statement either synchronously
 or asynchronously.  With synchronous execution, the invocation of a MATLAB
 statement returns the result after the call finishes.  With asynchronous
-execution, the invocation of a MATLAB statement returns a FutureResult object
-immediately.  You can call its "done" function to check if the call has finished,
-and its "result" function to obtain the actual result of the MATLAB statement.
+execution, the invocation of a MATLAB statement is performed in the background 
+and a FutureResult object is returned immediately.  You can call its "done" 
+function to check if the call has finished, and its "result" function to obtain
+ the actual result of the MATLAB statement.
 
 This example shows how to call a MATLAB function:
 
@@ -25,7 +26,7 @@ import atexit
 import weakref
 import threading
 
-_supported_versions = ['2_7', '3_4', '3_5']
+_supported_versions = ['2_7', '3_5', '3_6']
 _ver = sys.version_info
 _version = '{0}_{1}'.format(_ver[0], _ver[1])
 _PYTHONVERSION = None
@@ -76,10 +77,11 @@ from matlab.engine.fevalfuture import FevalFuture
 from matlab.engine.futureresult import FutureResult
 from matlab.engine.enginesession import EngineSession
 from matlab.engine.matlabengine import MatlabEngine
+from matlab.engine.matlabengine import enginehelper
 
 _session = EngineSession()
 
-def start_matlab(option="-nodesktop", async=False):
+def start_matlab(option="-nodesktop", **kwargs):
     """
     Start the MATLAB Engine.  This function creates an instance of the
     MatlabEngine class.  The local version of MATLAB will be launched
@@ -90,24 +92,25 @@ def start_matlab(option="-nodesktop", async=False):
     
     Parameters
         option - MATLAB startup option.
-        async: bool - start MATLAB asynchronously or not.  This parameter
-        is optional and false by default.
+        async, background: bool - start MATLAB asynchronously or not.  This parameter
+        is optional and false by default.  "async" is a synonym for "background"
+        that will be removed in a future release.
                 
     Returns
-        MatlabEngine - if aync is false.  This object can be used to evaluate
+        MatlabEngine - if aync or background is false.  This object can be used to evaluate
         MATLAB statements.
-        FutureResult - if async is true.  This object can be used to obtain the
+        FutureResult - if async or background is true.  This object can be used to obtain the
         real MatlabEngine instance.
 
     Raises
         EngineError - if MATLAB can't be started.
     """
-    
     if not isinstance(option, str):
         raise TypeError(pythonengine.getMessage('StartupOptionShouldBeStr'))
-
+    
+    background = enginehelper._get_async_or_background_argument(kwargs)
     future = FutureResult(option=option)
-    if not async:
+    if not background:
         #multi-threads cannot launch MATLAB simultaneously
         eng = future.result()
         return eng
@@ -125,7 +128,7 @@ def find_matlab():
     engines = pythonengine.findMATLAB()
     return engines
 
-def connect_matlab(name=None, async=False):
+def connect_matlab(name=None, **kwargs):
     """
     Connect to a shared MATLAB session.  This function creates an instance 
     of the MatlabEngine class and connects it to a MATLAB session. The MATLAB 
@@ -140,13 +143,14 @@ def connect_matlab(name=None, async=False):
     Parameters 
         name: str - the name of the shared MATLAB session, which is optional.
         By default it is None.
-        async: bool - connect to the shared MATLAB session asynchronously or
-        not.  This is optional and false by default.
+        async, background: bool - connect to the shared MATLAB session asynchronously or
+        not.  This is optional and false by default.  "async" is a synonym for 
+        "background" that will be removed in a future release.
 
-    Retains
-        MatlabEngine - if async is false.  This object can be used to evaluate
+    Returns
+        MatlabEngine - if async or background is false.  This object can be used to evaluate
         MATLAB functions.
-        FutureResult - if async is true.  This object can be used to obtain the
+        FutureResult - if async or background is true.  This object can be used to obtain the
         real MatlabEngine instance.
 
     Raises
@@ -155,6 +159,7 @@ def connect_matlab(name=None, async=False):
     
     #multi-threads cannot run this function simultaneously 
 
+    background = enginehelper._get_async_or_background_argument(kwargs)
     if name is None:
         with _engine_lock:
             #if there is no shareable or more than one shareable MATLAB
@@ -166,14 +171,14 @@ def connect_matlab(name=None, async=False):
                 #if there are shareable MATLAB sessions available
                 future = FutureResult(name=engines[0], attach=True)
 
-            if not async:
+            if not background:
                 eng = future.result()
                 return eng
             else:
                 return future
     else:
         future = FutureResult(name=name, attach=True)
-        if not async:
+        if not background:
             eng = future.result()
             return eng
         else:

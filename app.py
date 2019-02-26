@@ -160,7 +160,7 @@ def get_cv_by_user_id():
 		user_id = 4
 		# GET CV FROM USER AND JOB ID
 		cv = get_CV(user_id)
-		cv_json = json.dumps(cv)
+		cv_json = json.dumps(cv.__dict__)
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -217,11 +217,13 @@ def save_job():
 	if login_check() == "Admin":
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
-		description = request.form.get("description")
-		deadline = request.form.get("deadline")
-		location = request.form.get("location")
-		position = request.form.get("position")
-		job = Job(job_id, description, deadline, location, position)
+		job_json = json.loads(request.form.get("job"))
+		job = Job(
+			job_json["Name"],
+			job_json["Description"],
+			job_json["Deadline"],
+			job_json["Location"],
+			job_json["Position"])
 
 		if job_id == -1:
 			insert_job(job)
@@ -271,18 +273,18 @@ def applicant_login():
 	if request.method == "POST":
 		email = request.form.get("email")
 		password = request.form.get("password")
-		try:
-			# Check if valid user logging in -> Method should return user_id OR None
-			user_id = authenticate_user(email, password)
-			if user_id is None:
-				# if None returned, email or password is incorrect
-				return Response("Incorrect username or password", status=200, mimetype="text/html")
-			else:
-				session["account_type"] = "Applicant"
-				session["user_id"] = user_id
-				return Response("Success", status=200, mimetype="text/html")
-		except:
-			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
+		#try:
+		# Check if valid user logging in -> Method should return user_id OR None
+		user_id = authenticate_user(email, password)
+		if user_id is None:
+			# if None returned, email or password is incorrect
+			return Response("Incorrect username or password", status=200, mimetype="text/html")
+		else:
+			session["account_type"] = "Applicant"
+			session["user_id"] = user_id
+			return Response("Success", status=200, mimetype="text/html")
+		#except:
+		#return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
 
 # Applicant Registration POST Method
 # Receives: email, password, first name, last name
@@ -290,15 +292,18 @@ def applicant_login():
 # Actions: Create new applicant in database + Set SESSION variables
 @app.route("/applicant/register", methods=["POST"])
 def register_applicant():
-	email = request.form.get("email")
-	password = request.form.get("password")
+
 	FName = request.form.get("first_name")
 	LName = request.form.get("last_name")
+	email = request.form.get("email")
+	password = request.form.get("password")
+
 	try:
 		# If the email address is taken, return an error
 		if check_mail(email):
 			return Response("This email address is taken", status=200, mimetype="text/html")
-		new_applicant = applicant(first_name, last_name, email, password)
+
+		new_applicant = Applicant(FName, LName, email, password)
 		user_id = create_user(new_applicant)
 		session["account_type"] = "Applicant"
 		session["user_id"] = user_id
@@ -319,7 +324,8 @@ def get_applicant_jobs():
 	if login_check() == "Applicant":
 		# GET ALL JOBS HERE in JSON format - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
 		jobs = get_jobs()
-		return Response(jobs, status=200, mimetype="text/html")
+		jobs_json = json.dumps(jobs)
+		return Response(jobs_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Applicant CV Editing page
@@ -337,7 +343,8 @@ def get_applicant_cv():
 		user_id = session["user_id"]
 		# GET USERS CURRENT CV HERE
 		cv = get_cv(user_id)
-		return Response(cv, status=200, mimetype="text/html")
+		cv_json = json.dumps(cv)
+		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Saving CV Changes
@@ -348,7 +355,8 @@ def save_applicant_cv():
 	if login_check() == "Applicant":
 		user_id = session["user_id"]
 		cv = request.form.get("cv")
-    	# SAVE USER'S CV TO DATABASE HERE
+		print(cv)
+		# SAVE USER'S CV TO DATABASE HERE
 		insert_json_cv(cv, user_id)
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")

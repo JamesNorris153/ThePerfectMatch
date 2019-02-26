@@ -1,4 +1,4 @@
-#Copyright 2014-2015 MathWorks, Inc.
+#Copyright 2014-2017 MathWorks, Inc.
 
 """
 FutureResult: The class name of a future result returned by the MATLAB Engine.
@@ -59,8 +59,7 @@ class FutureResult():
         """
         if timeout is not None:
             if not isinstance(timeout, (int, long, float)):
-                raise TypeError(pythonengine.getMessage('TimeoutMustBeNumeric') + " %s" %
-                                type(timeout).__name__)
+                raise TypeError(pythonengine.getMessage('TimeoutMustBeNumeric', type(timeout).__name__))
             
             if timeout < 0:
                 raise TypeError(pythonengine.getMessage('TimeoutCannotBeNegative'))
