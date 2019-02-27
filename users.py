@@ -269,10 +269,10 @@ def insert_special_dependency(table, jobID, name, second, level):
 def authenticate_user(email, password):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT id,password from users where email=(?)',(email,))
+    cur.execute('SELECT id, password from users where email=(?)',(email,))
     passw = cur.fetchone()
     if passw == None: return None
-    if bcrypt.checkpw(password, passw[1].encode("utf8")):
+    if bcrypt.checkpw(password.encode("utf8"), passw[1]):
         con.close()
         return passw[0]
     else:
@@ -488,7 +488,7 @@ def authenticate_admin(username, password):
     cur.execute('SELECT id,password from admins where username=(?)',(username,))
     passw = cur.fetchone()
     if passw == None: return None
-    if bcrypt.checkpw(password.encode("utf8"),passw[1].encode("utf8")):
+    if bcrypt.checkpw(password.encode("utf8"),passw[1]):
         con.close()
         return passw[0]
     else:
@@ -498,10 +498,14 @@ def authenticate_admin(username, password):
 def create_admin(admin):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
+    user_id = None
     if check_user(admin.username)==True:
         cur.execute('INSERT INTO admins VALUES (NULL,?,?)',(admin.username,bcrypt.hashpw(admin.password.encode("utf8"),bcrypt.gensalt())))
         con.commit()
+        cur.execute('SELECT id FROM admins WHERE username=?',(admin.username,))
+        user_id = cur.fetchone()[0]
     con.close()
+    return user_id
 
 def check_user(username):
     con = sql.connect(path.join(ROOT, 'database.db'))
