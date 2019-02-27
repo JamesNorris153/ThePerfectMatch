@@ -26,6 +26,8 @@
       <footer class="modal-card-foot">
         <button class="button" onclick="saveChanges();">Save</button>
         <button class="button" onclick="closeJobModal();">Cancel</button>
+        <button class="button active_job_button" onclick="openJob();">Make Active</button>
+        <button class="button inactive_job_button" onclick="closeJob();">Make Inactive</button>
       </footer>
       </div>
     </div>
@@ -37,6 +39,7 @@
       <th>Location</th>
       <th>Position</th>
       <th>Deadline</th>
+      <th>Status</th>
       <th>
         Actions
         <a class="button is-rounded is-small add_button" onclick="showJobModal(-1);">Add Job</a>
@@ -49,6 +52,7 @@
       <td class="job_location"></td>
       <td class="job_position"></td>
       <td class="job_deadline"></td>
+      <td class="job_status"></td>
       <td>
         <div>
           <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
@@ -76,6 +80,7 @@ function showJobModal(job_id) {
     job_location = "";
     job_position = "";
     modal_title = "Add Job";
+    job_status = "NULL";
   } else {
     job_name = $('#'+job_id).find('.job_title').html();
     job_description = $('#'+job_id).find('.job_description').html();
@@ -83,6 +88,16 @@ function showJobModal(job_id) {
     job_location = $('#'+job_id).find('.job_location').html();
     job_position = $('#'+job_id).find('.job_position').html();
     modal_title = "Edit Job";
+    job_status = $('#'+job_id).find('.job_status').html();
+  }
+
+  $('.active_job_button').addClass('is-hidden');
+  $('.inactive_job_button').addClass('is-hidden');
+
+  if (job_status == "Available") {
+    $('.inactive_job_button').removeClass('is-hidden');
+  } else if (job_status == "Unavailable") {
+    $('.active_job_button').removeClass('is-hidden');
   }
 
 
@@ -138,6 +153,7 @@ $(document).ready(function() {
       job_deadline = job["Deadline"];
       job_location = job["Location"];
       job_position = job["Position"];
+      job_status = job["Status"];
 
       // Insert all data into new row in table
       job_element = $(job_template).clone().removeClass('template').attr('id',job_id);
@@ -145,6 +161,7 @@ $(document).ready(function() {
       $(job_element).find('.job_location').html(job_location);
       $(job_element).find('.job_position').html(job_position);
       $(job_element).find('.job_deadline').html(job_deadline);
+      $(job_element).find('.job_status').html(job_status);
       $(job_element).find('.job_description').html(job_description);
 
       // Insert job at top of table

@@ -35,6 +35,7 @@ class Jobs(db.Model):
     deadline = db.Column(db.DateTime, unique=False, nullable=False)
     location = db.Column(db.String(50), unique=False, nullable=False)
     position = db.Column(db.String(20), unique=False, nullable=False)
+    status = db.Column(db.String(20), unique=False, nullable=False)
     alevels=db.relationship('ALevel',backref='job',lazy=True)
     skills=db.relationship('Skills',backref='job',lazy=True)
     employment=db.relationship('Employment',backref='job',lazy=True)
@@ -44,7 +45,7 @@ class Jobs(db.Model):
     tests=db.relationship('Tests',backref='job',lazy=True)
 
     def __repr__(self):
-        return f"Jobs('{self.name}', '{self.description}', '{self.deadline}', '{self.location}', '{self.position}')"
+        return f"Jobs('{self.name}', '{self.description}', '{self.deadline}', '{self.location}', '{self.position}', '{self.status}')"
 
 class ALevel(db.Model):
     __tablename__='alevel'

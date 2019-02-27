@@ -14,12 +14,13 @@ ROOT = path.dirname(path.relpath((__file__)))
 class Job:
 
     #def __init__(self, name, description,deadline,position,location,hobbies,skills,languages,ALevels):
-    def __init__(self, name, description, deadline, location, position):
+    def __init__(self, name, description, deadline, location, position, status):
         self.name = name
         self.location = location
         self.position = position
         self.deadline = deadline
         self.description = description
+        self.status = status
         #self.hobbies = hobbies
         #self.skills = skills
         #self.languages = languages
@@ -147,6 +148,7 @@ def create_jobs_dictionary(jobs):
         jobs_dict["Deadline"] = "" if (job[3] == None) else job[3]
         jobs_dict["Location"] = "" if (job[4] == None) else job[4]
         jobs_dict["Position"] = "" if (job[5] == None) else job[5]
+        jobs_dict["Status"] = "" if (job[6] == None) else job[6]
         all_jobs.append(jobs_dict)
     return all_jobs
 
@@ -182,7 +184,7 @@ def get_trait_level(table, jobID):
 def insert_job(job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position))
+    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,"Available")',(job.name,job.description,job.deadline,job.location,job.position))
     con.commit()
     con.close()
 
@@ -347,9 +349,16 @@ def update_status(jobID,cvID,status):
 def close_job(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    con.execute('UPDATE jobs SET position="unavailable" where id=(?)',(jobID,))
+    con.execute('UPDATE jobs SET status="Unavailable" where id=(?)',(jobID,))
     con.commit()
     cur.execute('UPDATE job_cv SET status=2 WHERE Job_ID=(?) AND status=0',(jobID,))
+    con.commit()
+    con.close()
+
+def reopen_job(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    con.execute('UPDATE jobs SET status="Available" where id=(?)',(jobID,))
     con.commit()
     con.close()
 
