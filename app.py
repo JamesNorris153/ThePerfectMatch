@@ -381,6 +381,16 @@ def apply_for_job():
 
 ## TEMP PAGES
 
+# CREATE NEW ADMIN WITH PASSWORD 'TEST'
+@app.route("/create_admin", methods=["GET"])
+def create_test_admin():
+	username=request.args.get("username")
+	admin = Admin(username,'test')
+	user_id = create_admin(admin)
+	if user_id is None:
+		return Response("ERROR", status=200, mimetype="text/html")
+	return Response(str(user_id), status=200, mimetype="text/html")
+
 
 
 ## SETUP APP
