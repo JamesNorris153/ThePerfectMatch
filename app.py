@@ -380,6 +380,31 @@ def apply_for_job():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
+# Receives applicant's answers for a given test
+# Receives: job_id + question and answers
+# Returns: Success/Failure
+# Actions: Check user's answers and add to database with score
+@app.route("/applicant/send_test_answers", methods=["POST"])
+def send_test_answers():
+	if login_check() == "Applicant":
+		user_id = session["user_id"]
+		job_id = request.form.get("job_id")
+		# answers will be in JSON form:
+		# var answers = [{
+		#		"Question":question_title,
+		#		"Answer":user_answer
+		#	},
+		# 	{
+		#		"Question":question_title,
+		#		"Answer":user_answer
+		#	},...];
+		# Each question asked will have the user's answer attached
+		answers = request.form.get("answers")
+		# Check user's answers against actual answers and apply scoring ML
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
+
 
 ## TEMP PAGES
 
