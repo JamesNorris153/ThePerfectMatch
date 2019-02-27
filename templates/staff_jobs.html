@@ -19,15 +19,28 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">JOB TITLE</p>
+        <div class="is-hidden" id="cur_job_id"></div>
       </header>
       <section class="modal-card-body">
         {% include 'new_job.html' %}
       </section>
       <footer class="modal-card-foot">
-        <button class="button" onclick="saveChanges();">Save</button>
-        <button class="button" onclick="closeJobModal();">Cancel</button>
-        <button class="button active_job_button" onclick="openJob();">Make Active</button>
-        <button class="button inactive_job_button" onclick="closeJob();">Make Inactive</button>
+        <button class="button is-rounded" onclick="saveChanges();">Save</button>
+        <button class="button is-rounded" onclick="closeJobModal();">Cancel</button>
+        <div class="field has-addons">
+          <p class="control">
+            <input class="input is-rounded" value="Status:" size="6" readonly>
+          </p>
+          <div class="control is-expanded">
+            <div class="select is-rounded" name="job_status">
+              <select>
+                <option class="default_option">Available</option>
+                <option>Unavailable</option>
+                <option>Closed</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </footer>
       </div>
     </div>
@@ -78,9 +91,9 @@ function showJobModal(job_id) {
     job_description = "";
     job_deadline = "";
     job_location = "";
-    job_position = "";
+    job_position = "Position";
     modal_title = "Add Job";
-    job_status = "NULL";
+    job_status = "Available";
   } else {
     job_name = $('#'+job_id).find('.job_title').html();
     job_description = $('#'+job_id).find('.job_description').html();
@@ -91,23 +104,14 @@ function showJobModal(job_id) {
     job_status = $('#'+job_id).find('.job_status').html();
   }
 
-  $('.active_job_button').addClass('is-hidden');
-  $('.inactive_job_button').addClass('is-hidden');
-
-  if (job_status == "Available") {
-    $('.inactive_job_button').removeClass('is-hidden');
-  } else if (job_status == "Unavailable") {
-    $('.active_job_button').removeClass('is-hidden');
-  }
-
-
-
   $('#job_modal #cur_job_id').html(job_id);
   $('#job_modal .modal-card-title').html(modal_title);
   $('#job_modal input[name="job_name"]').val(job_name);
   $('#job_modal input[name="job_location"]').val(job_location);
   $('#job_modal input[name="job_deadline"]').val(job_deadline);
   $('#job_modal .job_description_box').html(job_description);
+  $('#job_modal div[name="job_position"]').find('select').val(job_position);
+  $('#job_modal div[name="job_status"]').find('select').val(job_status);
 
   $('#job_modal').addClass('is-active');
 }
@@ -138,8 +142,16 @@ $('#job_table').on('click', '.candidates_button', function(event) {
   window.location.href="/staff/candidates?id="+job_id;
 });
 
-$(document).ready(function() {
+function refreshJobs() {
+
   $.get("/staff/get_jobs", function(data) {
+
+    if (data == "You are not logged in") {
+      window.location.href="/";
+    }
+
+    $('#job_table tbody .job:not(.template)').remove();
+
 
     job_template = $('.job.template');
     all_jobs = JSON.parse(data);
@@ -168,6 +180,10 @@ $(document).ready(function() {
       $(job_element).insertAfter($(job_template));
     }
   });
+}
+
+$(document).ready(function() {
+  refreshJobs();
 });
 
 </script>

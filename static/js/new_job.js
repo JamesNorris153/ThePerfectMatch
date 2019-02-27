@@ -65,22 +65,26 @@ function saveChanges() {
     });
   });
 
+  // Get job status
+  var job_status = $('#job_modal div[name="job_status"]').find('select').val();
+
   var job = {
     "Name":job_name,
     "Description":job_description,
     "Deadline":job_deadline,
     "Location":job_location,
     "Position":job_position,
+    "Status":job_status,
     "Questions":question_details
   };
 
-  // var job_id = $('#cur_job_id').html();
-  var job_id=-1;
+  var job_id = $('#cur_job_id').html();
 
   // showJobLoadingModal('Success',JSON.stringify(job));
   $.post('/staff/save_job', {job_id:job_id, job: JSON.stringify(job)}, function(data) {
     if (data == "Success") {
       showJobLoadingModal("Success","All Changes Saved");
+      refreshJobs();
       $(modal).find('.modal-background').attr('onclick','closeCompletedJobModal();');
       $(modal).find('.modal-close').attr('onclick','closeCompletedJobModal();');
     } else {
