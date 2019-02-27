@@ -3,8 +3,8 @@ from flask_cors import CORS
 import json
 
 from users import *
-from job import job
-from admin import admin
+# from job import job
+# from admin import admin
 import os
 
 ## Session variables
@@ -303,10 +303,10 @@ def register_applicant():
 
 	try:
 		# If the email address is taken, return an error
-		if check_mail(email):
+		if not check_mail(email):
 			return Response("This email address is taken", status=200, mimetype="text/html")
 
-		new_applicant = Applicant(FName, LName, email, password)
+		new_applicant = Applicant(FName, LName, password, email)
 		user_id = create_user(new_applicant)
 		session["account_type"] = "Applicant"
 		session["user_id"] = user_id
