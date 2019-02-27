@@ -404,6 +404,25 @@ def send_test_answers():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
+# Sends a test to the applicant for a given job
+# Receives: job_id
+# Returns: Questions with all multiple choice answers
+@app.route("/applicant/get_job_test", methods=["POST"])
+def get_job_test():
+	if login_check() == "Applicant":
+		job_id = request.form.get("job_id")
+		questions = [];
+		# GET QUESTIONS + ALL OPTIONS FROM DATABASE FOR THIS JOB
+		# questions = [{
+		# 	"Question":question,
+		# 	"Correct":correct,
+		# 	"Incorrect1":incorrect1,
+		# 	"Incorrect2":incorrect2,
+		# 	"Incorrect3":incorrect3
+		# }];
+		return Response(questions, status=200, mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 
 
 ## TEMP PAGES
