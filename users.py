@@ -114,7 +114,10 @@ def create_user(applicant):
     if check_mail(applicant.email)==True:
         cur.execute('INSERT INTO users VALUES (NULL,?,?,?,?)',(applicant.FName,applicant.LName,bcrypt.hashpw(applicant.password.encode("utf8"),bcrypt.gensalt()),applicant.email))
     con.commit()
+    cur.execute('SELECT id FROM users WHERE email=?',(applicant.email,))
+    user_id = cur.fetchone()[0]
     con.close()
+    return user_id
 	# TODO: return user_id on creation
 	# return user_id
 
@@ -146,6 +149,7 @@ def create_jobs_dictionary(jobs):
 		all_jobs.append(jobs_dict)
 	return all_jobs
 
+# Returns true IF user doesn't exist, false otherwise
 def check_mail(email):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
