@@ -56,35 +56,7 @@
           <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
           <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
         </div>
-      </td>
-    </tr>
-
-    <tr id="1">
-      <td>Software Engineer</td>
-      <td>London</td>
-      <td>Full-Time</td>
-      <td>23/03/19</td>
-      <td>
-        <div>
-          <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
-          <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
-          <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
-          <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
-        </div>
-      </td>
-    </tr>
-    <tr id="12">
-      <td>Analyst</td>
-      <td>Cambridge</td>
-      <td>Part-Time</td>
-      <td>21/02/19</td>
-      <td>
-        <div>
-          <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
-          <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
-          <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
-          <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
-        </div>
+        <div class="is-hidden job_description"></div>
       </td>
     </tr>
   </tbody>
@@ -96,8 +68,32 @@ function closeJobModal() {
   $('#job_modal').removeClass('is-active');
 }
 function showJobModal(job_id) {
-  $('#job_modal .modal-card-title').html("JOB:"+job_id);
+
+  if (job_id == -1) {
+    job_name = "";
+    job_description = "";
+    job_deadline = "";
+    job_location = "";
+    job_position = "";
+    modal_title = "Add Job";
+  } else {
+    job_name = $('#'+job_id).find('.job_title').html();
+    job_description = $('#'+job_id).find('.job_description').html();
+    job_deadline = $('#'+job_id).find('.job_deadline').html();
+    job_location = $('#'+job_id).find('.job_location').html();
+    job_position = $('#'+job_id).find('.job_position').html();
+    modal_title = "Edit Job";
+  }
+
+
+
   $('#job_modal #cur_job_id').html(job_id);
+  $('#job_modal .modal-card-title').html(modal_title);
+  $('#job_modal input[name="job_name"]').val(job_name);
+  $('#job_modal input[name="job_location"]').val(job_location);
+  $('#job_modal input[name="job_deadline"]').val(job_deadline);
+  $('#job_modal .job_description_box').html(job_description);
+
   $('#job_modal').addClass('is-active');
 }
 function closeCompletedJobModal() {
@@ -129,7 +125,31 @@ $('#job_table').on('click', '.candidates_button', function(event) {
 
 $(document).ready(function() {
   $.get("/staff/get_jobs", function(data) {
-    alert(data);
+
+    job_template = $('.job.template');
+    all_jobs = JSON.parse(data);
+    for (i in all_jobs) {
+
+      // Get all job data from JSON
+      job = all_jobs[i];
+      job_id = job["ID"];
+      job_name = job["Name"];
+      job_description = job["Description"];
+      job_deadline = job["Deadline"];
+      job_location = job["Location"];
+      job_position = job["Position"];
+
+      // Insert all data into new row in table
+      job_element = $(job_template).clone().removeClass('template').attr('id',job_id);
+      $(job_element).find('.job_title').html(job_name);
+      $(job_element).find('.job_location').html(job_location);
+      $(job_element).find('.job_position').html(job_position);
+      $(job_element).find('.job_deadline').html(job_deadline);
+      $(job_element).find('.job_description').html(job_description);
+
+      // Insert job at top of table
+      $(job_element).insertAfter($(job_template));
+    }
   });
 });
 
