@@ -138,16 +138,17 @@ def get_jobs():
     return jobs
 
 def create_jobs_dictionary(jobs):
-	all_jobs = []
-	for job in jobs:
-		jobs_dict = {}
-		jobs_dict["Name"] = "" if (job[1] == None) else job[1]
-		jobs_dict["Description"] = "" if (job[2] == None) else job[1]
-		jobs_dict["Deadline"] = "" if (job[3] == None) else job[1]
-		jobs_dict["Location"] = "" if (job[4] == None) else job[1]
-		jobs_dict["Position"] = "" if (job[5] == None) else job[1]
-		all_jobs.append(jobs_dict)
-	return all_jobs
+    all_jobs = []
+    for job in jobs:
+        jobs_dict = {}
+        jobs_dict["ID"] = "" if (job[0] == None) else job[0]
+        jobs_dict["Name"] = "" if (job[1] == None) else job[1]
+        jobs_dict["Description"] = "" if (job[2] == None) else job[2]
+        jobs_dict["Deadline"] = "" if (job[3] == None) else job[3]
+        jobs_dict["Location"] = "" if (job[4] == None) else job[4]
+        jobs_dict["Position"] = "" if (job[5] == None) else job[5]
+        all_jobs.append(jobs_dict)
+    return all_jobs
 
 # Returns true IF user doesn't exist, false otherwise
 def check_mail(email):
