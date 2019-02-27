@@ -205,6 +205,7 @@ def dislike_candidate():
 #		"Deadline":job_deadline,
 #		"Location":job_location,
 #		"Position":job_position,
+#		"Status":job_status,
 #		"Questions":[{
 #			"Question":question,
 #			"Correct":correct_answer,
@@ -226,7 +227,8 @@ def save_job():
 			job_json["Description"],
 			job_json["Deadline"],
 			job_json["Location"],
-			job_json["Position"])
+			job_json["Position"],
+			job_json["Status"])
 
 		if job_id == -1:
 			insert_job(job)
