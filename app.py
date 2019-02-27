@@ -123,7 +123,8 @@ def get_staff_jobs():
 	if login_check() == "Admin":
 		# GET ALL JOBS CREATED BY THIS USER IN JSON FORMAT
 		jobs = get_jobs()
-		jobs_json = json.dumps(jobs)
+		jobs_dict = create_jobs_dictionary(jobs)
+		jobs_json = json.dumps(jobs_dict)
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -140,8 +141,10 @@ def show_staff_candidates_page():
 def get_candidates():
 	if login_check() == "Admin":
 		job_id = request.form.get("job_id")
+		print(job_id)
 
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
+
 		candidates = show_best_candidates(job_id)
 		candidates_json = json.dumps(candidates)
 		return Response(candidates_json, status=200, mimetype="json/application")
@@ -273,18 +276,18 @@ def applicant_login():
 	if request.method == "POST":
 		email = request.form.get("email")
 		password = request.form.get("password")
-		#try:
-		# Check if valid user logging in -> Method should return user_id OR None
-		user_id = authenticate_user(email, password)
-		if user_id is None:
-			# if None returned, email or password is incorrect
-			return Response("Incorrect username or password", status=200, mimetype="text/html")
-		else:
-			session["account_type"] = "Applicant"
-			session["user_id"] = user_id
-			return Response("Success", status=200, mimetype="text/html")
-		#except:
-		#return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
+		try:
+			# Check if valid user logging in -> Method should return user_id OR None
+			user_id = authenticate_user(email, password)
+			if user_id is None:
+				# if None returned, email or password is incorrect
+				return Response("Incorrect username or password", status=200, mimetype="text/html")
+			else:
+				session["account_type"] = "Applicant"
+				session["user_id"] = user_id
+				return Response("Success", status=200, mimetype="text/html")
+		except:
+			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
 
 # Applicant Registration POST Method
 # Receives: email, password, first name, last name
