@@ -3,8 +3,6 @@ from flask_cors import CORS
 import json
 
 from users import *
-# from job import job
-# from admin import admin
 import os
 
 ## Session variables
@@ -17,7 +15,7 @@ app = Flask(__name__, static_url_path='/static')
 
 CORS(app)
 
-# Function to check whether user is logged in
+## Function to check whether user is logged in
 # Returns account_type or None if not logged in
 # If either session variable has been lost, log user out and return None
 def login_check():
@@ -94,8 +92,10 @@ def staff_login():
 	# Returns: Success/Failure
 	# Actions: Set SESSION account_type + user_id
 	if request.method == "POST":
+		# GET REQUIRED REQUEST PARAMETERS
 		email = request.form.get("email")
 		password = request.form.get("password")
+
 		try:
 			# Check if valid login -> Method should return user_id OR None
 			user_id = authenticate_admin(email, password)
@@ -121,10 +121,15 @@ def show_staff_jobs_page():
 @app.route("/staff/get_jobs")
 def get_staff_jobs():
 	if login_check() == "Admin":
-		# GET ALL JOBS CREATED BY THIS USER IN JSON FORMAT
-		jobs = get_jobs()
-		jobs_dict = create_jobs_dictionary(jobs)
-		jobs_json = json.dumps(jobs_dict)
+
+		# GET ALL JOBS IN JSON FORMAT
+		try:
+			jobs = get_jobs()
+			jobs_dict = create_jobs_dictionary(jobs)
+			jobs_json = json.dumps(jobs_dict)
+		except:
+			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -140,13 +145,16 @@ def show_staff_candidates_page():
 @app.route("/staff/get_candidates")
 def get_candidates():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
-		print(job_id)
 
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
+		try:
+			candidates = show_best_candidates(job_id)
+			candidates_json = json.dumps(candidates)
+		except:
+			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
 
-		candidates = show_best_candidates(job_id)
-		candidates_json = json.dumps(candidates)
 		return Response(candidates_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -157,13 +165,18 @@ def get_candidates():
 @app.route("/staff/get_cv")
 def get_cv_by_user_id():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
-
 		#user_id = request.form.get("user_id")
 		user_id = 4
+
 		# GET CV FROM USER AND JOB ID
-		cv = get_CV(user_id)
-		cv_json = json.dumps(cv.__dict__)
+		try:
+			cv = get_CV(user_id)
+			cv_json = json.dumps(cv.__dict__)
+		except:
+			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -174,6 +187,7 @@ def get_cv_by_user_id():
 @app.route("/staff/like_candidate", methods=["POST"])
 def like_candidate():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 
@@ -189,6 +203,7 @@ def like_candidate():
 @app.route("/staff/dislike_candidate", methods=["POST"])
 def dislike_candidate():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 
@@ -219,9 +234,12 @@ def dislike_candidate():
 @app.route("/staff/save_job", methods=["POST"])
 def save_job():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 		job_json = json.loads(request.form.get("job"))
+
+		# CREATE JOB IN DATABASE
 		job = Job(
 			job_json["Name"],
 			job_json["Description"],
@@ -229,30 +247,37 @@ def save_job():
 			job_json["Location"],
 			job_json["Position"],
 			job_json["Status"])
-
-		if job_id == -1:
-			insert_job(job)
-			return Response("Success", status=200, mimetype="text/html")
-		else:
-			# TODO: edit job method
-			close_job(job_id)
-			insert_job(job)
-			return Response("Success", status=200, mimetype="text/html")
+		try:
+			if job_id == -1:
+				insert_job(job)
+				return Response("Success", status=200, mimetype="text/html")
+			else:
+				# TODO: edit job method
+				close_job(job_id)
+				insert_job(job)
+				return Response("Success", status=200, mimetype="text/html")
+		except:
+			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])
 def delete_job():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
+
 		# DELETE JOB IN DATABASE
 		close_job(job_id)
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/retrain_job", methods=["POST"])
 def retrain_job():
 	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
+
 		# PERFORM ML RETRAINING
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -276,8 +301,10 @@ def applicant_login():
 	# Returns: Success/Failure
 	# Actions: Set SESSION account_type + user_id
 	if request.method == "POST":
+		# GET REQUIRED REQUEST PARAMETERS
 		email = request.form.get("email")
 		password = request.form.get("password")
+
 		try:
 			# Check if valid user logging in -> Method should return user_id OR None
 			user_id = authenticate_user(email, password)
@@ -298,6 +325,7 @@ def applicant_login():
 @app.route("/applicant/register", methods=["POST"])
 def register_applicant():
 
+	# GET REQUIRED REQUEST PARAMETERS
 	FName = request.form.get("first_name")
 	LName = request.form.get("last_name")
 	email = request.form.get("email")
@@ -327,9 +355,13 @@ def show_applicant_jobs_page():
 @app.route("/applicant/get_jobs")
 def get_applicant_jobs():
 	if login_check() == "Applicant":
-		# GET ALL JOBS HERE in JSON format - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
-		jobs = get_jobs()
-		jobs_json = json.dumps(jobs)
+		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
+		try:
+			jobs = get_jobs()
+			jobs_json = json.dumps(jobs)
+		except:
+			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+
 		return Response(jobs_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -345,10 +377,16 @@ def show_applicant_cv_page():
 @app.route("/applicant/get_cv")
 def get_applicant_cv():
 	if login_check() == "Applicant":
+		# GET REQUIRED SESSION PARAMETER
 		user_id = session["user_id"]
-		# GET USERS CURRENT CV HERE
-		cv = get_cv(user_id)
-		cv_json = json.dumps(cv)
+
+		# GET USERS CURRENT CV IN JSON FORMAT
+		try:
+			cv = get_cv(user_id)
+			cv_json = json.dumps(cv)
+		except:
+			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -358,9 +396,11 @@ def get_applicant_cv():
 @app.route("/applicant/save_cv", methods=["POST"])
 def save_applicant_cv():
 	if login_check() == "Applicant":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		cv = request.form.get("cv")
 		print(cv)
+
 		# SAVE USER'S CV TO DATABASE HERE
 		insert_json_cv(cv, user_id)
 		return Response("Success", status=200, mimetype="text/html")
