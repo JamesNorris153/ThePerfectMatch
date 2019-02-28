@@ -2,6 +2,7 @@ import sqlite3 as sql
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
+import json
 from flask import g
 from os import path
 
@@ -42,14 +43,14 @@ class Admin:
 
 class CV:
 
-    FName = ""
-    LName = ""
-    degrees = []
-    languages = []
-    hobbies = []
-    ALevels = []
-    employment = []
-    skills = []
+	FName = ""
+	LName = ""
+	degrees = []
+	languages = []
+	hobbies = []
+	ALevels = []
+	employment = []
+	skills = []
     # def __init__(self, FName, LName, hobbies, languages, degrees, ALevels, employment, skills):
     #     self.FName = FName
     #     self.LName = LName
@@ -59,6 +60,46 @@ class CV:
     #     self.ALevels = ALevels
     #     self.employment = employment
     #     self.skills = skills
+
+	def jsonify_cv(self):
+		cv_dict = dict()
+
+		cv_dict["FName"] = self.FName
+		cv_dict["LName"] = self.LName
+
+		degrees = dict()
+		for degree in self.degrees:
+			degrees.update(degree.__dict__)
+			print(degrees)
+		cv_dict["degrees"] = degrees
+
+		languages = []
+		for language in self.languages:
+			languages.append(language.__dict__)
+			print(languages)
+		cv_dict["languages"] = languages
+
+		hobbies = []
+		for hobby in self.hobbies:
+			hobbies.append(hobby.__dict__)
+		cv_dict["hobbies"] = hobbies
+
+		ALevels = []
+		for ALevel in self.ALevels:
+			ALevels.append(ALevel.__dict__)
+		cv_dict["languages"] = languages
+
+		employment = []
+		for employ in self.employment:
+			employment.append(employ.__dict__)
+		cv_dict["employment"] = employment
+
+		skills = []
+		for skill in self.skills:
+			skills.append(skill.__dict__)
+		cv_dict["skills"] = skills
+
+		return json.dumps(cv_dict)
 
 class Form:
 
@@ -102,7 +143,7 @@ class Edu:
     course = ""
     grade = ""
 
-    # def __init__(self,university,course,grade):
+    # def __init__(self, university, course, grade):
     #     self.name=university
     #     self.course=course
     #     self.grade=self.grade

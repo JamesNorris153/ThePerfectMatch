@@ -382,10 +382,12 @@ def get_applicant_cv():
 
 		# GET USERS CURRENT CV IN JSON FORMAT
 		try:
-			cv = get_cv(user_id)
-			cv_json = json.dumps(cv)
+			# cv_id = get_current_cv(user_id)
+			cv_id = 7826
+			cv = get_CV(cv_id)
+			cv_json = cv.jsonify_cv()
 		except:
-			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -399,10 +401,14 @@ def save_applicant_cv():
 		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		cv = request.form.get("cv")
-		print(cv)
+		cv_json = json.loads(cv)
 
 		# SAVE USER'S CV TO DATABASE HERE
-		insert_json_cv(cv, user_id)
+		try:
+			insert_json_cv(cv_json, user_id)
+		except:
+			return Response("Could not save data in the database", status=200, mimetype="text/html")
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
