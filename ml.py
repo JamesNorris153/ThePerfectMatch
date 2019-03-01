@@ -16,6 +16,7 @@ def retrain(jobID):
     trainingData = []
     testData = []
     state = []
+    newApplicants = []
 
     def getData(databaseData, globalData, dataSet, index = 0):
         applicant_data = []
@@ -32,7 +33,9 @@ def retrain(jobID):
 
     for i in cvs:
         info = users.get_CV(i[0])
-        if users.select_status(jobID, i)[0] == 0:
+        status = users.select_status(jobID, i)[0]
+        if status == 0:
+            newApplicants.append(i[0])
             getData(info.skills, skills, testData, 2)
             getData(info.languages, languages, testData)
             getData(info.ALevels, ALevels, testData, 1)
@@ -42,7 +45,7 @@ def retrain(jobID):
             getData(info.languages, languages, trainingData)
             getData(info.ALevels, ALevels, trainingData, 1)
             getData(info.hobbies, hobbies, trainingData)
-            status.append(users.select_status(jobID, i)[0])
+            state.append(status)
 
     X1 = numpy.array(trainingData)
     X2 = numpy.array(testData)
@@ -52,6 +55,6 @@ def retrain(jobID):
     eng.addpath(r'./functions',nargout=0)
     t = eng.main(X1.tolist(), y1.tolist(), len(cvs), X2.tolist())
     index = 0
-    for i in cvs:
+    for i in newApplicants:
         users.update_score(jobID, i, t[index])
         index = index + 1
