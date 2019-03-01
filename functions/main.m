@@ -2,9 +2,6 @@ function [score2] = main(X, y, m, X2)
     %% Setup the parameters
     num_labels = 2;          % 2 labels indicate the result can be either 0 or 1 
 
-    %data = load('score.txt');
-    %X = data(:, 1:end - 1);
-    %y = data(:, end);
     X = double(cell2mat(X));
     y = double(cell2mat(y));
     X = reshape(X, [m, size(X, 2) / m]);
