@@ -383,7 +383,7 @@ def get_applicant_cv():
 		# GET USERS CURRENT CV IN JSON FORMAT
 		try:
 			# cv_id = get_current_cv(user_id)
-			cv_id = 7826
+			cv_id = 7824
 			cv = get_CV(cv_id)
 			cv_json = cv.jsonify_cv()
 		except:
@@ -419,10 +419,13 @@ def save_applicant_cv():
 @app.route("/applicant/apply_for_job", methods=["POST"])
 def apply_for_job():
 	if login_check() == "Applicant":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
+
 		# APPLY USER FOR JOB WITH THEIR CURRENT CV
 		apply_job(user_id, job_id)
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -433,8 +436,11 @@ def apply_for_job():
 @app.route("/applicant/send_test_answers", methods=["POST"])
 def send_test_answers():
 	if login_check() == "Applicant":
+		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
+		answers = request.form.get("answers")
+		answers_json = json.loads(answers)
 		# answers will be in JSON form:
 		# var answers = [{
 		#		"Question":question_title,
@@ -445,7 +451,6 @@ def send_test_answers():
 		#		"Answer":user_answer
 		#	},...];
 		# Each question asked will have the user's answer attached
-		answers = request.form.get("answers")
 		# Check user's answers against actual answers and apply scoring ML
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -453,7 +458,7 @@ def send_test_answers():
 # Sends a test to the applicant for a given job
 # Receives: job_id
 # Returns: Questions with all multiple choice answers
-@app.route("/applicant/get_job_test", methods=["POST"])
+@app.route("/applicant/get_job_test")
 def get_job_test():
 	if login_check() == "Applicant":
 		job_id = request.form.get("job_id")

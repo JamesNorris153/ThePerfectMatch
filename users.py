@@ -148,6 +148,19 @@ class Edu:
     #     self.course=course
     #     self.grade=self.grade
 
+class Question:
+
+	question = ""
+	correct = ""
+	incorrect_1 = ""
+	incorrect_2 = ""
+	incorrect_3 = ""
+
+class Answer:
+
+	question = ""
+	answer = ""
+
 #Example Methods
 def create_user(applicant):
     con = sql.connect(path.join(ROOT, 'database.db'))
