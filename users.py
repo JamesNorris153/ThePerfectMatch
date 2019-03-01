@@ -328,7 +328,7 @@ def authenticate_user(email, password):
     cur.execute('SELECT id, password from users where email=(?)',(email,))
     passw = cur.fetchone()
     if passw == None: return None
-    if bcrypt.checkpw(password.encode("utf8"), passw[1].encode("utf8")):
+    if bcrypt.checkpw(password.encode("utf8"),str(passw[1])):
         con.close()
         return passw[0]
     else:
@@ -452,6 +452,56 @@ def get_employment_level(jobID):
     con.close()
     return user
 
+def get_current_cv(userID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT MAX(id) from cvs where User_ID=(?)',(userID,))
+    user = cur.fetchall()
+    con.close()
+    return user
+
+def score_test(answers,jobID,cvID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    score=0
+    for i in answers:
+        cur.execute('Select answer from question_test where id=(?)',(i.id))
+        correct = cur.fetchone()
+        if i.answer == correct:
+            score+=1
+    cur.execute('Update job_cv set score=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cvID,jobID))
+    con.commit()
+    con.close()
+    return score
+
+def show_current_applications(userID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    query = "SELECT id from cvs where User_ID="+str(userID)
+    cur.execute('SELECT Job_ID, CV_ID from job_cv where CV_ID in ((?)) and status=0',(query,))
+    jobs = cur.fetchall()
+    con.close()
+    return jobs
+
+def what_job(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT * from jobs where id=(?)',(jobID,))
+    job = cur.fetchall()
+    con.close()
+    return job
+
+def get_test(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT id from tests where Job_ID=(?) order by random() limit 1',(jobID,))
+    test = cur.fetchone()[0]
+    cur.execute('SELECT * from question_test where Test_ID=(?) order by random() limit 10',(test,))
+    questions=cur.fetchall()
+    con.close()
+    return questions
+
+
 # Use the one defined bellow
 
 # def insert_cv (form):
@@ -551,7 +601,7 @@ def authenticate_admin(username, password):
     cur.execute('SELECT id,password from admins where username=(?)',(username,))
     passw = cur.fetchone()
     if passw == None: return None
-    if bcrypt.checkpw(password.encode("utf8"),passw[1].encode("utf8")):
+    if bcrypt.checkpw(password.encode("utf8"),str(passw[1])):
         con.close()
         return passw[0]
     else:
