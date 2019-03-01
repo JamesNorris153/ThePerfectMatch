@@ -754,3 +754,21 @@ def insert_json_cv(form,userID):
             con.commit()
 
     con.close()
+    
+def change_pass_user(userID,newpass):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('UPDATE users set password=(?) where id=(?)',(bcrypt.hashpw(newpass.encode("utf8"),bcrypt.gensalt()),userID))
+    con.close()
+
+def change_pass_admin(userID,newpass):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('UPDATE admins set password=(?) where id=(?)',(bcrypt.hashpw(newpass.encode("utf8"),bcrypt.gensalt()),userID))
+    con.close()
+
+def backup_db():
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('.backup backup_file.sq3')
+    con.close()
