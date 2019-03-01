@@ -9,42 +9,27 @@
 <style>
 </style>
 <body>
-  <section class="hero is-fullheight is-default is-bold">
-    <div class="hero-body">
-      <div class="container has-text-centered">
-        <div class="columns is-vcentered">
-                   <div class="column is-5">
-                       <figure class="image is-4by3">
-                           <img src="/static/imgs/logo.png" alt="logo" height="150" width="250">
-                       </figure>
-                   </div>
-                   <div class="column is-6 is-offset-1">
-                       <h1 class="title is-2">
-                           Hello.
-                       </h1>
-                       <h2 class="subtitle is-4">
-                           Are you an applicant or a staff member?
-                       </h2>
-                       <br>
-                       <p class="has-text-centered">
-                         <a class="button is-medium is-info is-outlined" href="/applicant/login">Applicant</a>
-                         <a class="button is-medium is-info is-outlined" href="/staff/login">Staff</a>
-
-                       </p>
-                   </div>
-               </div>
-           </div>
-       </div>
-       <div class="hero-foot">
-            <div class="container">
-                <div class="tabs is-centered">
-                    <ul>
-                      <li><a>~ Your best online application tool ~</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
+    <div class="columns">
+    <section class="hero is-fullheight column">
+      <figure class="image">
+          <img src="/static/imgs/logo.png" alt="logo" width="200">
+      </figure>
     </section>
+    <section class="hero is-fullheight column has-background-black has-text-centered is-vcentered">
+      <div class="is-vcentered" style="margin-top:auto;margin-bottom:auto;">
+        <h1 class="title is-2">
+            Hello.
+        </h1>
+        <h2 class="subtitle is-4">
+            Are you an applicant or a staff member?
+        </h2>
+        <br>
+        <p class="has-text-centered">
+          <a class="button is-medium is-info is-outlined" href="/applicant/login">Applicant</a>
+          <a class="button is-medium is-info is-outlined" href="/staff/login">Staff</a>
+        </p>
+      </div>
+    </section>
+  </div>
 </body>
 </html>
