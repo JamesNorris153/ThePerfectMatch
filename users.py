@@ -478,6 +478,17 @@ def what_job(jobID):
     con.close()
     return job
 
+def get_test(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT id from tests where Job_ID=(?) order by random() limit 1',(jobID,))
+    test = cur.fetchone()[0]
+    cur.execute('SELECT * from question_test where Test_ID=(?) order by random() limit 10',(test,))
+    questions=cur.fetchall()
+    con.close()
+    return questions
+
+
 # Use the one defined bellow
 
 # def insert_cv (form):
