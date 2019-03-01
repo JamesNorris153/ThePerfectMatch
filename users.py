@@ -399,6 +399,22 @@ def update_status(jobID,cvID,status):
     con.commit()
     con.close()
 
+def select_status(jobID, cvID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('select status from job_cv WHERE Job_ID=(?) AND CV_ID=(?)',(jobID,cvID))
+    status = cur.fetchall()[0]
+    con.commit()
+    con.close()
+    return status
+    
+def update_score(jobID,cvID,score):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('UPDATE job_cv SET score=(?) WHERE Job_ID=(?) AND CV_ID=(?)',(score,jobID,cvID))
+    con.commit()
+    con.close()
+
 def close_job(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -639,6 +655,17 @@ def show_best_candidates(jobId):
     con.close()
     return users
 
+def select_cvs(jobId):
+    cvID = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT cv_id from job_cv where job_id=(?)',(jobId,))
+    ids = cur.fetchall()
+    for item in ids:
+        cvID.append(item)
+    con.commit()
+    con.close()
+    return cvID
 
 def insert_json_cv(form,userID):
     con = sql.connect(path.join(ROOT, 'database.db'))
