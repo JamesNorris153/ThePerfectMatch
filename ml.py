@@ -51,5 +51,7 @@ def retrain(jobID):
     eng = matlab.engine.start_matlab()
     eng.addpath(r'./functions',nargout=0)
     t = eng.main(X1.tolist(), y1.tolist(), len(cvs), X2.tolist())
+    index = 0
     for i in cvs:
-        users.update_score(jobID, i, t[0])
+        users.update_score(jobID, i, t[index])
+        index = index + 1
