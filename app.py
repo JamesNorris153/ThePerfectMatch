@@ -155,6 +155,17 @@ def get_candidates():
 		if session['job_id'] is None:
 			return Repsponse("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
+		# candidates = [
+		# {
+		# 	"ID":candidate_id,
+		# 	"First Name":first_name,
+		# 	"Last Name":last_name,
+		# 	"Email":email,
+		# 	"Score":score,
+		# 	"CVID":cvid,
+		# 	"Status":status ("Like"/"Dislike"/"Unknown")
+		# }
+		# ]
 		try:
 			candidates = show_best_candidates(job_id)
 			candidates_json = json.dumps(candidates)
