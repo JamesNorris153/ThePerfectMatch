@@ -778,3 +778,15 @@ def all_applications(jobID):
     users=cur.fetchall()
     con.close()
     return users
+    
+def add_test(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('INSERT into tests values (NULL,?)',(jobID,))
+    con.close()
+
+def add_question(testID,question,answer):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('INSERT into question_test values (NULL,?,?,?)',(testID,question,answer))
+    con.close()
