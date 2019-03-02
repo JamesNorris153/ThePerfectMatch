@@ -2,7 +2,8 @@ function closeDescriptionModal() {
   $('#description_modal').removeClass('is-active');
 }
 function showDescriptionModal(job_id) {
-  $('#description_modal .modal-message').html("JOB:"+job_id);
+  description = $('#'+job_id).find('.job_description').html();
+  $('#description_modal .modal-message').html(description);
   $('#description_modal').addClass('is-active');
 }
 
@@ -241,19 +242,19 @@ function saveChanges() {
 
 }
 $('#job_table').on('click', '.apply_button', function(event) {
-  var job_id = $(this).parent().parent().parent().parent().attr('id');
+  var job_id = $(this).parent().parent().parent().attr('id');
   showApplicationModal(job_id);
 });
 $('#job_table').on('click', '.view_button', function(event) {
-  var job_id = $(this).parent().parent().parent().parent().attr('id');
+  var job_id = $(this).parent().parent().parent().attr('id');
   showDescriptionModal(job_id);
 });
 $('#job_table').on('click', '.test_button', function(event) {
-    var job_id = $(this).parent().parent().parent().parent().attr('id');
+    var job_id = $(this).parent().parent().parent().attr('id');
     showTestModal(job_id);
 });
 $('#job_table').on('click', '.feedback_button', function(event) {
-    var job_id = $(this).parent().parent().parent().parent().attr('id');
+    var job_id = $(this).parent().parent().parent().attr('id');
     showFeedbackModal(job_id);
 });
 

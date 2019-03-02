@@ -69,54 +69,82 @@
       </footer>
     </div>
   </div>
-
-
   <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Position</th>
-        <th>Deadline</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr id="5">
-        <td>Software Engineer</td>
-        <td>London</td>
-        <td>Full-Time</td>
-        <td>23/03/19</td>
-        <td>
-          <div class="columns has-text-centered is-gapless">
-            <div class="column">
-              <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
-            </div>
-            <div class="column">
-              <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr id="7">
-        <td>Analyst</td>
-        <td>Cambridge</td>
-        <td>Part-Time</td>
-        <td>21/02/19</td>
-        <td>
-          <div class="columns has-text-centered is-gapless">
-            <div class="column">
-              <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
-            </div>
-            <div class="column">
-              <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
-            </div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Location</th>
+      <th>Position</th>
+      <th>Deadline</th>
+      <th>Status</th>
+      <th>
+        Actions
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="job template">
+      <td class="job_title"></td>
+      <td class="job_location"></td>
+      <td class="job_position"></td>
+      <td class="job_deadline"></td>
+      <td class="job_status"></td>
+      <td>
+        <div>
+          <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
+          <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+        </div>
+        <div class="is-hidden job_description"></div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 </body>
 <script src="/static/js/jquery-3.3.1.min.js"></script>
 <script src="/static/js/applicant_jobs.js"></script>
+<script>
+function refreshJobs() {
+
+  $.get("/applicant/get_jobs", function(data) {
+
+    if (data == "You are not logged in") {
+      window.location.href="/";
+    }
+
+    $('#job_table tbody .job:not(.template)').remove();
+
+    job_template = $('.job.template');
+    all_jobs = JSON.parse(data);
+    for (i in all_jobs) {
+
+      // Get all job data from JSON
+      job = all_jobs[i];
+      job_id = job["ID"];
+      job_name = job["Name"];
+      job_description = job["Description"];
+      job_deadline = job["Deadline"];
+      job_location = job["Location"];
+      job_position = job["Position"];
+      job_status = job["Status"];
+
+      // Insert all data into new row in table
+      job_element = $(job_template).clone().removeClass('template').attr('id',job_id);
+      $(job_element).find('.job_title').html(job_name);
+      $(job_element).find('.job_location').html(job_location);
+      $(job_element).find('.job_position').html(job_position);
+      $(job_element).find('.job_deadline').html(job_deadline);
+      $(job_element).find('.job_status').html(job_status);
+      $(job_element).find('.job_description').html(job_description);
+
+      // Insert job at top of table
+      $(job_element).insertAfter($(job_template));
+    }
+
+  });
+}
+
+$(document).ready(function() {
+  refreshJobs();
+});
+</script>
 </html>

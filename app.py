@@ -3,7 +3,7 @@ from flask_cors import CORS
 import json
 
 from users import *
-from ml import retrain
+# from ml import retrain
 import os
 
 ## Session variables
@@ -316,7 +316,8 @@ def retrain_job():
 
 		# PERFORM ML RETRAINING
 		try:
-			retrain(job_id)
+			print()
+			# retrain(job_id)
 		except:
 			return Response("Could not update data in the database", status=200, mimetype="text/html")
 
@@ -399,17 +400,20 @@ def get_applicant_jobs():
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
 		try:
 			jobs = get_jobs()
-			jobs_dict = []
-			for job in jobs:
-				this_job = Job(job[1], job[2], job[3], job[4], job[5], job[6])
-				job_dict = this_job.__dict__
-				job_dict["id"] = job[0]
-				jobs_dict.append(job_dict)
+			jobs_dict = create_jobs_dictionary(jobs)
 			jobs_json = json.dumps(jobs_dict)
+			# jobs = get_jobs()
+			# jobs_dict = []
+			# for job in jobs:
+			# 	this_job = Job(job[1], job[2], job[3], job[4], job[5], job[6])
+			# 	job_dict = this_job.__dict__
+			# 	job_dict["id"] = job[0]
+			# 	jobs_dict.append(job_dict)
+			# jobs_json = json.dumps(jobs_dict)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
-		return Response(jobs_json, status=200, mimetype="json/application")
+		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Applicant CV Editing page
