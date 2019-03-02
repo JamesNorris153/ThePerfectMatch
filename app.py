@@ -147,7 +147,7 @@ def show_staff_candidates_page():
 
 ## Get All Candidates - Staff
 # Returns: All candidates for jobs by this user in JSON/Text format
-@app.route("/staff/get_candidates")
+@app.route("/staff/get_candidates", methods=["POST"])
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
