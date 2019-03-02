@@ -650,7 +650,7 @@ def check_user(username):
 def show_best_candidates(jobId):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT LName,Fname from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where status=0 order by score desc')
+    cur.execute('SELECT * from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where status=0 and Job_ID=(?) order by score desc',(jobId,))
     users=cur.fetchall()
     con.close()
     return users
@@ -772,3 +772,11 @@ def backup_db():
     cur = con.cursor()
     cur.execute('.backup backup_file.sq3')
     con.close()
+
+def all_applications(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT * from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) order by score desc',(jobID,))
+    users=cur.fetchall()
+    con.close()
+    return users
