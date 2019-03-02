@@ -470,7 +470,7 @@ def get_current_cv(userID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT MAX(id) from cvs where User_ID=(?)',(userID,))
-    user = cur.fetchall()
+    user = cur.fetchone()[0]
     con.close()
     return user
 
