@@ -121,7 +121,7 @@ function showJobModal(job_id) {
   $('#job_modal .question_number').val(job_question_number);
 
   $('.test_question:not(.template)').remove();
-
+  
   all_questions = JSON.parse(job_questions);
   for (i in all_questions) {
     question = all_questions[i];
