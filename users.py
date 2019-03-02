@@ -87,7 +87,7 @@ class CV:
 		ALevels = []
 		for ALevel in self.ALevels:
 			ALevels.append(ALevel.__dict__)
-		cv_dict["languages"] = languages
+		cv_dict["alevels"] = ALevels
 
 		employment = []
 		for employ in self.employment:
@@ -778,7 +778,7 @@ def all_applications(jobID):
     users=cur.fetchall()
     con.close()
     return users
-    
+
 def add_test(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
