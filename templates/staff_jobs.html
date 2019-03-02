@@ -74,6 +74,8 @@
           <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
         </div>
         <div class="is-hidden job_description"></div>
+        <div class="is-hidden job_question_number"></div>
+        <div class="is-hidden job_questions"></div>
       </td>
     </tr>
   </tbody>
@@ -94,6 +96,8 @@ function showJobModal(job_id) {
     job_position = "Position";
     modal_title = "Add Job";
     job_status = "Available";
+    job_question_number = "";
+    job_questions = "[]";
   } else {
     job_name = $('#'+job_id).find('.job_title').html();
     job_description = $('#'+job_id).find('.job_description').html();
@@ -102,6 +106,8 @@ function showJobModal(job_id) {
     job_position = $('#'+job_id).find('.job_position').html();
     modal_title = "Edit Job";
     job_status = $('#'+job_id).find('.job_status').html();
+    job_question_number = $('#'+job_id).find('.job_question_number').html();
+    job_questions = $('#'+job_id).find('.job_questions').html();
   }
 
   $('#job_modal #cur_job_id').html(job_id);
@@ -112,6 +118,31 @@ function showJobModal(job_id) {
   $('#job_modal .job_description_box').html(job_description);
   $('#job_modal div[name="job_position"]').find('select').val(job_position);
   $('#job_modal div[name="job_status"]').find('select').val(job_status);
+  $('#job_modal .question_number').val(job_question_number);
+
+  $('.test_question:not(.template)').remove();
+
+  all_questions = JSON.parse(job_questions);
+  for (i in all_questions) {
+    question = all_questions[i];
+    question_element = $('.add_question_button').parent().find(".template").clone().removeClass('template');
+    question_title = question["Question"];
+    correct = question["Correct"];
+
+    $(question_element).find('input[name="question"]').val(question_title);
+    $(question_element).find('input[name="correct_answer"]').val(correct);
+
+    incorrect_answers = question["Incorrect"];
+    incorrect1 = incorrect_answers[0]["Answer"];
+    incorrect2 = incorrect_answers[1]["Answer"];
+    incorrect3 = incorrect_answers[2]["Answer"];
+
+    $(question_element).find('input[name="incorrect_answer"]:nth-of-type(1)').val(incorrect1);
+    $(question_element).find('input[name="incorrect_answer"]:nth-of-type(2)').val(incorrect2);
+    $(question_element).find('input[name="incorrect_answer"]:nth-of-type(3)').val(incorrect3);
+
+    $(question_element).insertBefore('.add_question_button');
+  }
 
   $('#job_modal').addClass('is-active');
 }
@@ -166,6 +197,23 @@ function refreshJobs() {
       job_location = job["Location"];
       job_position = job["Position"];
       job_status = job["Status"];
+      job_question_number = 2; // TEMPORARY VALUE
+      job_questions = [
+        {"Question":"Q1",
+        "Correct":"A",
+        "Incorrect":[
+          {"Answer":"B"},
+          {"Answer":"C"},
+          {"Answer":"D"}
+        ]},
+        {"Question":"Q2",
+        "Correct":"A2",
+        "Incorrect":[
+          {"Answer":"B2"},
+          {"Answer":"C2"},
+          {"Answer":"D2"}
+        ]}
+      ]; // TEMPORARY VALUE
 
       // Insert all data into new row in table
       job_element = $(job_template).clone().removeClass('template').attr('id',job_id);
@@ -175,6 +223,9 @@ function refreshJobs() {
       $(job_element).find('.job_deadline').html(job_deadline);
       $(job_element).find('.job_status').html(job_status);
       $(job_element).find('.job_description').html(job_description);
+      $(job_element).find('.job_question_number').html(job_question_number);
+      $(job_element).find('.job_questions').html(JSON.stringify(job_questions));
+
 
       // Insert job at top of table
       $(job_element).insertAfter($(job_template));
