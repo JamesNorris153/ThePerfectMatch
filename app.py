@@ -129,7 +129,7 @@ def get_staff_jobs():
 			jobs_dict = create_jobs_dictionary(jobs)
 			jobs_json = json.dumps(jobs_dict)
 		except:
-			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -154,7 +154,7 @@ def get_candidates():
 		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.args.get("job_id")
 		if session['job_id'] is None:
-			return Repsponse("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
+			return Response("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
 		# candidates = [
 		# {
@@ -171,7 +171,7 @@ def get_candidates():
 			candidates = show_best_candidates(job_id)
 			candidates_json = json.dumps(candidates)
 		except:
-			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
 		return Response(candidates_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -189,7 +189,7 @@ def get_cv_by_id():
 			cv = get_CV(cv_id)
 			cv_json = json.dumps(cv.__dict__)
 		except:
-			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -290,7 +290,7 @@ def save_job():
 				insert_job(job)
 				return Response("Success", status=200, mimetype="text/html")
 		except:
-			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])
