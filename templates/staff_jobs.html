@@ -121,7 +121,7 @@ function showJobModal(job_id) {
   $('#job_modal .question_number').val(job_question_number);
 
   $('.test_question:not(.template)').remove();
-  
+
   all_questions = JSON.parse(job_questions);
   for (i in all_questions) {
     question = all_questions[i];
@@ -133,13 +133,12 @@ function showJobModal(job_id) {
     $(question_element).find('input[name="correct_answer"]').val(correct);
 
     incorrect_answers = question["Incorrect"];
-    incorrect1 = incorrect_answers[0]["Answer"];
-    incorrect2 = incorrect_answers[1]["Answer"];
-    incorrect3 = incorrect_answers[2]["Answer"];
 
-    $(question_element).find('input[name="incorrect_answer"]:nth-of-type(1)').val(incorrect1);
-    $(question_element).find('input[name="incorrect_answer"]:nth-of-type(2)').val(incorrect2);
-    $(question_element).find('input[name="incorrect_answer"]:nth-of-type(3)').val(incorrect3);
+    var i=0;
+    $(question_element).find('input[name="incorrect_answer"]').each(function() {
+      $(this).val(incorrect_answers[i]["Answer"]);
+      i++;
+    });
 
     $(question_element).insertBefore('.add_question_button');
   }
