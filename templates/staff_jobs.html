@@ -169,7 +169,7 @@ $('#job_table').on('click', '.delete_button', function(event) {
 });
 $('#job_table').on('click', '.candidates_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
-  window.location.href="/staff/candidates?id="+job_id;
+  window.location.href="/staff/candidates?job_id="+job_id;
 });
 
 function refreshJobs() {
