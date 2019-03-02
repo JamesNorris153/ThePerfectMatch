@@ -120,8 +120,11 @@ function showJobModal(job_id) {
   $('#job_modal div[name="job_status"]').find('select').val(job_status);
   $('#job_modal .question_number').val(job_question_number);
 
+<<<<<<< HEAD
   $('.test_question:not(.template)').remove();
 
+=======
+>>>>>>> 716ae05bd835c74150a7e5d138ae37b88fa76fa3
   all_questions = JSON.parse(job_questions);
   for (i in all_questions) {
     question = all_questions[i];
