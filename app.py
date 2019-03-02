@@ -176,20 +176,16 @@ def get_candidates():
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Get a CV from database to view
-# Receives: user_id + job_id
+# Receives: cv_id
 # Returns: CV in JSON/Text Format
-#@app.route("/staff/get_cv", methods=["POST"])
-@app.route("/staff/get_cv")
-def get_cv_by_user_id():
+@app.route("/staff/get_cv", methods=["POST"])
+def get_cv_by_id():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		user_id = session["user_id"]
-		#user_id = request.form.get("user_id")
-		user_id = 4
-
-		# GET CV FROM USER AND JOB ID
+		cv_id = request.form.get('cv_id')
+		
 		try:
-			cv = get_CV(user_id)
+			cv = get_CV(cv_id)
 			cv_json = json.dumps(cv.__dict__)
 		except:
 			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
