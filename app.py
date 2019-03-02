@@ -198,21 +198,22 @@ def get_cv_by_id():
 # Receives: user_id + job_id
 # Returns: Success/Failure
 # Actions: Likes candidate in DB to adapt ML
-@app.route("/staff/like_candidate", methods=["POST"])
+@app.route("/staff/like_candidate")
 def like_candidate():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
+		user_id = request.form.get("user_id")
 		job_id = request.form.get("job_id")
 
 		# LIKE CANDIDATE FOR ROLE
 		try:
 			cv_id = None
-			applications = show_current_applications(userID)
+			applications = show_current_applications(user_id)
 			for application in applications:
 				if application[0] == jobID:
 					cv_id = application[1]
-			update_status(job_id, cv_id, 2)
+			update_status(job_id, cv_id, 1)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
@@ -233,11 +234,11 @@ def dislike_candidate():
 		# DISLIKE CANDIDATE FOR ROLE
 		try:
 			cv_id = None
-			applications = show_current_applications(userID)
+			applications = show_current_applications(user_id)
 			for application in applications:
 				if application[0] == jobID:
 					cv_id = application[1]
-			update_status(job_id, cv_id, 1)
+			update_status(job_id, cv_id, 2)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
@@ -397,19 +398,18 @@ def show_applicant_jobs_page():
 @app.route("/applicant/get_jobs")
 def get_applicant_jobs():
 	if login_check() == "Applicant":
+		# GET REQUIRED SESSION PARAMETER
+		user_id = session["user_id"]
+
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
 		try:
 			jobs = get_jobs()
 			jobs_dict = create_jobs_dictionary(jobs)
+			current_applications = show_current_applications(user_id)
+			for job in jobs_dict:
+				if job["ID"] in current_applications: job["Application"] = 1
+				else: job["Application"] = 0
 			jobs_json = json.dumps(jobs_dict)
-			# jobs = get_jobs()
-			# jobs_dict = []
-			# for job in jobs:
-			# 	this_job = Job(job[1], job[2], job[3], job[4], job[5], job[6])
-			# 	job_dict = this_job.__dict__
-			# 	job_dict["id"] = job[0]
-			# 	jobs_dict.append(job_dict)
-			# jobs_json = json.dumps(jobs_dict)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
