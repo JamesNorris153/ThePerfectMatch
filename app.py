@@ -156,6 +156,17 @@ def get_candidates():
 		if session['job_id'] is None:
 			return Repsponse("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
+		# candidates = [
+		# {
+		# 	"ID":candidate_id,
+		# 	"First Name":first_name,
+		# 	"Last Name":last_name,
+		# 	"Email":email,
+		# 	"Score":score,
+		# 	"CVID":cvid,
+		# 	"Status":status ("Like"/"Dislike"/"Unknown")
+		# }
+		# ]
 		try:
 			candidates = show_best_candidates(job_id)
 			candidates_json = json.dumps(candidates)
@@ -166,18 +177,16 @@ def get_candidates():
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Get a CV from database to view
-# Receives: user_id + job_id
+# Receives: cv_id
 # Returns: CV in JSON/Text Format
-#@app.route("/staff/get_cv", methods=["POST"])
-@app.route("/staff/get_cv")
-def get_cv_by_user_id():
+@app.route("/staff/get_cv", methods=["POST"])
+def get_cv_by_id():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		user_id = session["user_id"]
+		cv_id = request.form.get('cv_id')
 
-		# GET CV FROM USER AND JOB ID
 		try:
-			cv = get_CV(user_id)
+			cv = get_CV(cv_id)
 			cv_json = json.dumps(cv.__dict__)
 		except:
 			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
