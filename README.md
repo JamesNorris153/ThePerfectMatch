@@ -1,7 +1,11 @@
 # cs261
 
-Libraries required in order to run the application: flask, flask_cors, sqlite3, bcrypt
+Requirements: Python 2.7
 
-To start the application run $python app.py from the directory root
-
-Connect to the application at localhost:5000
+Modules Required:
+- flask
+- flask_cors
+- flask_sqlalchemy
+- bcrypt
+- sqlite3
+- json
