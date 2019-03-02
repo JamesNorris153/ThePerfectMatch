@@ -137,12 +137,17 @@ def get_staff_jobs():
 @app.route("/staff/candidates")
 def show_staff_candidates_page():
 	if login_check() == "Admin":
+		job_id = request.args.get('job_id')
+		if job_id is None:
+			session['job_id'] = None
+			return redirect("/staff/jobs")
+		session['job_id'] = job_id
 		return render_template("staff_candidates.html")
 	return redirect("/")
 
 ## Get All Candidates - Staff
 # Returns: All candidates for jobs by this user in JSON/Text format
-@app.route("/staff/get_candidates")
+@app.route("/staff/get_candidates", methods=["POST"])
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
