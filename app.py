@@ -137,6 +137,11 @@ def get_staff_jobs():
 @app.route("/staff/candidates")
 def show_staff_candidates_page():
 	if login_check() == "Admin":
+		job_id = request.args.get('job_id')
+		if job_id is None:
+			session['job_id'] = None
+			return redirect("/staff/jobs")
+		session['job_id'] = job_id
 		return render_template("staff_candidates.html")
 	return redirect("/")
 
@@ -147,7 +152,8 @@ def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
-
+		if session['job_id'] is None:
+			return Repsponse("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
 		try:
 			candidates = show_best_candidates(job_id)
