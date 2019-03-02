@@ -147,11 +147,11 @@ def show_staff_candidates_page():
 
 ## Get All Candidates - Staff
 # Returns: All candidates for jobs by this user in JSON/Text format
-@app.route("/staff/get_candidates", methods=["POST"])
+@app.route("/staff/get_candidates")
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		job_id = request.form.get("job_id")
+		job_id = request.args.get("job_id")
 		if session['job_id'] is None:
 			return Repsponse("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
