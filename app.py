@@ -226,7 +226,8 @@ def dislike_candidate():
 #			"Correct":correct_answer,
 #			"Incorrect":[{
 #				"Answer":answer
-#			}]
+#			}],
+# 		"QuestionNumber":number of questions to be randomly given to applicant
 #		}]
 #	};
 # Returns: Success/Failure

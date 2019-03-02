@@ -53,7 +53,21 @@
 </div>
 
 <div class="box" id="job_test">
-  <p class="title">Test</p>
+    <div class="level">
+      <div class="level-left">
+        <p class="title level-item" style="margin-bottom:0;">Test</p>
+      </div>
+      <div class="level-right job_item">
+        <div class="field has-addons level-item">
+        <p class="control">
+          <input class="input is-rounded" value="# of Questions To Ask:" size="18" readonly>
+        </p>
+        <p class="control">
+          <input class="input is-rounded question_number" type="text" size="5">
+        </p>
+        </div>
+      </div>
+    </div>
   <div class="content">
 
     <div class="test_question job_item notification template">
@@ -75,7 +89,7 @@
       </p>
     </div>
 
-    <a class="button is-info is-rounded" onclick="addItem(this)">Add Question</a>
+    <a class="button is-info is-rounded add_question_button" onclick="addItem(this)">Add Question</a>
 
   </div>
 </div>
