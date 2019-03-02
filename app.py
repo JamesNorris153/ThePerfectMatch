@@ -439,7 +439,7 @@ def get_applicant_cv():
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
-		return Response(cv_json, status=200, mimetype="json/application")
+		return Response(cv_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Saving CV Changes
