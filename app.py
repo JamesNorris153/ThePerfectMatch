@@ -3,6 +3,7 @@ from flask_cors import CORS
 import json
 
 from users import *
+from ml import retrain
 import os
 
 ## Session variables
@@ -128,7 +129,7 @@ def get_staff_jobs():
 			jobs_dict = create_jobs_dictionary(jobs)
 			jobs_json = json.dumps(jobs_dict)
 		except:
-			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -173,15 +174,13 @@ def get_cv_by_user_id():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
 		user_id = session["user_id"]
-		#user_id = request.form.get("user_id")
-		user_id = 4
 
 		# GET CV FROM USER AND JOB ID
 		try:
 			cv = get_CV(user_id)
 			cv_json = json.dumps(cv.__dict__)
 		except:
-			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -198,7 +197,16 @@ def like_candidate():
 		job_id = request.form.get("job_id")
 
 		# LIKE CANDIDATE FOR ROLE
-		# TODO: like candidate method
+		try:
+			cv_id = None
+			applications = show_current_applications(userID)
+			for application in applications:
+				if application[0] == jobID:
+					cv_id = application[1]
+			update_status(job_id, cv_id, 2)
+		except:
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -214,7 +222,16 @@ def dislike_candidate():
 		job_id = request.form.get("job_id")
 
 		# DISLIKE CANDIDATE FOR ROLE
-		# TODO: dislike candidate method
+		try:
+			cv_id = None
+			applications = show_current_applications(userID)
+			for application in applications:
+				if application[0] == jobID:
+					cv_id = application[1]
+			update_status(job_id, cv_id, 1)
+		except:
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -264,7 +281,7 @@ def save_job():
 				insert_job(job)
 				return Response("Success", status=200, mimetype="text/html")
 		except:
-			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Repsponse("Could not connect to the database", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])
@@ -274,7 +291,10 @@ def delete_job():
 		job_id = request.form.get("job_id")
 
 		# DELETE JOB IN DATABASE
-		close_job(job_id)
+		try:
+			close_job(job_id)
+		except:
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -286,6 +306,11 @@ def retrain_job():
 		job_id = request.form.get("job_id")
 
 		# PERFORM ML RETRAINING
+		try:
+			retrain(job_id)
+		except:
+			return Response("Could not update data in the database", status=200, mimetype="text/html")
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -365,9 +390,15 @@ def get_applicant_jobs():
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
 		try:
 			jobs = get_jobs()
-			jobs_json = json.dumps(jobs)
+			jobs_dict = []
+			for job in jobs:
+				this_job = Job(job[1], job[2], job[3], job[4], job[5], job[6])
+				job_dict = this_job.__dict__
+				job_dict["id"] = job[0]
+				jobs_dict.append(job_dict)
+			jobs_json = json.dumps(jobs_dict)
 		except:
-			return Repsponse("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(jobs_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -393,7 +424,7 @@ def get_applicant_cv():
 			cv = get_CV(cv_id)
 			cv_json = cv.jsonify_cv()
 		except:
-			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(cv_json, status=200, mimetype="json/application")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -413,7 +444,7 @@ def save_applicant_cv():
 		try:
 			insert_json_cv(cv_json, user_id)
 		except:
-			return Response("Could not save data in the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -434,7 +465,7 @@ def apply_for_job():
 			cv_id = get_current_cv(user_id)
 			apply_job(cv_id, job_id)
 		except:
-			return Response("Could not save data in the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -457,7 +488,7 @@ def send_test_answers():
 			cv_id = get_current_cv(user_id)
 			score = score_test(answers_json, job_id, cv_id)
 		except:
-			return Response("Could not save data in the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")

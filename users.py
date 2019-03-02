@@ -67,9 +67,9 @@ class CV:
 		cv_dict["FName"] = self.FName
 		cv_dict["LName"] = self.LName
 
-		degrees = dict()
+		degrees = []
 		for degree in self.degrees:
-			degrees.update(degree.__dict__)
+			degrees.append(degree.__dict__)
 			print(degrees)
 		cv_dict["degrees"] = degrees
 
@@ -172,8 +172,6 @@ def create_user(applicant):
     user_id = cur.fetchone()[0]
     con.close()
     return user_id
-	# TODO: return user_id on creation
-	# return user_id
 
 def get_users():
     con = sql.connect(path.join(ROOT, 'database.db'))
@@ -407,7 +405,7 @@ def select_status(jobID, cvID):
     con.commit()
     con.close()
     return status
-    
+
 def update_score(jobID,cvID,score):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -754,7 +752,7 @@ def insert_json_cv(form,userID):
             con.commit()
 
     con.close()
-    
+
 def change_pass_user(userID,newpass):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
