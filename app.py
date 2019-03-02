@@ -382,8 +382,7 @@ def get_applicant_cv():
 
 		# GET USERS CURRENT CV IN JSON FORMAT
 		try:
-			# cv_id = get_current_cv(user_id)
-			cv_id = 7824
+			cv_id = get_current_cv(user_id)
 			cv = get_CV(cv_id)
 			cv_json = cv.jsonify_cv()
 		except:
@@ -424,7 +423,11 @@ def apply_for_job():
 		job_id = request.form.get("job_id")
 
 		# APPLY USER FOR JOB WITH THEIR CURRENT CV
-		apply_job(user_id, job_id)
+		try:
+			cv_id = get_current_cv(user_id)
+			apply_job(cv_id, job_id)
+		except:
+			return Response("Could not save data in the database", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -440,18 +443,15 @@ def send_test_answers():
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 		answers = request.form.get("answers")
-		answers_json = json.loads(answers)
-		# answers will be in JSON form:
-		# var answers = [{
-		#		"Question":question_title,
-		#		"Answer":user_answer
-		#	},
-		# 	{
-		#		"Question":question_title,
-		#		"Answer":user_answer
-		#	},...];
-		# Each question asked will have the user's answer attached
-		# Check user's answers against actual answers and apply scoring ML
+
+		# SCORE TEST AND STORE IN DATABASE
+		try:
+			answers_json = json.loads(answers)
+			cv_id = get_current_cv(user_id)
+			score = score_test(answers_json, job_id, cv_id)
+		except:
+			return Response("Could not save data in the database", status=200, mimetype="text/html")
+
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
@@ -461,16 +461,16 @@ def send_test_answers():
 @app.route("/applicant/get_job_test")
 def get_job_test():
 	if login_check() == "Applicant":
+		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
-		questions = [];
-		# GET QUESTIONS + ALL OPTIONS FROM DATABASE FOR THIS JOB
-		# questions = [{
-		# 	"Question":question,
-		# 	"Correct":correct,
-		# 	"Incorrect1":incorrect1,
-		# 	"Incorrect2":incorrect2,
-		# 	"Incorrect3":incorrect3
-		# }];
+		job_id = 1
+
+		#try:
+		questions = get_test(job_id);
+		questions_json = json.dumps(questions)
+		#except:
+		#return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
+
 		return Response(questions, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
