@@ -6,25 +6,39 @@
   <link rel="stylesheet" type="text/css" href="/static/css/login.css">
   <title>Staff Portal</title>
 </head>
+<style>
+  body {
+    background-image: url("/static/imgs/lines.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+</style>
 <body>
   <div class="hero">
-    <div class="hero-head">
-      <a class="tag" href="/applicant/login">Looking for the applicant portal?</a>
-    </div>
+    <section class="hero is-fullheight">
     <div class="hero-body">
       <div class="container has-text-centered">
+        <div class="column is-4 is-offset-4">
         <p class="subtitle">Staff Portal</p>
         <form class="box loginForm" onsubmit="return login(email,password);">
-          <input class="input is-rounded" type="text" placeholder="Email Address" name="email">
-          <input class="input is-rounded" type="password" placeholder="Password" name="password">
-          <input class="button is-info is-rounded" type="submit" value="Login">
+          <figure class="image container is-128x128">
+            <img src="/static/imgs/icon.png">
+          </figure>
+
+          <input class="input is-large" type="text" placeholder="Email Address" name="email">
+          <input class="input is-large" type="password" placeholder="Password" name="password">
+          <input class="button is-info is-large is-block is-fullwidth" type="submit" value="Login">
           <p id="login_error" class="has-text-danger"></p>
-          <div class="level">
-            <a class="is-info is-rounded is-small">Forgot your password?</a>
-          </div>
+          <p class="has-text-grey" style="margin-top:20px;margin-bottom:auto;text-align:center;">
+            <a style="color:grey;">Forgot your password?</a> <br>
+            <a href="/applicant/login" style="color:grey;">Looking for the applicant portal?</a>
+          </p>
         </form>
       </div>
+      </div>
     </div>
+  </section>
   </div>
 </body>
 <script src="/static/js/jquery-3.3.1.min.js"></script>
