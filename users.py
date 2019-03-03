@@ -228,7 +228,7 @@ def get_trait_level(table, jobID):
 def insert_job(job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,"Available")',(job.name,job.description,job.deadline,job.location,job.position))
+    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status))
     con.commit()
     con.close()
 
