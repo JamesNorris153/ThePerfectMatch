@@ -343,7 +343,7 @@ def get_CV(cvID):
     result = cur.fetchone()
     info.FName = result[0]
     info.LName = result[1]
-    cur.execute('SELECT grade,name from alevel_cv join alevel on alevel.id = alevel_cv.ALevel_ID WHERE CV_ID=(?)',(cvID,))
+    cur.execute('SELECT grade,name from alevel_cv join alevel on alevel.id = alevel_cv.CV_ID WHERE ALevel_ID=(?)',(cvID,))
     result = cur.fetchall()
     for row in result:
         put = Trait()
