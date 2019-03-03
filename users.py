@@ -491,8 +491,7 @@ def score_test(answers,jobID,cvID):
 def show_current_applications(userID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    query = "SELECT id from cvs where User_ID="+str(userID)
-    cur.execute('SELECT Job_ID, CV_ID from job_cv where CV_ID in ((?)) and status=0',(query,))
+    cur.execute('SELECT Job_ID, CV_ID from job_cv where CV_ID in (SELECT id from cvs where User_ID=?) and status=0',(userID,))
     jobs = cur.fetchall()
     con.close()
     return jobs
