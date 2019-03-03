@@ -1,7 +1,7 @@
-import matlab.engine
 import users
 import time
-import numpy
+import numpy as np
+import ml_test_func
 
 def test(jobID, numOfTrainingData, numOfTestData):
     cvs = users.select_cvs(jobID)
@@ -14,10 +14,10 @@ def test(jobID, numOfTrainingData, numOfTestData):
 
     dict = {'A*' : 10, 'A' : 9, 'B' : 8, 'C' : 7, 'D' : 6}
 
-    trainingData = []
-    testData = []
-    state = []
-    state2 = []
+    X1 = []
+    X2 = []
+    y1 = []
+    y2 = []
 
     def getData(databaseData, globalData, dataSet, index = 0):
         applicant_data = []
@@ -32,29 +32,20 @@ def test(jobID, numOfTrainingData, numOfTestData):
                 if index == 1: dataSet.append(dict[applicant_level[item]])
                 else: dataSet.append(applicant_level[item])
 
-
-    for i in range(1, numOfTrainingData + 1):
+    for i in range(0, numOfTrainingData):
         info = users.get_CV(cvs[i][0])
-        getData(info.skills, skills, trainingData, 2)
-        getData(info.languages, languages, trainingData)
-        getData(info.ALevels, ALevels, trainingData, 1)
-        getData(info.hobbies, hobbies, trainingData)
-        state.append(users.select_status(jobID, i)[0])
+        getData(info.skills, skills, x1, 2)
+        getData(info.languages, languages, x1)
+        getData(info.ALevels, ALevels, x1, 1)
+        getData(info.hobbies, hobbies, x1)
+        y1.append(users.select_status(jobID, i)[0])
 
-    for i in range(1, numOfTestData + 1):
+    for i in range(numOfTrainingData, numOfTestData + numOfTrainingData):
         info = users.get_CV(cvs[i][0])
-        getData(info.skills, skills, testData, 2)
-        getData(info.languages, languages, testData)
-        getData(info.ALevels, ALevels, testData, 1)
-        getData(info.hobbies, hobbies, testData)
+        getData(info.skills, skills, x2, 2)
+        getData(info.languages, languages, x2)
+        getData(info.ALevels, ALevels, x2, 1)
+        getData(info.hobbies, hobbies, x2)
+        y2.append(users.select_status(jobID, i)[0])
 
-
-    X1 = numpy.array(trainingData)
-    X2 = numpy.array(testData)
-    y1 = numpy.array(state)
-    y2 = numpy.array(state2)
-
-
-    eng = matlab.engine.start_matlab()
-    eng.addpath(r'./functions',nargout=0)
-    t = eng.main_test(X1.tolist(), y1.tolist(), numOfTrainingData, X2.tolist(), y2.tolist(), numOfTestData)
+    ml_test_func.ml_test(X1, y1, X2, y2)
