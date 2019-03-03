@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="/static/css/bulma_min.css">
   <link rel="stylesheet" type="text/css" href="/static/css/tables.css">
+  <script src="/static/js/jquery-3.3.1.min.js"></script>
   <title>BRAND CV</title>
 </head>
 
@@ -20,76 +21,9 @@
 
   {% include 'editable_cv.html' %}
 </body>
-<script src="/static/js/jquery-3.3.1.min.js"></script>
+
 <script src="/static/js/applicant_cv.js"></script>
 <script>
-function loadCV() {
-  $.get("/applicant/get_cv",function(data) {
 
-    cv = JSON.parse(data);
-
-    fname = cv["FName"];
-    lname = cv["LName"];
-    degrees = cv["degrees"];
-    languages = cv["languages"];
-    hobbies = cv["hobbies"];
-    alevels = cv["alevels"];
-    employment = cv["employment"];
-    skills = cv["skills"];
-
-    for (i in languages) {
-      language = languages[i];
-      name = language["name"];
-      level = language["level"];
-
-      new_language = $('.add_language_button').parent().find(".template").clone().removeClass('template');
-      $(new_language).find('input[name="language_name"]').val(name);
-      $(new_language).find('div[name="expertise"] select').val(level);
-      $(new_language).insertBefore('.add_language_button');
-
-    }
-
-    for (i in skills) {
-      skill = skills[i];
-      name = skill["name"];
-      level = skill["level"];
-
-      new_skill = $('.add_skill_button').parent().find(".template").clone().removeClass('template');
-      $(new_skill).find('input[name="skill_name"]').val(name);
-      $(new_skill).find('div[name="expertise"] select').val(level);
-      $(new_skill).insertBefore('.add_skill_button');
-
-    }
-
-    for (i in hobbies) {
-      hobby = hobbies[i];
-      name = hobby["name"];
-      level = hobby["level"];
-
-      new_hobby = $('.add_hobby_button').parent().find(".template").clone().removeClass('template');
-      $(new_hobby).find('input[name="hobby_name"]').val(name);
-      $(new_hobby).find('div[name="interest"] select').val(level);
-      $(new_hobby).insertBefore('.add_hobby_button');
-
-    }
-
-    for (i in alevels) {
-      alevel = alevels[i];
-      name = alevel["name"];
-      level = alevel["level"];
-
-      new_alevel = $('.add_a_level_button').parent().find(".template").clone().removeClass('template');
-      $(new_alevel).find('input[name="subject_name"]').val(name);
-      $(new_alevel).find('div[name="grade"] select').val(level);
-      $(new_alevel).insertBefore('.add_a_level_button');
-
-    }
-
-  });
-}
-
-$(document).ready(function() {
-  loadCV();
-});
 </script>
 </html>

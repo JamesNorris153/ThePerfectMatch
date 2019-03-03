@@ -20,20 +20,13 @@ CORS(app)
 # Returns account_type or None if not logged in
 # If either session variable has been lost, log user out and return None
 def login_check():
-	if "user_id" in session:
-		if session["user_id"] is None:
-			logout()
-		if "account_type" in session:
-			type = session["account_type"]
-			if type is None:
-				logout()
-			else:
-				return type
-		else:
-			logout()
-	else:
+	user_id = session.get("user_id")
+	account_type = session.get("account_type")
+	if user_id is None or account_type is None:
 		logout()
-	return None
+		return None
+	else:
+		return account_type
 
 # Function to reset all session variables
 def logout():
@@ -427,7 +420,9 @@ def show_applicant_cv_page():
 # Returns: User's CV in JSON/Text Format
 @app.route("/applicant/get_cv")
 def get_applicant_cv():
-	if login_check() == "Applicant":
+	account_type = login_check()
+	print(account_type)
+	if account_type == "Applicant":
 		# GET REQUIRED SESSION PARAMETER
 		user_id = session["user_id"]
 
@@ -435,7 +430,7 @@ def get_applicant_cv():
 		try:
 			cv_id = get_current_cv(user_id)
 			cv = get_CV(cv_id)
-			cv_json = cv.jsonify_cv()
+			cv_json = jsonify_cv(cv)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 

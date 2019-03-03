@@ -782,3 +782,42 @@ def add_question(testID,question,answer):
     cur = con.cursor()
     cur.execute('INSERT into question_test values (NULL,?,?,?)',(testID,question,answer))
     con.close()
+
+
+def jsonify_cv(cv):
+    cv_dict = dict()
+
+    cv_dict["FName"] = cv.FName
+    cv_dict["LName"] = cv.LName
+
+    degrees = []
+    for degree in cv.degrees:
+        degrees.append(degree.__dict__)
+    cv_dict["degrees"] = degrees
+
+    languages = []
+    for language in cv.languages:
+        languages.append(language.__dict__)
+    cv_dict["languages"] = languages
+
+    hobbies = []
+    for hobby in cv.hobbies:
+        hobbies.append(hobby.__dict__)
+    cv_dict["hobbies"] = hobbies
+
+    ALevels = []
+    for ALevel in cv.ALevels:
+        ALevels.append(ALevel.__dict__)
+    cv_dict["alevels"] = ALevels
+
+    employment = []
+    for employ in cv.employment:
+        employment.append(employ.__dict__)
+    cv_dict["employment"] = employment
+
+    skills = []
+    for skill in cv.skills:
+        skills.append(skill.__dict__)
+    cv_dict["skills"] = skills
+
+    return json.dumps(cv_dict)
