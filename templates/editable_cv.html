@@ -114,9 +114,10 @@
 
       // Reset values
       $('.cv_item:not(.template):not(.university_item)').remove();
+      $('.cv_item:not(.template) .is-danger:not(.button)').removeClass('is-danger');
       $('input[name="university_name"]').val("");
       $('input[name="degree_name"]').val("");
-      $('div[name="degree_level"] select').val("Grade");
+      $('div[name="degree_level"] select').val("Level");
 
       cv = JSON.parse(data);
 

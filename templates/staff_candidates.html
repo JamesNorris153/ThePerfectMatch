@@ -90,7 +90,7 @@ function refreshCandidates() {
   			"Last Name":"Smith",
   			"Email":"John.Smith@gmail.com",
   		 	"Score":1032,
-  		 	"CVID":57,
+  		 	"CVID":7824,
   		 	"Status":"Unknown"
       },
       {
@@ -152,6 +152,7 @@ function showCVModal(element,cv_id) {
     //   $('#cv_modal .dislike_button').attr('onclick','dislikeCandidate('+candidate_id+','+job_id+',this);').removeClass('is-hidden is-danger').html('Dislike');
     //   $('#cv_modal').addClass('is-active');
     // }
+
   });
 }
 
@@ -184,12 +185,6 @@ function dislikeCandidate(candidate_id,job_id,button) {
     }
   });
 }
-
-$('#candidates_table').on('click', '.cv_button', function(event) {
-  var candidate_id = $(this).parent().parent().parent().parent().find('.applied_candidate_name').attr('value');
-  var job_id = $(this).parent().parent().parent().parent().find('.applied_job_title').attr('value');
-  showCVModal(candidate_id, job_id);
-});
 
 </script>
 </html>

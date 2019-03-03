@@ -12,7 +12,6 @@ function closeApplicationModal() {
 }
 function showApplicationModal(job_id) {
   loadCV();
-  $('#application_modal .modal-card-title').html("JOB:"+job_id);
   $('#application_modal #cur_job_id').html(job_id);
   $('#application_modal').addClass('is-active');
 }
