@@ -1,7 +1,8 @@
 import matlab.engine
 import users
 import time
-import numpy
+import numpy as np
+import ml_func
 
 def retrain(jobID):
     cvs = users.select_cvs(jobID)
@@ -13,11 +14,11 @@ def retrain(jobID):
 
     dict = {'A*' : 10, 'A' : 9, 'B' : 8, 'C' : 7, 'D' : 6}
 
-    trainingData = []
-    testData = []
-    state = []
+    X1 = []
+    X2 = []
+    y1 = []
     newApplicants = []
-
+    y2 = []
     def getData(databaseData, globalData, dataSet, index = 0):
         applicant_data = []
         applicant_level = {}
@@ -36,25 +37,22 @@ def retrain(jobID):
         status = users.select_status(jobID, i)[0]
         if status == 0:
             newApplicants.append(i[0])
-            getData(info.skills, skills, testData, 2)
-            getData(info.languages, languages, testData)
-            getData(info.ALevels, ALevels, testData, 1)
-            getData(info.hobbies, hobbies, testData)
+            getData(info.skills, skills, X2, 2)
+            getData(info.languages, languages, X2)
+            getData(info.ALevels, ALevels, X2, 1)
+            getData(info.hobbies, hobbies, X2)
         else:
-            getData(info.skills, skills, trainingData, 2)
-            getData(info.languages, languages, trainingData)
-            getData(info.ALevels, ALevels, trainingData, 1)
-            getData(info.hobbies, hobbies, trainingData)
-            state.append(status)
+            getData(info.skills, skills, X1, 2)
+            getData(info.languages, languages, X1)
+            getData(info.ALevels, ALevels, X1, 1)
+            getData(info.hobbies, hobbies, X1)
+            y1.append(status)
 
-    X1 = numpy.array(trainingData)
-    X2 = numpy.array(testData)
-    y1 = numpy.array(state)
+    newScore = ml_func.doLearning(X1, y1, X2)
 
-    eng = matlab.engine.start_matlab()
-    eng.addpath(r'./functions',nargout=0)
-    t = eng.main(X1.tolist(), y1.tolist(), len(cvs), X2.tolist())
     index = 0
     for i in newApplicants:
-        users.update_score(jobID, i, t[index])
+        users.update_score(jobID, i, newScore[index])
         index = index + 1
+
+retrain(1)
