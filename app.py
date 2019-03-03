@@ -530,6 +530,15 @@ def get_job_test():
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 
+@app.route("/applicant/give_up", methods=["POST"])
+def give_up():
+	if login_check() == "Applicant":
+		job_id = request.form.get("job_id")
+		user_id = session["user_id"]
+		# User exited test without submitting -> Make changes to DB
+		return Response("Success",status=200,mimetype="text/html")
+	return Response("You are not logged in", status=200, mimetype="text/html")
+
 
 ## TEMP PAGES
 
