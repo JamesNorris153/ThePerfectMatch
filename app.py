@@ -503,20 +503,30 @@ def send_test_answers():
 # Sends a test to the applicant for a given job
 # Receives: job_id
 # Returns: Questions with all multiple choice answers
-@app.route("/applicant/get_job_test")
+@app.route("/applicant/get_job_test", methods=["POST"])
 def get_job_test():
 	if login_check() == "Applicant":
 		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
-		job_id = 1
+		# job_id = 1
 
 		#try:
 		questions = get_test(job_id);
 		questions_json = json.dumps(questions)
+		# Can we get questions in this form if possible?
+		# questions = [
+		# 	{
+		# 		"Question":question,
+		# 		"Correct":correct,
+		# 		"Incorrect1":incorrect1,
+		# 		"Incorrect2":incorrect2,
+		# 		"Incorrect3":incorrect3
+		# 	}
+		# ]
 		#except:
 		#return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
-		return Response(questions, status=200, mimetype="text/html")
+		return Response(questions_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 

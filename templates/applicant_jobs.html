@@ -48,7 +48,30 @@
         <div class="is-hidden" id="cur_job_id"></div>
       </header>
       <section class="modal-card-body">
-        BIG TEST HERE
+        <div class="test_question notification template">
+          <p class="question"></p>
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="answer">
+              <span class="answer1"></span>
+            </label>
+            <br>
+            <label class="radio">
+              <input type="radio" name="answer">
+              <span class="answer2"></span>
+            </label>
+            <br>
+            <label class="radio">
+              <input type="radio" name="answer">
+              <span class="answer3"></span>
+            </label>
+            <br>
+            <label class="radio">
+              <input type="radio" name="answer">
+              <span class="answer4"></span>
+            </label>
+          </div>
+        </div>
       </section>
       <footer class="modal-card-foot">
         <button class="button is-success" onclick="submitTest();">Submit</button>
@@ -94,7 +117,9 @@
       <td>
         <div>
           <a class="button is-rounded is-small view_button" style="margin:2px">View</a>
-          <a class="button is-rounded is-small apply_button" style="margin:2px">Apply</a>
+          <a class="button is-rounded is-small apply_button is-hidden" style="margin:2px">Apply</a>
+          <a class="button is-rounded is-small test_button is-hidden" style="margin:2px">Test</a>
+          <a class="button is-rounded is-small feedback_button is-hidden" style="margin:2px">Feedback</a>
         </div>
         <div class="is-hidden job_description"></div>
       </td>
@@ -104,6 +129,90 @@
 </body>
 <script src="/static/js/applicant_jobs.js"></script>
 <script>
+
+function showTestModal(job_id) {
+
+  // $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
+  //   alert(data);
+  // });
+
+  $('.test_question:not(.template)').remove();
+
+  questions = [
+    {
+      "Question":"Q1",
+      "Correct":"A1",
+      "Incorrect1":"B1",
+      "Incorrect2":"C1",
+      "Incorrect3":"D1"
+    },
+    {
+      "Question":"Q2",
+      "Correct":"A2",
+      "Incorrect1":"B2",
+      "Incorrect2":"C2",
+      "Incorrect3":"D2"
+    },
+    {
+      "Question":"Q3",
+      "Correct":"A3",
+      "Incorrect1":"B3",
+      "Incorrect2":"C3",
+      "Incorrect3":"D3"
+    }
+  ];
+
+  for (q in questions) {
+    question = questions[q];
+    question_name = question["Question"];
+    answers = [];
+    answers.push(question["Correct"]);
+    answers.push(question["Incorrect1"]);
+    answers.push(question["Incorrect2"]);
+    answers.push(question["Incorrect3"]);
+
+    test_question = $('.test_question.template').clone().removeClass('template');
+    $(test_question).find('.question').html(question_name);
+
+    // Shuffle answers
+    for (var i = answers.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = answers[i];
+        answers[i] = answers[j];
+        answers[j] = temp;
+    }
+
+    $(test_question).find('.answer1').html(answers[0]);
+    $(test_question).find('.answer2').html(answers[1]);
+    $(test_question).find('.answer3').html(answers[2]);
+    $(test_question).find('.answer4').html(answers[3]);
+
+    $(test_question).find('input[name="answer"]').attr('name',q);
+
+    $(test_question).insertAfter($('.test_question.template'));
+
+  }
+
+  job_title = $('#'+job_id).find('.job_title').html();
+
+  $('#test_modal .modal-card-title').html(job_title+" - Test");
+  $('#test_modal #cur_job_id').html(job_id);
+  $('#test_modal').addClass('is-active');
+}
+
+function closeTestModal() {
+  $('#test_modal').removeClass('is-active');
+}
+
+function submitTest() {
+  $('#test_modal').removeClass('is-active');
+  job_id = $('#cur_job_id').html();
+  $('#'+job_id+' .test_button').addClass('is-hidden');
+  $('#'+job_id+' .feedback_button').removeClass('is-hidden');
+  closeTestModal();
+}
+
+
 function refreshJobs() {
 
   $.get("/applicant/get_jobs", function(data) {
@@ -136,6 +245,9 @@ function refreshJobs() {
       $(job_element).find('.job_deadline').html(job_deadline);
       $(job_element).find('.job_status').html(job_status);
       $(job_element).find('.job_description').html(job_description);
+
+      // $(job_element).find('.apply_button').removeClass('is-hidden');
+      $(job_element).find('.test_button').removeClass('is-hidden');
 
       // Insert job at top of table
       $(job_element).insertAfter($(job_template));

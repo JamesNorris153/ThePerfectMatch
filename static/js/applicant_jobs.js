@@ -21,20 +21,7 @@ function closeCompletedApplicationModal() {
   closeApplicationModal();
 }
 
-function closeTestModal() {
-  $('#test_modal').removeClass('is-active');
-}
-function showTestModal(job_id) {
-  $('#test_modal .modal-card-title').html("JOB:"+job_id);
-  $('#test_modal #cur_job_id').html(job_id);
-  $('#test_modal').addClass('is-active');
-}
-function submitTest() {
-  $('#test_modal').removeClass('is-active');
-  job_id = $('#cur_job_id').html();
-  $('#'+job_id+' .test_button').removeClass('test_button').addClass('feedback_button').html("Feedback");
-  closeTestModal();
-}
+
 
 function closeFeedbackModal() {
   $('#feedback_modal').removeClass('is-active');
@@ -229,7 +216,8 @@ function saveChanges() {
           showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
           $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
           $(modal).find('.modal-close').attr('onclick','closeCompletedApplicationModal();');
-          $('#'+job_id+' .apply_button').removeClass('apply_button').addClass('test_button').html("Test");
+          $('#'+job_id+' .apply_button').addClass('is-hidden');
+          $('#'+job_id+' .test_button').removeClass('is-hidden');
         } else {
           showApplicationLoadingModal("Failure",data);
         }
