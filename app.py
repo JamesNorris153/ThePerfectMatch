@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, Response, session
 from flask_cors import CORS
+from flask_mail import Mail, Message
 import json
 
 from users import *
@@ -15,6 +16,23 @@ import os
 app = Flask(__name__, static_url_path='/static')
 
 CORS(app)
+# Email Setup
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'PerfectCandidate.Notifications@gmail.com'
+app.config['MAIL_PASSWORD'] = 'TPCGroup32'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+# PerfectCandidate.Notifications@gmail.com Password: TPCGroup32
+
+# Send test email to self
+@app.route("/testmail")
+def test_mail():
+	msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com', recipients = ['PerfectCandidate.Notifications@gmail.com'])
+	msg.body = "This is the email body"
+	mail.send(msg)
+	return "Sent"
 
 ## Function to check whether user is logged in
 # Returns account_type or None if not logged in
