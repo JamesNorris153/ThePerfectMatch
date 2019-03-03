@@ -43,23 +43,16 @@ class Admin:
 
 class CV:
 
-	FName = ""
-	LName = ""
-	degrees = []
-	languages = []
-	hobbies = []
-	ALevels = []
-	employment = []
-	skills = []
-    # def __init__(self, FName, LName, hobbies, languages, degrees, ALevels, employment, skills):
-    #     self.FName = FName
-    #     self.LName = LName
-    #     self.degrees = degrees
-    #     self.languages = languages
-    #     self.hobbies = hobbies
-    #     self.ALevels = ALevels
-    #     self.employment = employment
-    #     self.skills = skills
+    def __init__(self):
+
+        self.FName = ""
+        self.LName = ""
+        self.degrees = []
+        self.languages = []
+        self.hobbies = []
+        self.ALevels = []
+        self.employment = []
+        self.skills = []
 
 	def jsonify_cv(self):
 		cv_dict = dict()
