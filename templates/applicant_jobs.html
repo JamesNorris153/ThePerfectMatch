@@ -94,6 +94,8 @@
       </footer>
     </div>
   </div>
+
+
   <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table" style="margin-top:50px">
   <thead>
     <tr>
@@ -122,6 +124,7 @@
           <a class="button is-rounded is-small feedback_button is-hidden" style="margin:2px">Feedback</a>
         </div>
         <div class="is-hidden job_description"></div>
+        <div class="is-hidden job_feedback"></div>
       </td>
     </tr>
   </tbody>
@@ -196,23 +199,77 @@ function showTestModal(job_id) {
   job_title = $('#'+job_id).find('.job_title').html();
 
   $('#test_modal .modal-card-title').html(job_title+" - Test");
-  $('#test_modal #cur_job_id').html(job_id);
+  $('#cur_job_id').html(job_id);
   $('#test_modal').addClass('is-active');
 }
 
 function giveUpTest() {
-    job_id = $('#test_modal #cur_job_id').html();
+    job_id = $('#cur_job_id').html();
     $('#'+job_id).find('.test_button').addClass('is-hidden');
     $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
     $('#test_modal').removeClass('is-active');
 }
 
 function submitTest() {
-  $('#test_modal').removeClass('is-active');
+  //JSON Format
+
+  // answers = [
+  //   {
+  //     "Question":question,
+  //     "Answer":answer
+  //   },
+  //   {
+  //     "Question":question,
+  //     "Answer":answer
+  //   },
+  //   {
+  //     "Question":question,
+  //     "Answer":answer
+  //   }
+  // ];
+
+  all_questions = $('.test_question:not(.template)');
+  answers = [];
+  $(all_questions).each(function(){
+    question = $(this).find('.question').html();
+    answer = $(this).find("input[type='radio']:checked").parent().find('span').html();
+    answers.push({
+      "Question":question,
+      "Answer":answer
+    });
+  });
+
   job_id = $('#cur_job_id').html();
-  $('#'+job_id+' .test_button').addClass('is-hidden');
-  $('#'+job_id+' .feedback_button').removeClass('is-hidden');
-  closeTestModal();
+
+  $.post("/applicant/send_test_answers",{job_id:job_id,answers:answers},function(data) {
+    if (data == "Success") {
+      alert("Submitted!");
+      $('#'+job_id).find('.test_button').addClass('is-hidden');
+      $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
+      $('#test_modal').removeClass('is-active');
+    } else {
+      alert(data);
+    }
+  });
+
+}
+
+function closeFeedbackModal() {
+  $('#feedback_modal').removeClass('is-active');
+}
+function showFeedbackModal(job_id) {
+  job_title = $('#'+job_id).find('.job_title').html();
+  job_feedback = $('#'+job_id).find('.job_feedback').html();
+  if (job_feedback == "0") {
+    feedback = "Your application has been submitted and is with our hiring team. Once they have made a decision about your application, you will be notified via email.";
+  } else if (job_feedback == "1") {
+    feedback = "Unfortunately your application has not been selected for the next stage of hiring.";
+  } else {
+    feedback = "Your application has been selected by our staff for the next stage of hiring. A member of our team will be in contact with you via email soon.";
+  }
+  $('#feedback_modal .modal-card-title').html(job_title);
+  $('#feedback_modal .modal-card-body').html(feedback);
+  $('#feedback_modal').addClass('is-active');
 }
 
 
@@ -240,6 +297,7 @@ function refreshJobs() {
       job_position = job["Position"];
       job_status = job["Status"];
       job_application = job["Application"];
+      job_feedback = job["Feedback"];
 
       // Insert all data into new row in table
       job_element = $(job_template).clone().removeClass('template').attr('id',job_id);
@@ -249,6 +307,7 @@ function refreshJobs() {
       $(job_element).find('.job_deadline').html(job_deadline);
       $(job_element).find('.job_status').html(job_status);
       $(job_element).find('.job_description').html(job_description);
+      $(job_element).find('.job_feedback').html(job_feedback);
 
       // Check what stage of the application process they are in
       // 0 = Not Applied

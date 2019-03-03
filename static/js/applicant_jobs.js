@@ -21,16 +21,6 @@ function closeCompletedApplicationModal() {
   closeApplicationModal();
 }
 
-
-
-function closeFeedbackModal() {
-  $('#feedback_modal').removeClass('is-active');
-}
-function showFeedbackModal(job_id) {
-  $('#feedback_modal .modal-card-title').html("JOB:"+job_id);
-  $('#feedback_modal').addClass('is-active');
-}
-
 function saveChanges() {
 
   $('#saving_cv_modal').addClass('is-active');

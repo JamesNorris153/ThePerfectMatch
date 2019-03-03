@@ -400,10 +400,17 @@ def get_applicant_jobs():
 			complete_applications = get_completed_applications(user_id)
 			incomplete_applications = get_incomplete_applications(user_id)
 			for job in jobs_dict:
-				# Checks if job["ID"] is in any current applications
-				if any(job["ID"] in application for application in complete_applications): job["Application"] = 2
-				elif any(job["ID"] in application for application in incomplete_applications): job["Application"] = 1
-				else: job["Application"] = 0
+				job["Application"] = 0
+				job["Feedback"] = 0
+				if any(job["ID"] in application for application in incomplete_applications):
+					job["Application"] = 1
+					job["Feedback"] = 0
+				else:
+					for application in complete_applications:
+						if job["ID"] == application[0]:
+							job["Application"] = 2
+							job["Feedback"] = application[1]
+							break
 			jobs_json = json.dumps(jobs_dict)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
