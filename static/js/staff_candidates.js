@@ -66,6 +66,17 @@ function refreshCandidates() {
       // Insert job at top of table
       $(candidate_element).insertAfter($(candidate_template));
     }
+
+    // Get applicant data
+    applicant_number = candidates.length;
+    liked_applicant_number = $('.candidate_status:contains("Like")').length;
+    disliked_applicant_number = $('.candidate_status:contains("Dislike")').length;
+    unknown_applicant_number = $('.candidate_status:contains("Unknown")').length;
+    $('#total_applicants').html(applicant_number);
+    $('#liked_applicants').html(liked_applicant_number);
+    $('#disliked_applicants').html(disliked_applicant_number);
+    $('#unknown_applicants').html(unknown_applicant_number);
+
   });
 }
 
@@ -204,6 +215,10 @@ function likeCandidate(cv_id,candidate_id,button) {
       $(button).attr('onclick','').html("Liked").addClass('is-success');
       $(button).parent().find('.dislike_button').addClass('is-hidden');
       $('#'+candidate_id).find('.candidate_status').html('Like');
+      unknown_applicant_number = Number($('#unknown_applicants').html());
+      liked_applicant_number = Number($('#liked_applicants').html());
+      $('#liked_applicants').html(liked_applicant_number+1);
+      $('#unknown_applicants').html(unknown_applicant_number-1);
     } else {
       alert(data);
     }
@@ -216,6 +231,10 @@ function dislikeCandidate(cv_id,candidate_id,button) {
       $(button).attr('onclick','').html("Disliked").addClass('is-danger');
       $(button).parent().find('.like_button').addClass('is-hidden');
       $('#'+candidate_id).find('.candidate_status').html('Dislike');
+      unknown_applicant_number = Number($('#unknown_applicants').html());
+      disliked_applicant_number = Number($('#disliked_applicants').html());
+      $('#disliked_applicants').html(disliked_applicant_number+1);
+      $('#unknown_applicants').html(unknown_applicant_number-1);
     } else {
       alert(data);
     }
