@@ -17,7 +17,7 @@
 <div class="box" id="university_details" style="margin-top:50px">
   <p class="title">University</p>
   <div class="content">
-    <div class="cv_item">
+    <div class="cv_item university_item">
       <div class="field has-addons">
         <p class="control is-expanded">
           <input class="input is-rounded" type="text" placeholder="University Name" name="university_name">
@@ -112,6 +112,12 @@
   function loadCV() {
     $.get("/applicant/get_cv",function(data) {
 
+      // Reset values
+      $('.cv_item:not(.template):not(.university_item)').remove();
+      $('input[name="university_name"]').val("");
+      $('input[name="degree_name"]').val("");
+      $('div[name="degree_level"] select').val("Grade");
+
       cv = JSON.parse(data);
 
       fname = cv["FName"];
@@ -199,8 +205,4 @@
 
     });
   }
-
-  $(document).ready(function() {
-    loadCV();
-  });
 </script>

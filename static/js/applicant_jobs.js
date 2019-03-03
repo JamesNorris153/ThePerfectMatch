@@ -11,6 +11,7 @@ function closeApplicationModal() {
   $('#application_modal').removeClass('is-active');
 }
 function showApplicationModal(job_id) {
+  loadCV();
   $('#application_modal .modal-card-title').html("JOB:"+job_id);
   $('#application_modal #cur_job_id').html(job_id);
   $('#application_modal').addClass('is-active');
@@ -257,9 +258,3 @@ $('#job_table').on('click', '.feedback_button', function(event) {
     var job_id = $(this).parent().parent().parent().attr('id');
     showFeedbackModal(job_id);
 });
-
-// $(document).ready(function() {
-//   $.post("/applicant/get_jobs", function(data) {
-//     // CONVERT JSON DATA TO ROWS IN TABLE
-//   });
-// });
