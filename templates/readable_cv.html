@@ -3,16 +3,6 @@
     display:none;
   }
 </style>
-<script>
-  function deleteItem(element) {
-    $(element).parent().parent().parent().remove();
-  }
-  function addItem(element) {
-    newItem = $(element).parent().find(".template").clone().removeClass('template');
-    $(newItem).insertBefore(element);
-  }
-</script>
-
 <div class="box" id="university_details">
   <p class="title">University</p>
   <div class="content">

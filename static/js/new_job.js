@@ -99,13 +99,19 @@ function saveChanges() {
   });
 
 }
+
+
 function deleteItem(element) {
   $(element).parent().remove();
 }
+
+
 function addItem(element) {
   newItem = $(element).parent().find(".template").clone().removeClass('template');
   $(newItem).insertBefore(element);
 }
+
+
 function closeJobLoadingModal() {
   modal = $('#saving_job_modal');
   $(modal).removeClass('is-active');
@@ -114,6 +120,8 @@ function closeJobLoadingModal() {
   $(modal).find('.modal-background').attr('onclick','');
   $(modal).find('.modal-message').html('LOADING...');
 }
+
+
 function showJobLoadingModal(state,message) {
   modal = $('#saving_job_modal');
   if (state == "Success") {

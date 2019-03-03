@@ -184,3 +184,7 @@ function saveChanges() {
   });
 
 }
+
+$(document).ready(function() {
+  loadCV();
+})

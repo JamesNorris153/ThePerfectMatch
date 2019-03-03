@@ -1,9 +1,4 @@
-<script>
-  function toggleHamburger(element) {
-    $(element).parent().parent().find('.navbar-menu').toggleClass('is-active');
-    $(element).toggleClass('is-active');
-  }
-</script>
+
 <nav class="navbar is-info is-fixed-top" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" onclick="toggleHamburger(this);">
@@ -36,5 +31,5 @@
     </div>
   </div>
   {% endif %}
-
 </nav>
+<script src="/static/js/header.js"></script>
