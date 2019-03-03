@@ -75,7 +75,7 @@
       </section>
       <footer class="modal-card-foot">
         <button class="button is-success" onclick="submitTest();">Submit</button>
-        <button class="button" onclick="closeTestModal();">Cancel</button>
+        <button class="button" onclick="giveUpTest();">Give Up</button>
       </footer>
     </div>
   </div>
@@ -200,8 +200,16 @@ function showTestModal(job_id) {
   $('#test_modal').addClass('is-active');
 }
 
-function closeTestModal() {
-  $('#test_modal').removeClass('is-active');
+function giveUpTest() {
+    job_id = $('#test_modal #cur_job_id').html();
+    $.post("/applicant/give_up",{job_id:job_id},function(data) {
+      if (data != "Success") {
+        alert(data);
+      }
+      $('#'+job_id).find('.test_button').addClass('is-hidden');
+      $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
+      $('#test_modal').removeClass('is-active');
+    });
 }
 
 function submitTest() {
@@ -258,6 +266,16 @@ function refreshJobs() {
 
 $(document).ready(function() {
   refreshJobs();
+});
+
+$(window).bind('unload', function(){
+  // If test is being taken -> Give user 0 for test
+  if ($('#test_modal').hasClass('is-active')) {
+      job_id = $('#test_modal #cur_job_id').html();
+      $.post("/applicant/give_up",{job_id:job_id},function(data) {
+        console.log(data);
+      });
+  }
 });
 </script>
 </html>
