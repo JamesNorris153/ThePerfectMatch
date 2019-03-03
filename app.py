@@ -180,11 +180,11 @@ def get_cv_by_id():
 
 		try:
 			cv = get_CV(cv_id)
-			cv_json = json.dumps(cv.__dict__)
+			cv_json = jsonify_cv(cv)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
-		return Response(cv_json, status=200, mimetype="json/application")
+		return Response(cv_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Like a candidate for a role
