@@ -590,7 +590,7 @@ def get_test(jobID):
 def apply_job(cvID,jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into job_cv values (?,?,?,?)',(jobID,cvID,0,0))
+    cur.execute('INSERT into job_cv values (?,?,?,?)',(jobID,cvID,-1,0))
     con.commit()
     con.close()
 
