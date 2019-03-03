@@ -188,24 +188,23 @@ def get_cv_by_id():
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Like a candidate for a role
-# Receives: user_id + job_id
+# Receives: cv_id
 # Returns: Success/Failure
 # Actions: Likes candidate in DB to adapt ML
-@app.route("/staff/like_candidate")
+@app.route("/staff/like_candidate", methods=["POST"])
 def like_candidate():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		user_id = session["user_id"]
-		user_id = request.form.get("user_id")
-		job_id = request.form.get("job_id")
+		cv_id = request.form.get("cv_id")
+		job_id = session["job_id"]
 
 		# LIKE CANDIDATE FOR ROLE
 		try:
-			cv_id = None
-			applications = show_current_applications(user_id)
-			for application in applications:
-				if application[0] == jobID:
-					cv_id = application[1]
+			# cv_id = None
+			# applications = show_current_applications(user_id)
+			# for application in applications:
+			# 	if application[0] == jobID:
+			# 		cv_id = application[1]
 			update_status(job_id, cv_id, 1)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
@@ -214,23 +213,23 @@ def like_candidate():
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 ## Dislike a candidate for a role
-# Receives: user_id + job_id
+# Receives: cv_id
 # Returns: Success/Failure
 # Actions: Dislikes candidate in DB to adapt ML
 @app.route("/staff/dislike_candidate", methods=["POST"])
 def dislike_candidate():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		user_id = session["user_id"]
-		job_id = request.form.get("job_id")
+		cv_id = request.form.get("cv_id")
+		job_id = session["job_id"]
 
 		# DISLIKE CANDIDATE FOR ROLE
 		try:
-			cv_id = None
-			applications = show_current_applications(user_id)
-			for application in applications:
-				if application[0] == jobID:
-					cv_id = application[1]
+			# cv_id = None
+			# applications = show_current_applications(candidate_id)
+			# for application in applications:
+			# 	if application[0] == jobID:
+			# 		cv_id = application[1]
 			update_status(job_id, cv_id, 2)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
