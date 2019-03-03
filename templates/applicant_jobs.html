@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="/static/css/bulma_min.css">
   <link rel="stylesheet" type="text/css" href="/static/css/tables.css">
-
+  <script src="/static/js/table.js"></script>
   <script src="/static/js/jquery-3.3.1.min.js"></script>
   <title>BRAND Jobs</title>
 </head>
@@ -74,11 +74,11 @@
   <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table" style="margin-top:50px">
   <thead>
     <tr>
-      <th>Title</th>
-      <th>Location</th>
-      <th>Position</th>
-      <th>Deadline</th>
-      <th>Status</th>
+      <th onclick="sortTable(0,this);">Title</th>
+      <th onclick="sortTable(1,this);">Location</th>
+      <th onclick="sortTable(2,this);">Position</th>
+      <th onclick="sortTable(3,this);">Deadline</th>
+      <th onclick="sortTable(4,this);">Status</th>
       <th>
         Actions
       </th>

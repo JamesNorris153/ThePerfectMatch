@@ -48,11 +48,11 @@
   <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table">
   <thead>
     <tr>
-      <th>Title</th>
-      <th>Location</th>
-      <th>Position</th>
-      <th>Deadline</th>
-      <th>Status</th>
+      <th onclick="sortTable(0,this);">Title</th>
+      <th onclick="sortTable(1,this);">Location</th>
+      <th onclick="sortTable(2,this);">Position</th>
+      <th onclick="sortTable(3,this);">Deadline</th>
+      <th onclick="sortTable(4,this);">Status</th>
       <th>
         Actions
         <a class="button is-rounded is-small add_button" onclick="showJobModal(-1);">Add Job</a>
@@ -82,6 +82,7 @@
 </table>
 </body>
 <script src="/static/js/jquery-3.3.1.min.js"></script>
+<script src="/static/js/table.js"></script>
 <script>
 function closeJobModal() {
   $('#job_modal').removeClass('is-active');
