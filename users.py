@@ -489,6 +489,22 @@ def show_current_applications(userID):
     con.close()
     return jobs
 
+def get_completed_applications(userID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT Job_ID from job_cv where CV_ID in (SELECT id from cvs where User_ID=?) and score>=0',(userID,))
+    jobs = cur.fetchall()
+    con.close()
+    return jobs
+
+def get_incomplete_applications(userID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT Job_ID from job_cv where CV_ID in (SELECT id from cvs where User_ID=?) and score=-1',(userID,))
+    jobs = cur.fetchall()
+    con.close()
+    return jobs
+
 def what_job(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()

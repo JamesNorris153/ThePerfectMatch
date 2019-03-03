@@ -394,13 +394,15 @@ def get_applicant_jobs():
 		user_id = session["user_id"]
 
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
-		# Can we set Application to 0 for not applied, 1 for applied but not taken test, and 2 for applied and taken test?
 		try:
 			jobs = get_jobs()
 			jobs_dict = create_jobs_dictionary(jobs)
-			current_applications = show_current_applications(user_id)
+			complete_applications = get_completed_applications(user_id)
+			incomplete_applications = get_incomplete_applications(user_id)
 			for job in jobs_dict:
-				if job["ID"] in current_applications: job["Application"] = 1
+				# Checks if job["ID"] is in any current applications
+				if any(job["ID"] in application for application in complete_applications): job["Application"] = 2
+				elif any(job["ID"] in application for application in incomplete_applications): job["Application"] = 1
 				else: job["Application"] = 0
 			jobs_json = json.dumps(jobs_dict)
 		except:

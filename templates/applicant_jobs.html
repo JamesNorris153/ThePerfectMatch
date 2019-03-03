@@ -202,14 +202,9 @@ function showTestModal(job_id) {
 
 function giveUpTest() {
     job_id = $('#test_modal #cur_job_id').html();
-    $.post("/applicant/give_up",{job_id:job_id},function(data) {
-      if (data != "Success") {
-        alert(data);
-      }
-      $('#'+job_id).find('.test_button').addClass('is-hidden');
-      $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
-      $('#test_modal').removeClass('is-active');
-    });
+    $('#'+job_id).find('.test_button').addClass('is-hidden');
+    $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
+    $('#test_modal').removeClass('is-active');
 }
 
 function submitTest() {
@@ -244,6 +239,7 @@ function refreshJobs() {
       job_location = job["Location"];
       job_position = job["Position"];
       job_status = job["Status"];
+      job_application = job["Application"];
 
       // Insert all data into new row in table
       job_element = $(job_template).clone().removeClass('template').attr('id',job_id);
@@ -254,8 +250,19 @@ function refreshJobs() {
       $(job_element).find('.job_status').html(job_status);
       $(job_element).find('.job_description').html(job_description);
 
-      // $(job_element).find('.apply_button').removeClass('is-hidden');
-      $(job_element).find('.test_button').removeClass('is-hidden');
+      // Check what stage of the application process they are in
+      // 0 = Not Applied
+      if (job_application == 0) {
+        $(job_element).find('.apply_button').removeClass('is-hidden');
+      }
+      // 1 = Applied With CV but not taken test
+      if (job_application == 1) {
+        $(job_element).find('.test_button').removeClass('is-hidden');
+      }
+      // 2 = Applied with CV + Taken Test
+      if (job_application == 2) {
+        $(job_element).find('.feedback_button').removeClass('is-hidden');
+      }
 
       // Insert job at top of table
       $(job_element).insertAfter($(job_template));
@@ -266,16 +273,6 @@ function refreshJobs() {
 
 $(document).ready(function() {
   refreshJobs();
-});
-
-$(window).bind('unload', function(){
-  // If test is being taken -> Give user 0 for test
-  if ($('#test_modal').hasClass('is-active')) {
-      job_id = $('#test_modal #cur_job_id').html();
-      $.post("/applicant/give_up",{job_id:job_id},function(data) {
-        console.log(data);
-      });
-  }
 });
 </script>
 </html>
