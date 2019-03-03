@@ -511,8 +511,8 @@ def get_job_test():
 	if login_check() == "Applicant":
 		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
-		# job_id = 1
 
+		#This method also needs to change the application score from -1 to 0
 		#try:
 		questions = get_test(job_id);
 		questions_json = json.dumps(questions)
