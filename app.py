@@ -287,7 +287,7 @@ def save_job():
 		print(question_number)
 		try:
 			if job_id == "-1":
-				new_job_id = insert_job(job)
+				new_job_id = insert_job(job, user_id)
 				test_id = add_test(new_job_id,question_number)
 				for question in questions:
 					temp_question = Question(question["Question"],question["Correct"],question["Incorrect1"],question["Incorrect2"],question["Incorrect3"])
