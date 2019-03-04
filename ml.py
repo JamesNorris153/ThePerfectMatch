@@ -2,6 +2,7 @@ import users
 import time
 import numpy as np
 import ml_func
+import re
 
 def retrain(jobID):
     cvs = users.select_cvs(jobID)
@@ -11,13 +12,30 @@ def retrain(jobID):
     hobbies = users.selectAllHobbies()
     employment = users.selectAllEmployment()
 
+    uniScore = {}
+    def readUniScore():
+        with open("uniScore.txt") as f:
+            for line in f:
+                m = re.search("\d", line)
+                if m :
+                    uniScore[line[:m.start() - 1]] = line[m.start():]
+
+    readUniScore()
+
+    def convertUniScore(uniName):
+        if uniScore.get(uniName) != None:
+            return uniScore[uniName]
+        else:
+            return 0
+
     dict = {'A*' : 10, 'A' : 9, 'B' : 8, 'C' : 7, 'D' : 6}
 
     X1 = []
     X2 = []
     y1 = []
-    newApplicants = []
     y2 = []
+    newApplicants = []
+
     def getData(databaseData, globalData, dataSet, index = 0):
         applicant_data = []
         applicant_level = {}
@@ -34,23 +52,23 @@ def retrain(jobID):
     for i in cvs:
         info = users.get_CV(i[0])
         status = users.select_status(jobID, i[0])[0]
+        applicant = []
+        applicant.append(convertUniScore(info.degrees[0]))
+        applicant.append(dict[info.degrees[1]])
+        applicant.append(users.select_testScore(jobID, i[0]))
         if status == 0:
             newApplicants.append(i[0])
-            applicant = []
             getData(info.skills, skills, applicant, 2)
             getData(info.languages, languages, applicant)
             getData(info.ALevels, ALevels, applicant, 1)
             getData(info.hobbies, hobbies, applicant)
-            applicant.append(users.select_testScore(jobID, i[0]))
             X2.append(applicant)
         else:
-            applicant = []
             level = []
             getData(info.skills, skills, applicant, 2)
             getData(info.languages, languages, applicant)
             getData(info.ALevels, ALevels, applicant, 1)
             getData(info.hobbies, hobbies, applicant)
-            applicant.append(users.select_testScore(jobID, i[0]))
             X1.append(applicant)
             if status == 1: level.append(1)
             else: level.append(0)
@@ -60,10 +78,5 @@ def retrain(jobID):
 
     index = 0
     for i in newApplicants:
-        print(jobID)
-        print(i)
-        print(newScore[index][0])
         users.update_score(jobID, i, newScore[index][0])
         index = index + 1
-
-# retrain(1)
