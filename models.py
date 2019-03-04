@@ -127,6 +127,7 @@ class Degrees(db.Model):
 class Tests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Job_ID= db.Column(db.Integer,db.ForeignKey('jobs.id'), nullable=False)
+    question_no = db.Column(db.Integer,nullable=False)
     questions=db.relationship('Question_Test',backref='test',lazy=True)
 
 class ALevel_CV(db.Model):
@@ -192,6 +193,9 @@ class Question_Test(db.Model):
     Test_ID= db.Column(db.Integer, db.ForeignKey('tests.id'), nullable=False)
     question = db.Column(db.Text, unique=False, nullable=False)
     answer = db.Column(db.Text, unique=False, nullable=False)
+    incorrect1 = db.Column(db.Text, unique=False, nullable=False)
+    incorrect2 = db.Column(db.Text, unique=False, nullable=False)
+    incorrect3 = db.Column(db.Text, unique=False, nullable=False)
 
     def __repr__(self):
-        return f"Question_Test('{self.question}','{self.answer}')"
+        return f"Question_Test('{self.question}','{self.answer}','{self.incorrect1}','{self.incorrect2}','{self.incorrect3}')"
