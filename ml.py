@@ -1,4 +1,3 @@
-import matlab.engine
 import users
 import time
 import numpy as np
@@ -34,25 +33,35 @@ def retrain(jobID):
 
     for i in cvs:
         info = users.get_CV(i[0])
-        status = users.select_status(jobID, i)[0]
+        status = users.select_status(jobID, i[0])[0]
         if status == 0:
             newApplicants.append(i[0])
-            getData(info.skills, skills, X2, 2)
-            getData(info.languages, languages, X2)
-            getData(info.ALevels, ALevels, X2, 1)
-            getData(info.hobbies, hobbies, X2)
+            applicant = []
+            getData(info.skills, skills, applicant, 2)
+            getData(info.languages, languages, applicant)
+            getData(info.ALevels, ALevels, applicant, 1)
+            getData(info.hobbies, hobbies, applicant)
+            X2.append(applicant)
         else:
-            getData(info.skills, skills, X1, 2)
-            getData(info.languages, languages, X1)
-            getData(info.ALevels, ALevels, X1, 1)
-            getData(info.hobbies, hobbies, X1)
-            y1.append(status)
+            applicant = []
+            level = []
+            getData(info.skills, skills, applicant, 2)
+            getData(info.languages, languages, applicant)
+            getData(info.ALevels, ALevels, applicant, 1)
+            getData(info.hobbies, hobbies, applicant)
+            X1.append(applicant)
+            if status == 1: level.append(1)
+            else: level.append(0)
+            y1.append(level)
 
     newScore = ml_func.doLearning(X1, y1, X2)
 
     index = 0
     for i in newApplicants:
-        users.update_score(jobID, i, newScore[index])
+        print(jobID)
+        print(i)
+        print(newScore[index][0])
+        users.update_score(jobID, i, newScore[index][0])
         index = index + 1
 
-retrain(1)
+# retrain(1)

@@ -33,19 +33,29 @@ def test(jobID, numOfTrainingData, numOfTestData):
                 else: dataSet.append(applicant_level[item])
 
     for i in range(0, numOfTrainingData):
+        applicant = []
+        level = []
         info = users.get_CV(cvs[i][0])
-        getData(info.skills, skills, x1, 2)
-        getData(info.languages, languages, x1)
-        getData(info.ALevels, ALevels, x1, 1)
-        getData(info.hobbies, hobbies, x1)
-        y1.append(users.select_status(jobID, i)[0])
+        getData(info.skills, skills, applicant, 2)
+        getData(info.languages, languages, applicant)
+        getData(info.ALevels, ALevels, applicant, 1)
+        getData(info.hobbies, hobbies, applicant
+        X1.append(applicant)
+        if status == 1: level.append(1)
+        else: level.append(0)
+        y1.append(level)
 
     for i in range(numOfTrainingData, numOfTestData + numOfTrainingData):
         info = users.get_CV(cvs[i][0])
-        getData(info.skills, skills, x2, 2)
-        getData(info.languages, languages, x2)
-        getData(info.ALevels, ALevels, x2, 1)
-        getData(info.hobbies, hobbies, x2)
-        y2.append(users.select_status(jobID, i)[0])
+        applicant = []
+        level = []
+        getData(info.skills, skills, applicant, 2)
+        getData(info.languages, languages, applicant)
+        getData(info.ALevels, ALevels, applicant, 1)
+        getData(info.hobbies, hobbies, applicant)
+        X2.append(applicant)
+        if status == 1: level.append(1)
+        else: level.append(0)
+        y2.append(level)
 
     ml_test_func.ml_test(X1, y1, X2, y2)
