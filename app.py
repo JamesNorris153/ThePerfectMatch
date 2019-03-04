@@ -496,26 +496,26 @@ def get_applicant_jobs():
 		user_id = session["user_id"]
 
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
-		#try:
-		jobs = get_jobs_applicant(user_id)
-		jobs_dict = create_jobs_dictionary(jobs)
-		complete_applications = get_completed_applications(user_id)
-		incomplete_applications = get_incomplete_applications(user_id)
-		for job in jobs_dict:
-			job["Application"] = 0
-			job["Feedback"] = 0
-			if any(job["ID"] in application for application in incomplete_applications):
-				job["Application"] = 1
+		try:
+			jobs = get_jobs_applicant(user_id)
+			jobs_dict = create_jobs_dictionary(jobs)
+			complete_applications = get_completed_applications(user_id)
+			incomplete_applications = get_incomplete_applications(user_id)
+			for job in jobs_dict:
+				job["Application"] = 0
 				job["Feedback"] = 0
-			else:
-				for application in complete_applications:
-					if job["ID"] == application[0]:
-						job["Application"] = 2
-						job["Feedback"] = application[1]
-						break
-		jobs_json = json.dumps(jobs_dict)
-		#except:
-		#return Response("Could not connect to the database", status=200, mimetype="text/html")
+				if any(job["ID"] in application for application in incomplete_applications):
+					job["Application"] = 1
+					job["Feedback"] = 0
+				else:
+					for application in complete_applications:
+						if job["ID"] == application[0]:
+							job["Application"] = 2
+							job["Feedback"] = application[1]
+							break
+			jobs_json = json.dumps(jobs_dict)
+		except:
+		return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
