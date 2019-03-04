@@ -39,8 +39,10 @@ def test(jobID, numOfTrainingData, numOfTestData):
         getData(info.skills, skills, applicant, 2)
         getData(info.languages, languages, applicant)
         getData(info.ALevels, ALevels, applicant, 1)
-        getData(info.hobbies, hobbies, applicant
+        getData(info.hobbies, hobbies, applicant)
+        applicant.append(users.select_testScore(jobID, cvs[i][0]))
         X1.append(applicant)
+        status = users.select_status(jobID, cvs[i][0])[0]
         if status == 1: level.append(1)
         else: level.append(0)
         y1.append(level)
@@ -53,7 +55,9 @@ def test(jobID, numOfTrainingData, numOfTestData):
         getData(info.languages, languages, applicant)
         getData(info.ALevels, ALevels, applicant, 1)
         getData(info.hobbies, hobbies, applicant)
+        applicant.append(users.select_testScore(jobID, cvs[i][0]))
         X2.append(applicant)
+        status = users.select_status(jobID, cvs[i][0])[0]
         if status == 1: level.append(1)
         else: level.append(0)
         y2.append(level)
