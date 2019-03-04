@@ -15,13 +15,14 @@ ROOT = path.dirname(path.relpath((__file__)))
 class Job:
 
     #def __init__(self, name, description,deadline,position,location,hobbies,skills,languages,ALevels):
-    def __init__(self, name, description, deadline, location, position, status):
+    def __init__(self, name, description, deadline, location, position, status, creator):
         self.name = name
         self.location = location
         self.position = position
         self.deadline = deadline
         self.description = description
         self.status = status
+        self.creator = creator
         #self.hobbies = hobbies
         #self.skills = skills
         #self.languages = languages
@@ -206,6 +207,7 @@ def create_jobs_dictionary(jobs):
         jobs_dict["Location"] = "" if (job[4] == None) else job[4]
         jobs_dict["Position"] = "" if (job[5] == None) else job[5]
         jobs_dict["Status"] = "" if (job[6] == None) else job[6]
+        jobs_dict["Creator"] = "" if (job[7] == None) else job[7]
         all_jobs.append(jobs_dict)
     return all_jobs
 
@@ -220,6 +222,7 @@ def create_staff_jobs_dictionary(jobs):
         jobs_dict["Location"] = "" if (job[4] == None) else job[4]
         jobs_dict["Position"] = "" if (job[5] == None) else job[5]
         jobs_dict["Status"] = "" if (job[6] == None) else job[6]
+        jobs_dict["Creator"] = "" if (job[7] == None) else job[7]
         question_data = get_all_test_questions(jobs_dict["ID"])
         jobs_dict["QuestionNumber"] = question_data[0]
         jobs_dict["Questions"] = question_data[1]
@@ -281,7 +284,7 @@ def get_trait_level(table, jobID):
 def insert_job(job, admin_id):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status, admin_id))
+    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status,job.creator))
     job_id = cur.lastrowid
     con.commit()
     con.close()
@@ -290,7 +293,7 @@ def insert_job(job, admin_id):
 def edit_job(job_id, job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job_id))
+    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?), creator=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job.creator, job_id))
     con.commit()
     con.close()
 

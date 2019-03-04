@@ -279,7 +279,8 @@ def save_job():
 			job_json["Deadline"],
 			job_json["Location"],
 			job_json["Position"],
-			job_json["Status"])
+			job_json["Status"],
+			user_id)
 
 		questions = job_json["Questions"]
 		question_number = job_json["QuestionNumber"]
@@ -287,7 +288,7 @@ def save_job():
 		print(question_number)
 		try:
 			if job_id == "-1":
-				new_job_id = insert_job(job, user_id)
+				new_job_id = insert_job(job)
 				test_id = add_test(new_job_id,question_number)
 				for question in questions:
 					temp_question = Question(question["Question"],question["Correct"],question["Incorrect1"],question["Incorrect2"],question["Incorrect3"])
