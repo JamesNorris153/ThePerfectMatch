@@ -372,7 +372,7 @@ function submitTest() {
   $(all_questions).each(function(){
     question = $(this).find('.question').html();
     // If applicant hasn't selected an option, set answer to an empty string, otherwise get their answer
-    if ($(this).find("input[type='radio']:checked").size() == 0) {
+    if ($(this).find("input[type='radio']:checked").length == 0) {
       answer = "";
     } else {
       answer = $(this).find("input[type='radio']:checked").parent().find('span').html();

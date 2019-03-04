@@ -885,6 +885,13 @@ def add_question(testID,question):
     con.commit()
     con.close()
 
+def get_cv_for_job(user_id,job_id):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT cv_id FROM job_cv WHERE job_id=(?) and cv_id in (select id from cvs where user_id=(?))',(job_id,user_id,))
+    cv_id = cur.fetchone()[0]
+    con.close()
+    return cv_id
 
 def jsonify_cv(cv):
     cv_dict = dict()

@@ -559,14 +559,21 @@ def get_job_test():
 		#This method also needs to change the application score from -1 to 0
 		try:
 			questions = get_test(job_id)
-			questions_json = json.dumps(questions)
-			applications = show_current_applications(user_id)
 
-			cv_id = None
-			for application in applications:
-				if application["Job_ID"] == job_id: cv_id = application["CV_ID"]
-			update_score(job_id, cv_id, 0)
+			all_questions = []
+			for question in questions:
+				question_dict = {}
+				question_dict["Question"] = question[2]
+				question_dict["Correct"] = question[3]
+				question_dict["Incorrect1"] = question[4]
+				question_dict["Incorrect2"] = question[5]
+				question_dict["Incorrect3"] = question[6]
+				all_questions.append(question_dict)
 
+			questions_json = json.dumps(all_questions)
+
+			cv_id = get_cv_for_job(user_id,job_id)
+			update_score(job_id,cv_id,0)
 		except:
 			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
