@@ -36,6 +36,7 @@ class Jobs(db.Model):
     location = db.Column(db.String(50), unique=False, nullable=False)
     position = db.Column(db.String(20), unique=False, nullable=False)
     status = db.Column(db.String(20), unique=False, nullable=False)
+    creator = db.Column(db.Integer, unique=False, nullable=False)
     alevels=db.relationship('ALevel',backref='job',lazy=True)
     skills=db.relationship('Skills',backref='job',lazy=True)
     employment=db.relationship('Employment',backref='job',lazy=True)
@@ -176,6 +177,7 @@ class Job_CV(db.Model):
     CV_ID= db.Column(db.Integer, db.ForeignKey('cvs.id'), nullable=False, primary_key=True)
     score = db.Column(db.Integer, unique=False, nullable=False)
     status = db.Column(db.Integer, unique=False, nullable=False)
+    testScore = db.Column(db.Integer, unique=False, nullable=False)
     ss = relationship(Jobs,backref=backref("job_cv", cascade="all, delete-orphan"))
     cc = relationship(CVs, backref=backref("job_cv", cascade="all, delete-orphan"))
 

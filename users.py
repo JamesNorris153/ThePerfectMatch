@@ -545,7 +545,7 @@ def score_test(answers,job_id,cv_id):
         correct = cur.fetchone()[0]
         if i["Answer"] == correct:
             score+=1
-    cur.execute('Update job_cv set score=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cv_id,job_id))
+    cur.execute('Update job_cv set scoreTest=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cv_id,job_id))
     con.commit()
     con.close()
     return score
@@ -685,7 +685,7 @@ def delete_test(jobID):
 def apply_job(cvID,jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into job_cv values (?,?,?,?)',(jobID,cvID,-1,0))
+    cur.execute('INSERT into job_cv values (?,?,?,?,?)',(jobID,cvID,-1,0,0))
     con.commit()
     con.close()
 
@@ -735,7 +735,7 @@ def check_user(username):
 def show_best_candidates(jobId):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT * from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where status=0 and Job_ID=(?) order by score desc',(jobId,))
+    cur.execute('SELECT * from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where status=0 and score!=-1 and Job_ID=(?) order by score desc',(jobId,))
     users=cur.fetchall()
     con.close()
     return users
