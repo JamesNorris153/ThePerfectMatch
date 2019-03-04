@@ -18,38 +18,8 @@ function refreshCandidates() {
     // Reset the table
     $('#candidates_table tbody .candidate:not(.template)').remove();
 
-    // candidates = JSON.parse(data);
-
-    candidates = [
-      {
-  			"ID":"999232",
-  			"First Name":"John",
-  			"Last Name":"Smith",
-  			"Email":"John.Smith@gmail.com",
-  		 	"Score":1032,
-  		 	"CVID":7824,
-  		 	"Status":"Unknown"
-      },
-      {
-  			"ID":"999233",
-  			"First Name":"Fred",
-  			"Last Name":"Estair",
-  			"Email":"Fred@gmail.com",
-  		 	"Score":542,
-  		 	"CVID":60,
-  		 	"Status":"Like"
-      },
-      {
-  			"ID":"999234",
-  			"First Name":"Jane",
-  			"Last Name":"Doe",
-  			"Email":"J.Doe@gmail.com",
-  		 	"Score":750,
-  		 	"CVID":12,
-  		 	"Status":"Dislike"
-      },
-    ];
-
+    candidates = data;
+    // alert(JSON.stringify(candidates));
     // Iterate over each received candidate and add them to the table
     candidate_template = $('.candidate.template');
     for (i in candidates) {
@@ -61,7 +31,13 @@ function refreshCandidates() {
       candidate_email = candidate["Email"];
       candidate_score = candidate["Score"];
       candidate_cv = candidate["CVID"];
-      candidate_status = candidate["Status"];
+      if (candidate["Status"] == 0) {
+        candidate_status = "Unknown";
+      } else if (candidate["Status"] == 1) {
+        candidate_status = "Like";
+      } else {
+        candidate_status = "Dislike";
+      }
 
       // Insert all data into new row in table
       candidate_element = $(candidate_template).clone().removeClass('template').attr('id',candidate_id);
