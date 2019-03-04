@@ -834,6 +834,7 @@ def add_question(testID,question):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into question_test values (NULL,?,?,?,?,?,?)',(testID,question.question,question.correct,question.incorrect1,question.incorrect2,question.incorrect3))
+    con.commit()
     con.close()
 
 
