@@ -271,7 +271,14 @@ def get_user(id):
     user = cur.fetchall()
     con.close()
     return user
-
+    
+def get_ID(email):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT id from users where email=(?)',(email,))
+    id = cur.fetchone()
+    return id
+    
 #ALevel/Hobbies/Languages/Skills
 def get_trait_level(table, jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
