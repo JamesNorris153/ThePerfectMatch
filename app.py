@@ -292,6 +292,7 @@ def save_job():
 			job_json["Location"],
 			job_json["Position"],
 			job_json["Status"])
+<<<<<<< HEAD
 
 		questions = job_json["Questions"]
 		# questions = json.loads(job_json["Questions"])
@@ -316,6 +317,17 @@ def save_job():
 			return Response("Success", status=200, mimetype="text/html")
 		# except:
 		# 	return Response("Could not connect to the database", status=200, mimetype="text/html")
+=======
+		try:
+			if job_id == "-1":
+				insert_job(job)
+				return Response("Success", status=200, mimetype="text/html")
+			else:
+				edit_job(job_id, job)
+				return Response("Success", status=200, mimetype="text/html")
+		except:
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
+>>>>>>> 0b0dda02a7d8f325bca5c5b14ed6b498a52d6847
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])
@@ -326,7 +338,7 @@ def delete_job():
 
 		# DELETE JOB IN DATABASE
 		try:
-			close_job(job_id)
+			remove_job(job_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
@@ -534,8 +546,13 @@ def send_test_answers():
 		# SCORE TEST AND STORE IN DATABASE
 		try:
 			answers_json = json.loads(answers)
-			cv_id = get_current_cv(user_id)
+			applications = show_current_applications(user_id)
+
+			cv_id = None
+			for application in applications:
+				if application["Job_ID"] == job_id: cv_id = application["CV_ID"]
 			score = score_test(answers_json, job_id, cv_id)
+			
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
@@ -552,21 +569,18 @@ def get_job_test():
 		job_id = request.form.get("job_id")
 
 		#This method also needs to change the application score from -1 to 0
-		#try:
-		questions = get_test(job_id);
-		questions_json = json.dumps(questions)
-		# Can we get questions in this form if possible?
-		# questions = [
-		# 	{
-		# 		"Question":question,
-		# 		"Correct":correct,
-		# 		"Incorrect1":incorrect1,
-		# 		"Incorrect2":incorrect2,
-		# 		"Incorrect3":incorrect3
-		# 	}
-		# ]
-		#except:
-		#return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
+		try:
+			questions = get_test(job_id)
+			questions_json = json.dumps(questions)
+			applications = show_current_applications(user_id)
+
+			cv_id = None
+			for application in applications:
+				if application["Job_ID"] == job_id: cv_id = application["CV_ID"]
+			update_score(job_id, cv_id, 0)
+
+		except:
+			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
 		return Response(questions_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")

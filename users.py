@@ -431,6 +431,13 @@ def close_job(jobID):
     con.commit()
     con.close()
 
+def remove_job(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('DELETE FROM jobs WHERE id=(?)', (jobID))
+    con.commit()
+    con.close()
+
 def reopen_job(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
