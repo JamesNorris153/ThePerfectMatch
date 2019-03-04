@@ -1,5 +1,7 @@
+// Method called to save CV to database
 function saveChanges() {
 
+  // Display loading bar
   $('#saving_cv_modal').addClass('is-active');
 
   // Reset all errored out boxes
@@ -185,6 +187,7 @@ function saveChanges() {
 
 }
 
+// When the page loads, try and load a user's current CV
 $(document).ready(function() {
   loadCV();
 })

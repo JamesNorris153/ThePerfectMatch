@@ -42,6 +42,27 @@
 
   <div class="modal" id="test_modal">
     <div class="modal-background"></div>
+
+    <div class="modal" id="test_feedback_modal">
+      <div class="modal-background" onclick="closeTestFeedbackModal();"></div>
+      <div class="modal-content">
+        <div class="box has-text-centered">
+          <div class="modal-message">Your answers have been submitted and your application is now complete. You will receive an email about the progress of your application soon.</div>
+          <button class="modal-close is-large" aria-label="close" onclick="closeTestFeedbackModal();"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="test_error_modal">
+      <div class="modal-background" onclick="closeTestErrorModal();"></div>
+      <div class="modal-content">
+        <div class="box has-text-centered">
+          <div class="modal-message">FEEDBACK</div>
+          <button class="modal-close is-large" aria-label="close" onclick="closeTestErrorModal();"></button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">Job</p>

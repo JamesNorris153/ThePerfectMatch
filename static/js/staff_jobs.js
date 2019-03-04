@@ -1,10 +1,12 @@
+// Close the job modal
 function closeJobModal() {
   $('#job_modal').removeClass('is-active');
 }
 
-
+// Show the job modal with data for a given/new job
 function showJobModal(job_id) {
 
+  // if job id is -1, this is a new job so use an empty template
   if (job_id == -1) {
     job_name = "";
     job_description = "";
@@ -16,6 +18,7 @@ function showJobModal(job_id) {
     job_question_number = "";
     job_questions = "[]";
   } else {
+    // If not get all data from the table
     job_name = $('#'+job_id).find('.job_title').html();
     job_description = $('#'+job_id).find('.job_description').html();
     job_deadline = $('#'+job_id).find('.job_deadline').html();
@@ -27,6 +30,7 @@ function showJobModal(job_id) {
     job_questions = $('#'+job_id).find('.job_questions').html();
   }
 
+  // Display all job data in the modal
   $('#job_modal #cur_job_id').html(job_id);
   $('#job_modal .modal-card-title').html(modal_title);
   $('#job_modal input[name="job_name"]').val(job_name);
@@ -37,8 +41,10 @@ function showJobModal(job_id) {
   $('#job_modal div[name="job_status"]').find('select').val(job_status);
   $('#job_modal .question_number').val(job_question_number);
 
+  // Delete any test questions left from last use
   $('.test_question:not(.template)').remove();
 
+  // Get all questions and start adding them to the modal
   all_questions = JSON.parse(job_questions);
   for (i in all_questions) {
     question = all_questions[i];
@@ -46,40 +52,43 @@ function showJobModal(job_id) {
     question_title = question["Question"];
     correct = question["Correct"];
 
+    // Show the question and correct answer
     $(question_element).find('input[name="question"]').val(question_title);
     $(question_element).find('input[name="correct_answer"]').val(correct);
 
+    // Display each incorrect answer
     incorrect_answers = question["Incorrect"];
-
     var i=0;
     $(question_element).find('input[name="incorrect_answer"]').each(function() {
       $(this).val(incorrect_answers[i]["Answer"]);
       i++;
     });
 
+    // Insert the question at the end of the modal
     $(question_element).insertBefore('.add_question_button');
   }
 
+  // Show the modal
   $('#job_modal').addClass('is-active');
 }
 
-
+// Close the completed job modal and job modal
 function closeCompletedJobModal() {
   $('#saving_job_modal .modal-close').attr('onclick','closeJobLoadingModal();');
   closeJobLoadingModal();
   closeJobModal();
 }
 
-
+// Add functionality for the edit job button
 $('#job_table').on('click', '.edit_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
   showJobModal(job_id);
 });
 
-
+// Add functionality for the delete job button
 $('#job_table').on('click', '.delete_button', function(event) {
     var job_id = $(this).parent().parent().parent().attr('id');
-    // DELETE JOB
+    // POST the job id for the job being delete to the database so that it can be deleted
     $.post("/staff/delete_job",{job_id:job_id},function(data) {
       if (data == "Success") {
         $('#'+job_id).remove();
@@ -89,24 +98,28 @@ $('#job_table').on('click', '.delete_button', function(event) {
     });
 });
 
-
+// Add functionality for the candidates button -> Redirect admin to a page of candidates for the selected job
 $('#job_table').on('click', '.candidates_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
   window.location.href="/staff/candidates?job_id="+job_id;
 });
 
 
+// Refresh all the jobs in the table
 function refreshJobs() {
 
+  // Get all jobs from the database
   $.get("/staff/get_jobs", function(data) {
 
+    // If not logged in, redirect to landing page
     if (data == "You are not logged in") {
       window.location.href="/";
     }
 
+    // Reset all data in  the table
     $('#job_table tbody .job:not(.template)').remove();
 
-
+    // Get all jobs into a JSON object and start iteratin over them
     job_template = $('.job.template');
     all_jobs = JSON.parse(data);
     for (i in all_jobs) {
@@ -156,7 +169,7 @@ function refreshJobs() {
   });
 }
 
-
+// When page loads, get all jobs into the table
 $(document).ready(function() {
   refreshJobs();
 });

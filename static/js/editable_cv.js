@@ -1,10 +1,15 @@
+// Delete the selected item from the CV
 function deleteItem(element) {
   $(element).parent().parent().parent().remove();
 }
+
+// Add a new blank item to the CV
 function addItem(element) {
   newItem = $(element).parent().find(".template").clone().removeClass('template');
   $(newItem).insertBefore(element);
 }
+
+// Close and reset the loading and application modals
 function closeApplicationLoadingModal() {
   modal = $('#saving_cv_modal');
   $(modal).removeClass('is-active');
@@ -13,6 +18,8 @@ function closeApplicationLoadingModal() {
   $(modal).find('.modal-background').attr('onclick','');
   $(modal).find('.modal-message').html('LOADING...');
 }
+
+// Show the application loading modal with a given message
 function showApplicationLoadingModal(state,message) {
   modal = $('#saving_cv_modal');
   if (state == "Success") {
@@ -25,7 +32,10 @@ function showApplicationLoadingModal(state,message) {
   $(modal).find('.modal-background').attr('onclick','closeApplicationLoadingModal();');
   $(modal).find('.modal-message').html(message);
 }
+
+// Load the applicant's current cv
 function loadCV() {
+  // Make call to the API to get the user's current cv
   $.get("/applicant/get_cv",function(data) {
 
     // Reset values
@@ -35,8 +45,10 @@ function loadCV() {
     $('input[name="degree_name"]').val("");
     $('div[name="degree_level"] select').val("Level");
 
+    // Parse the returned string to a JSON object
     cv = JSON.parse(data);
 
+    // Get all the attributes from the cv
     fname = cv["FName"];
     lname = cv["LName"];
     degrees = cv["degrees"];
@@ -46,6 +58,7 @@ function loadCV() {
     employment = cv["employment"];
     skills = cv["skills"];
 
+    // Display university data
     university = degrees[0]["name"];
     course = degrees[0]["course"];
     grade = degrees[0]["grade"];
@@ -53,6 +66,7 @@ function loadCV() {
     $('input[name="degree_name"]').val(course);
     $('div[name="degree_level"] select').val(grade);
 
+    // Display languages data
     for (i in languages) {
       language = languages[i];
       name = language["name"];
@@ -62,9 +76,9 @@ function loadCV() {
       $(new_language).find('input[name="language_name"]').val(name);
       $(new_language).find('div[name="expertise"] select').val(level);
       $(new_language).insertBefore('.add_language_button');
-
     }
 
+    // Display skills data
     for (i in skills) {
       skill = skills[i];
       name = skill["name"];
@@ -74,9 +88,9 @@ function loadCV() {
       $(new_skill).find('input[name="skill_name"]').val(name);
       $(new_skill).find('div[name="expertise"] select').val(level);
       $(new_skill).insertBefore('.add_skill_button');
-
     }
 
+    // Display hobby data
     for (i in hobbies) {
       hobby = hobbies[i];
       name = hobby["name"];
@@ -86,9 +100,9 @@ function loadCV() {
       $(new_hobby).find('input[name="hobby_name"]').val(name);
       $(new_hobby).find('div[name="interest"] select').val(level);
       $(new_hobby).insertBefore('.add_hobby_button');
-
     }
 
+    // Display alevel data
     for (i in alevels) {
       alevel = alevels[i];
       name = alevel["name"];
@@ -98,15 +112,16 @@ function loadCV() {
       $(new_alevel).find('input[name="subject_name"]').val(name);
       $(new_alevel).find('div[name="grade"] select').val(level);
       $(new_alevel).insertBefore('.add_a_level_button');
-
     }
 
+    // Display employment data
     for (i in employment) {
       job = employment[i];
       name = job["name"];
       position = job["position"];
       length = job["length"];
 
+      // Get the years and months from the length string
       var numbers = length.match(/\d+/g).map(Number);
       years = numbers[0];
       months = numbers[1];
@@ -117,8 +132,6 @@ function loadCV() {
       $(new_job).find('input[name="years"]').val(years);
       $(new_job).find('input[name="months"]').val(months);
       $(new_job).insertBefore('.add_employment_button');
-
     }
-
   });
 }

@@ -1,3 +1,4 @@
+// Swap the user between the register and login forms
 function swapForm() {
   $('.registerForm').toggleClass('is-hidden');
   $('.loginForm').toggleClass('is-hidden');

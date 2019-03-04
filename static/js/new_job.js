@@ -1,5 +1,7 @@
+// Save changes for the job being edited/added
 function saveChanges() {
 
+  // Show the saving modal
   $('#saving_job_modal').addClass('is-active');
 
   // Reset all errored out boxes
@@ -22,7 +24,7 @@ function saveChanges() {
   job_deadline = $('#job_details input[name="job_deadline"]').val();
   job_description = $('.job_description_box').val();
 
-  // Error Check Deadline
+  // Error Check Deadline - Check it's a real date in the format DD/MM/YYYY
   var t = $('#job_details input[name="job_deadline"]').val().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if(t !== null){
     var d = +t[1], m = +t[2], y = +t[3];
@@ -34,9 +36,10 @@ function saveChanges() {
     $('#job_details input[name="job_deadline"]').addClass('is-danger');
   }
 
+  // Get all the question elements
   all_questions = $('.test_question:not(.template)');
 
-  // Get number of questions to randomly ask applicant
+  // Get number of questions to randomly ask applicant - ensure it is a number between 0 and the number of questions entered
   question_number = $('.question_number').val();
   if (isNaN(question_number)) {
     $('.question_number').addClass('is-danger');
@@ -50,7 +53,7 @@ function saveChanges() {
     return;
   }
 
-  // Get all questions
+  // Get all questions in a JSON object
   question_details = []
   $(all_questions).each(function() {
     question = $(this).find('input[name="question"]').val();
@@ -73,6 +76,7 @@ function saveChanges() {
   // Get job status
   var job_status = $('#job_modal div[name="job_status"]').find('select').val();
 
+  // Create job JSON object
   var job = {
     "Name":job_name,
     "Description":job_description,
@@ -84,9 +88,12 @@ function saveChanges() {
     "QuestionNumber":question_number
   };
 
+  // If editing a job, get the current id for the job, otherwise it will be -1
   var job_id = $('#cur_job_id').html();
 
+  // Send the job details to the API along with the job id
   $.post('/staff/save_job', {job_id:job_id, job: JSON.stringify(job)}, function(data) {
+    // If successful, refresh all jobs
     if (data == "Success") {
       showJobLoadingModal("Success","All Changes Saved");
       refreshJobs();
@@ -100,18 +107,18 @@ function saveChanges() {
 
 }
 
-
+// Delete a question in the test
 function deleteItem(element) {
   $(element).parent().remove();
 }
 
-
+// Add a new test question
 function addItem(element) {
   newItem = $(element).parent().find(".template").clone().removeClass('template');
   $(newItem).insertBefore(element);
 }
 
-
+// Close the loading modal and reset its data
 function closeJobLoadingModal() {
   modal = $('#saving_job_modal');
   $(modal).removeClass('is-active');
@@ -121,7 +128,7 @@ function closeJobLoadingModal() {
   $(modal).find('.modal-message').html('LOADING...');
 }
 
-
+// Show the loading modal with a given state and message
 function showJobLoadingModal(state,message) {
   modal = $('#saving_job_modal');
   if (state == "Success") {

@@ -1,28 +1,38 @@
+// Closes the description modal
 function closeDescriptionModal() {
   $('#description_modal').removeClass('is-active');
 }
+
+// Shows the description modal and displays the description of the job selected
 function showDescriptionModal(job_id) {
   description = $('#'+job_id).find('.job_description').html();
   $('#description_modal .modal-message').html(description);
   $('#description_modal').addClass('is-active');
 }
 
+// Closes the application modal
 function closeApplicationModal() {
   $('#application_modal').removeClass('is-active');
 }
+
+// Loads the user's cv and shows it in the application modal
 function showApplicationModal(job_id) {
   loadCV();
   $('#application_modal #cur_job_id').html(job_id);
   $('#application_modal').addClass('is-active');
 }
+
+// If the user successfully applies, this method will close both the application and it's loading modal
 function closeCompletedApplicationModal() {
   $('#saving_cv_modal .modal-close').attr('onclick','closeApplicationLoadingModal();');
   closeApplicationLoadingModal();
   closeApplicationModal();
 }
 
+// Gets all data input by the user into their CV and uses a POST method to send it to the API
 function saveChanges() {
 
+  // Show the loading bar
   $('#saving_cv_modal').addClass('is-active');
 
   // Reset all errored out boxes
@@ -185,8 +195,7 @@ function saveChanges() {
 
   // Create JSON CV
   var cv = {
-    // NEED TO GET USER'S NAME FROM SOMEWHERE
-    "Name": "NAMETY NAME",
+    "Name": "NULL",
     "Degree Qualification": degree,
     "Degree Level": degree_level,
     "University Attended": university,
@@ -197,11 +206,17 @@ function saveChanges() {
     "Hobbies": hobby_details
   };
 
+  // Get the id of the job being applied for
   var job_id = $('#cur_job_id').html();
 
+  // Post the cv as a JSON string to the API
   $.post('/applicant/save_cv', {cv: JSON.stringify(cv)}, function(data) {
+
+    // If the CV is successfully processed, apply the user for the job
     if (data == "Success") {
+      // Post the id of the job being applied for
       $.post('/applicant/apply_for_job', {job_id:job_id}, function(data) {
+        // Display whether the application was a success or failure, and let the user close either both or just the loading modal
         if (data == "Success") {
           showApplicationLoadingModal("Success","Your CV has been submitted.<br>In order to complete your application there will be a short test.<br>You can do this at any time by viewing the Jobs page.");
           $(modal).find('.modal-background').attr('onclick','closeCompletedApplicationModal();');
@@ -219,30 +234,40 @@ function saveChanges() {
   });
 
 }
+
+// Adds functionality to all apply buttons in the table
 $('#job_table').on('click', '.apply_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
   showApplicationModal(job_id);
 });
+
+// Adds functionality to all view(description) buttons in the table
 $('#job_table').on('click', '.view_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
   showDescriptionModal(job_id);
 });
+
+// Adds functionality to all test buttons in the table
 $('#job_table').on('click', '.test_button', function(event) {
     var job_id = $(this).parent().parent().parent().attr('id');
     showTestModal(job_id);
 });
+
+// Adds functionality to all feedback buttons in the table
 $('#job_table').on('click', '.feedback_button', function(event) {
     var job_id = $(this).parent().parent().parent().attr('id');
     showFeedbackModal(job_id);
 });
 
 
+// Shows the modal that allows applicants to take tests for the jobs they apply for
 function showTestModal(job_id) {
 
   // $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
   //   alert(data);
   // });
 
+  // Reset the test modal
   $('.test_question:not(.template)').remove();
 
   questions = [
@@ -269,6 +294,7 @@ function showTestModal(job_id) {
     }
   ];
 
+  // For each question being asked, get the question itself, and all the possible answers
   for (q in questions) {
     question = questions[q];
     question_name = question["Question"];
@@ -278,35 +304,40 @@ function showTestModal(job_id) {
     answers.push(question["Incorrect2"]);
     answers.push(question["Incorrect3"]);
 
+    // Create a new element for this question from the template
     test_question = $('.test_question.template').clone().removeClass('template');
     $(test_question).find('.question').html(question_name);
 
-    // Shuffle answers
+    // Shuffle and then display the answers
     for (var i = answers.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var temp = answers[i];
         answers[i] = answers[j];
         answers[j] = temp;
     }
-
     $(test_question).find('.answer1').html(answers[0]);
     $(test_question).find('.answer2').html(answers[1]);
     $(test_question).find('.answer3').html(answers[2]);
     $(test_question).find('.answer4').html(answers[3]);
 
+    // Label this question so that only one of the answers can be selected
     $(test_question).find('input[name="answer"]').attr('name',q);
 
+    // Insert the question into the test area
     $(test_question).insertAfter($('.test_question.template'));
 
   }
 
+  // Get information about the job and display it in the modal
   job_title = $('#'+job_id).find('.job_title').html();
-
   $('#test_modal .modal-card-title').html(job_title+" - Test");
   $('#cur_job_id').html(job_id);
+
+  // Show the modal
   $('#test_modal').addClass('is-active');
 }
 
+// If the user gives up, close the test and show don't let them attempt it again
 function giveUpTest() {
     job_id = $('#cur_job_id').html();
     $('#'+job_id).find('.test_button').addClass('is-hidden');
@@ -314,6 +345,7 @@ function giveUpTest() {
     $('#test_modal').removeClass('is-active');
 }
 
+// Method for getting all the applicant's answers and sending them to the API
 function submitTest() {
   //JSON Format
 
@@ -332,38 +364,67 @@ function submitTest() {
   //   }
   // ];
 
+  // Get all the question elements from the test
   all_questions = $('.test_question:not(.template)');
   answers = [];
+
+  // For each question, get the question itself and the answer the user gave
   $(all_questions).each(function(){
     question = $(this).find('.question').html();
-    answer = $(this).find("input[type='radio']:checked").parent().find('span').html();
+    // If applicant hasn't selected an option, set answer to an empty string, otherwise get their answer
+    if ($(this).find("input[type='radio']:checked").size() == 0) {
+      answer = "";
+    } else {
+      answer = $(this).find("input[type='radio']:checked").parent().find('span').html();
+    }
+    // Add the question and answer to the JSON object
     answers.push({
       "Question":question,
       "Answer":answer
     });
   });
 
+  // Get the id of the job being tested for
   job_id = $('#cur_job_id').html();
 
+  // Post the applicant's answers to the API and display the returned data
   $.post("/applicant/send_test_answers",{job_id:job_id,answers:answers},function(data) {
     if (data == "Success") {
-      alert("Submitted!");
+      $('#test_feedback_modal').addClass('is-active');
       $('#'+job_id).find('.test_button').addClass('is-hidden');
       $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
       $('#test_modal').removeClass('is-active');
     } else {
-      alert(data);
+      $('#test_error_modal .modal-message').html(data);
+      $('#test_error_modal').addClass('is-active');
     }
   });
 
 }
 
+// Close both the feedback and test modals
+function closeTestFeedbackModal() {
+  $('#test_feedback_modal').removeClass('is-active');
+  $('#test_modal').removeClass('is-active');
+}
+
+// Close the test error modal
+function closeTestErrorModal() {
+  $('#test_error_modal').removeClass('is-active');
+}
+
+// Close the feedback modal
 function closeFeedbackModal() {
   $('#feedback_modal').removeClass('is-active');
 }
+
+// Show the feedback modal with the correct feedback according to how the recruiter judged the applicant's cv
 function showFeedbackModal(job_id) {
+  // Get the job title, and feedback level
   job_title = $('#'+job_id).find('.job_title').html();
   job_feedback = $('#'+job_id).find('.job_feedback').html();
+
+  // Display the correct message for the right feedback level
   if (job_feedback == "0") {
     feedback = "Your application has been submitted and is with our hiring team. Once they have made a decision about your application, you will be notified via email.";
   } else if (job_feedback == "1") {
@@ -371,22 +432,28 @@ function showFeedbackModal(job_id) {
   } else {
     feedback = "Your application has been selected by our staff for the next stage of hiring. A member of our team will be in contact with you via email soon.";
   }
+
+  // Show the modal with the correct details
   $('#feedback_modal .modal-card-title').html(job_title);
   $('#feedback_modal .modal-card-body').html(feedback);
   $('#feedback_modal').addClass('is-active');
 }
 
-
+// Refresh the job table
 function refreshJobs() {
 
+  // Call the get_jobs method in the API
   $.get("/applicant/get_jobs", function(data) {
 
+    // If user has been logged out somehow, redirect them to the login page
     if (data == "You are not logged in") {
       window.location.href="/";
     }
 
+    // Remove all current data from the table
     $('#job_table tbody .job:not(.template)').remove();
 
+    // Iterate over each job returned from the database
     job_template = $('.job.template');
     all_jobs = JSON.parse(data);
     for (i in all_jobs) {
@@ -434,6 +501,7 @@ function refreshJobs() {
   });
 }
 
+// When the page loads, get the jobs from the database
 $(document).ready(function() {
   refreshJobs();
 });
