@@ -211,6 +211,46 @@ def create_jobs_dictionary(jobs):
         all_jobs.append(jobs_dict)
     return all_jobs
 
+def create_staff_jobs_dictionary(jobs):
+    all_jobs = []
+    for job in jobs:
+        jobs_dict = {}
+        jobs_dict["ID"] = "" if (job[0] == None) else job[0]
+        jobs_dict["Name"] = "" if (job[1] == None) else job[1]
+        jobs_dict["Description"] = "" if (job[2] == None) else job[2]
+        jobs_dict["Deadline"] = "" if (job[3] == None) else job[3]
+        jobs_dict["Location"] = "" if (job[4] == None) else job[4]
+        jobs_dict["Position"] = "" if (job[5] == None) else job[5]
+        jobs_dict["Status"] = "" if (job[6] == None) else job[6]
+        question_data = get_all_test_questions(jobs_dict["ID"])
+        jobs_dict["QuestionNumber"] = question_data[0]
+        jobs_dict["Questions"] = question_data[1]
+        all_jobs.append(jobs_dict)
+    return all_jobs
+
+def get_all_test_questions(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT id,question_no from tests where Job_ID=(?)',(jobID,))
+    test_data = cur.fetchone()
+    if test_data is None:
+        return [0,[]]
+    test_id = test_data[0]
+    question_no = test_data[1]
+    cur.execute('SELECT question,answer,incorrect1,incorrect2,incorrect3 from question_test where Test_ID=(?)',(test_id,))
+    questions=cur.fetchall()
+    con.close()
+    all_questions = []
+    for question in questions:
+        temp_dict = {}
+        temp_dict["Question"] = question[0]
+        temp_dict["Correct"] = question[1]
+        temp_dict["Incorrect1"] = question[2]
+        temp_dict["Incorrect2"] = question[3]
+        temp_dict["Incorrect3"] = question[4]
+        all_questions.append(temp_dict)
+    return [question_no,all_questions]
+
 # Returns true IF user doesn't exist, false otherwise
 def check_mail(email):
     con = sql.connect(path.join(ROOT, 'database.db'))
