@@ -538,16 +538,16 @@ def get_current_cv(userID):
     con.close()
     return user
 
-def score_test(answers,jobID,cvID):
+def score_test(answers,job_id,cv_id):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     score=0
     for i in answers:
-        cur.execute('Select answer from question_test where id=(?)',(i.id))
-        correct = cur.fetchone()
-        if i.answer == correct:
+        cur.execute('Select answer from question_test where question=(?) and test_id in (SELECT id from tests where job_id=(?))',(i["Question"],job_id))
+        correct = cur.fetchone()[0]
+        if i["Answer"] == correct:
             score+=1
-    cur.execute('Update job_cv set score=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cvID,jobID))
+    cur.execute('Update job_cv set score=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cv_id,job_id))
     con.commit()
     con.close()
     return score
