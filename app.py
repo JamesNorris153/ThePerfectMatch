@@ -34,6 +34,17 @@ def test_mail():
 	mail.send(msg)
 	return "Sent"
 
+# Send email with new password
+def pass_mail(candidate):
+	msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com', recipients = candidate)
+	letters = string.ascii_letters
+	newpass = ''.join(random.choice(letters) for i in range(10))
+	id = get_ID(candidate)
+	change_pass_user(id,newpass)
+	msg.body = "Your pass has been changed. New generated pass is: "+newpass
+	mail.send(msg)
+	return "Sent"
+	
 ## Function to check whether user is logged in
 # Returns account_type or None if not logged in
 # If either session variable has been lost, log user out and return None
