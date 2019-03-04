@@ -349,7 +349,6 @@ function submitTest() {
 
   // Post the applicant's answers to the API and display the returned data
   $.post("/applicant/send_test_answers",{job_id:job_id,answers:JSON.stringify(answers)},function(data) {
-    alert(data);
     if (data == "Success") {
       $('#test_feedback_modal').addClass('is-active');
       $('#'+job_id).find('.test_button').addClass('is-hidden');
