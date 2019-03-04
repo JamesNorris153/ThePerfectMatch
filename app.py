@@ -292,7 +292,6 @@ def save_job():
 			job_json["Location"],
 			job_json["Position"],
 			job_json["Status"])
-<<<<<<< HEAD
 
 		questions = job_json["Questions"]
 		# questions = json.loads(job_json["Questions"])
@@ -317,17 +316,6 @@ def save_job():
 			return Response("Success", status=200, mimetype="text/html")
 		# except:
 		# 	return Response("Could not connect to the database", status=200, mimetype="text/html")
-=======
-		try:
-			if job_id == "-1":
-				insert_job(job)
-				return Response("Success", status=200, mimetype="text/html")
-			else:
-				edit_job(job_id, job)
-				return Response("Success", status=200, mimetype="text/html")
-		except:
-			return Response("Could not connect to the database", status=200, mimetype="text/html")
->>>>>>> 0b0dda02a7d8f325bca5c5b14ed6b498a52d6847
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])
@@ -552,7 +540,7 @@ def send_test_answers():
 			for application in applications:
 				if application["Job_ID"] == job_id: cv_id = application["CV_ID"]
 			score = score_test(answers_json, job_id, cv_id)
-			
+
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
