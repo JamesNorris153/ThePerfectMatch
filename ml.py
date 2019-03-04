@@ -41,6 +41,7 @@ def retrain(jobID):
             getData(info.languages, languages, applicant)
             getData(info.ALevels, ALevels, applicant, 1)
             getData(info.hobbies, hobbies, applicant)
+            applicant.append(users.select_testScore(jobID, i[0]))
             X2.append(applicant)
         else:
             applicant = []
@@ -49,6 +50,7 @@ def retrain(jobID):
             getData(info.languages, languages, applicant)
             getData(info.ALevels, ALevels, applicant, 1)
             getData(info.hobbies, hobbies, applicant)
+            applicant.append(users.select_testScore(jobID, i[0]))
             X1.append(applicant)
             if status == 1: level.append(1)
             else: level.append(0)
