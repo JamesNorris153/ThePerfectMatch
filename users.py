@@ -280,6 +280,13 @@ def get_ID(email):
     id = cur.fetchone()
     return id
 
+def get_admin_ID(email):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT id from admins where username=(?)',(email,))
+    id = cur.fetchone()
+    return id
+
 #ALevel/Hobbies/Languages/Skills
 def get_trait_level(table, jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
@@ -864,12 +871,14 @@ def change_pass_user(userID,newpass):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE users set password=(?) where id=(?)',(bcrypt.hashpw(newpass.encode("utf8"),bcrypt.gensalt()),userID))
+    con.commit()
     con.close()
 
 def change_pass_admin(userID,newpass):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE admins set password=(?) where id=(?)',(bcrypt.hashpw(newpass.encode("utf8"),bcrypt.gensalt()),userID))
+    con.commit()
     con.close()
 
 def backup_db():

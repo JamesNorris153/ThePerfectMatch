@@ -32,8 +32,8 @@
           <p id="login_error" class="has-text-danger">{{ error }}</p>
 
           <p class="has-text-grey" style="margin-top:20px;margin-bottom:auto;">
-            <a style="color:grey;">Forgot your password?</a> &nbsp;·&nbsp;
-            <a onclick="swapForm();" style="color:grey;">Sign Up</a> &nbsp;·&nbsp;
+            <a onclick="showForgot();" style="color:grey;">Forgot your password?</a> &nbsp;·&nbsp;
+            <a onclick="showRegister();" style="color:grey;">Sign Up</a> &nbsp;·&nbsp;
             <a href="/staff/login" style="color:grey;">Looking for the staff portal?</a>
           </p>
         </form>
@@ -48,7 +48,16 @@
           <input class="button is-info is-block is-large is-fullwidth" type="submit" value="Sign Up">
           <p id="register_error" class="has-text-danger">{{ error }}</p>
           <p class="has-text-grey" style="margin-top:20px;margin-bottom:auto;text-align:center;">
-            <a style="color:grey;" onclick="swapForm();">Already have an account?</a>
+            <a style="color:grey;" onclick="showLogin();">Already have an account?</a>
+          </p>
+        </form>
+
+        <form class="box forgotForm is-hidden" onsubmit="return forgotEmail(email);">
+          <input class="input is-large" type="text" placeholder="Email Address" name="email">
+          <input class="button is-info is-block is-large is-fullwidth" type="submit" value="Send Password Reset">
+          <p id="forgot_error" class="has-text-danger">{{ error }}</p>
+          <p class="has-text-grey" style="margin-top:20px;margin-bottom:auto;text-align:center;">
+            <a style="color:grey;" onclick="showLogin();">Login</a>
           </p>
         </form>
 

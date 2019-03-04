@@ -40,3 +40,35 @@ function login(email_input,password_input) {
   return false;
 
 }
+
+// Show login tab
+function showLogin() {
+  $('.loginForm').removeClass('is-hidden');
+  $('.forgotForm').addClass('is-hidden');
+}
+
+// Show forgot password tab
+function showForgot() {
+  $('.loginForm').addClass('is-hidden');
+  $('.forgotForm').removeClass('is-hidden');
+}
+
+// Send user a password reset email
+function forgotEmail(email_input) {
+  $('#forgot_error').removeClass('has-text-success').removeClass('has-text-danger').html('');
+  email = $(email_input).val();
+  if (email == "") {
+    $(email_input).addClass('is-danger');
+  } else {
+    $(email_input).removeClass('is-danger');
+    $.post("/staff/reset_password",{email:email}, function(data) {
+      if (data == "Success") {
+        $('#forgot_error').html('The password for this email address has been reset. Please check your emails to log back in.').addClass('has-text-success');
+      } else {
+        $('#forgot_error').html(data).addClass('has-text-danger');
+      }
+    });
+  }
+  // Prevent page reload
+  return false;
+}

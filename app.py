@@ -148,13 +148,22 @@ def reset_staff_password():
 	msg.add_recipient(email)
 	letters = string.ascii_letters
 	newpass = "".join(random.choice(letters) for i in range(10))
-
 	try:
-		user_id = get_ID(email)
-		change_pass_admin(user_id[0], newpass)
-		msg.body = "Your pass has been changed. New generated pass is: " + newpass
-		msg.header = "Reset Password"
-		mail.send(msg)
+		user_id = get_admin_ID(email)
+		# If user with this email doesn't exist -> For security reasons don't disclose this information
+		if user_id is not None:
+			try:
+				msg.body = "Your pass has been changed. New generated pass is: " + newpass
+				msg.header = "Reset Password"
+				mail.send(msg)
+			except:
+				# Invalid email address
+				return Response("The email address entered is invalid, please try again", status=200, mimetype="text/html")
+			try:
+				change_pass_admin(user_id[0], newpass)
+			except:
+				# Issue connecting to database
+				return Response("An unexpected error has occurred, if you have received an email, please ignore it and try again later", status=200, mimetype="text/html")
 	except:
 		return Response("Could not connect to database", status=200, mimetype="text/html")
 
@@ -453,13 +462,22 @@ def reset_applicant_password():
 	msg.add_recipient(email)
 	letters = string.ascii_letters
 	newpass = "".join(random.choice(letters) for i in range(10))
-
 	try:
 		user_id = get_ID(email)
-		change_pass_user(user_id[0], newpass)
-		msg.body = "Your pass has been changed. New generated pass is: " + newpass
-		msg.header = "Reset Password"
-		mail.send(msg)
+		# If user with this email doesn't exist -> For security reasons don't disclose this information
+		if user_id is not None:
+			try:
+				msg.body = "Your pass has been changed. New generated pass is: " + newpass
+				msg.header = "Reset Password"
+				mail.send(msg)
+			except:
+				# Invalid email address
+				return Response("The email address entered is invalid, please try again", status=200, mimetype="text/html")
+			try:
+				change_pass_user(user_id[0], newpass)
+			except:
+				# Issue connecting to database
+				return Response("An unexpected error has occurred, if you have received an email, please ignore it and try again later", status=200, mimetype="text/html")
 	except:
 		return Response("Could not connect to database", status=200, mimetype="text/html")
 

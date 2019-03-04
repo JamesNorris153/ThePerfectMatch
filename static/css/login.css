@@ -14,3 +14,12 @@
 .registerForm * {
   margin-bottom:5px;
 }
+
+.forgotForm {
+  max-width:450px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.forgotForm * {
+  margin-bottom:5px;
+}
