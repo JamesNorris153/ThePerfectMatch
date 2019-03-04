@@ -98,6 +98,19 @@ $('#job_table').on('click', '.delete_button', function(event) {
     });
 });
 
+// Add functionality for the delete job button
+$('#job_table').on('click', '.retrain_button', function(event) {
+    var job_id = $(this).parent().parent().parent().attr('id');
+    // POST the job id for the job being delete to the database so that it can be deleted
+    $.post("/staff/retrain_job",{job_id:job_id},function(data) {
+      if (data == "Success") {
+        alert("Success");
+      } else {
+        alert(data);
+      }
+    });
+});
+
 // Add functionality for the candidates button -> Redirect admin to a page of candidates for the selected job
 $('#job_table').on('click', '.candidates_button', function(event) {
   var job_id = $(this).parent().parent().parent().attr('id');
