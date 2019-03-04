@@ -448,7 +448,6 @@ def show_applicant_cv_page():
 @app.route("/applicant/get_cv")
 def get_applicant_cv():
 	account_type = login_check()
-	print(account_type)
 	if account_type == "Applicant":
 		# GET REQUIRED SESSION PARAMETER
 		user_id = session["user_id"]
@@ -522,9 +521,7 @@ def send_test_answers():
 			answers_json = json.loads(answers)
 			applications = show_current_applications(user_id)
 
-			cv_id = None
-			for application in applications:
-				if application["Job_ID"] == job_id: cv_id = application["CV_ID"]
+			cv_id = get_cv_for_job(user_id, job_id)
 			score = score_test(answers_json, job_id, cv_id)
 
 		except:
