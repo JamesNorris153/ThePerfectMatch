@@ -188,10 +188,11 @@ def get_jobs():
     con.close()
     return jobs
 
-def get_jobs_applicant():
+def get_jobs_applicant(user_id):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT * FROM jobs WHERE status="Available"')
+    # cur.execute('SELECT * FROM jobs WHERE status="Available"')
+    cur.execute('select * from jobs where status="Available" or id in (select job_id from job_cv where cv_id in (select cv_id from cvs where user_id=(?)))',(user_id,))
     jobs = cur.fetchall()
     con.close()
     return jobs

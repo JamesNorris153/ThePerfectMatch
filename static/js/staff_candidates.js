@@ -1,8 +1,10 @@
 // Method to refresh the candidates table data
 function refreshCandidates() {
 
+  job_id = $('#job_id').html();
+
   // Make get call to API to get all candidates for the current job
-  $.get("/staff/get_candidates", function(data) {
+  $.post("/staff/get_candidates",{job_id:job_id}, function(data) {
 
     // If not logged in, redirect, and if error, display to user
     if (data == "You are not logged in") {
@@ -211,7 +213,8 @@ function closeCVModal() {
 // Like a candidate given their cv and candidate id's
 function likeCandidate(cv_id,candidate_id,button) {
   // Send the like for the cv to the database so that it can be used in ML
-  $.post("/staff/like_candidate", {cv_id:cv_id}, function(data) {
+  job_id = $('#job_id').html();
+  $.post("/staff/like_candidate", {cv_id:cv_id,job_id:job_id}, function(data) {
     if (data == "Success") {
       // Don't let the admin like the same person again
       $(button).attr('onclick','').html("Liked").addClass('is-success');
@@ -231,8 +234,9 @@ function likeCandidate(cv_id,candidate_id,button) {
 
 // Dislike a candidate given their cv and candidate id's
 function dislikeCandidate(cv_id,candidate_id,button) {
+  job_id = $('#job_id').html();
   // Send the dislike for the cv to the database so that it can be used in ML
-  $.post("/staff/dislike_candidate", {cv_id:cv_id}, function(data) {
+  $.post("/staff/dislike_candidate", {cv_id:cv_id,job_id:job_id}, function(data) {
     if (data == "Success") {
       // Don't let the admin dislike the same person again
       $(button).attr('onclick','').html("Disliked").addClass('is-danger');

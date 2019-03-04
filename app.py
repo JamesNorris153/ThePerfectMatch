@@ -206,21 +206,17 @@ def show_staff_candidates_page():
 	if login_check() == "Admin":
 		job_id = request.args.get('job_id')
 		if job_id is None:
-			session['job_id'] = None
-			session.modified = True
 			return redirect("/staff/jobs")
-		session['job_id'] = job_id
-		session.modified = True
-		return render_template("staff_candidates.html")
+		return render_template("staff_candidates.html",job_id=job_id)
 	return redirect("/")
 
 ## Get All Candidates - Staff
 # Returns: All candidates for jobs by this user in JSON/Text format
-@app.route("/staff/get_candidates")
+@app.route("/staff/get_candidates", methods=["POST"])
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		job_id = session.get('job_id')
+		job_id = request.form.get('job_id')
 		if job_id is None:
 			return Response("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		try:
@@ -260,15 +256,10 @@ def like_candidate():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
 		cv_id = request.form.get("cv_id")
-		job_id = session["job_id"]
+		job_id = request.form.get('job_id')
 
 		# LIKE CANDIDATE FOR ROLE
 		try:
-			# cv_id = None
-			# applications = show_current_applications(user_id)
-			# for application in applications:
-			# 	if application[0] == jobID:
-			# 		cv_id = application[1]
 			update_status(job_id, cv_id, 1)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
@@ -285,15 +276,10 @@ def dislike_candidate():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
 		cv_id = request.form.get("cv_id")
-		job_id = session["job_id"]
+		job_id = request.form.get('job_id')
 
 		# DISLIKE CANDIDATE FOR ROLE
 		try:
-			# cv_id = None
-			# applications = show_current_applications(candidate_id)
-			# for application in applications:
-			# 	if application[0] == jobID:
-			# 		cv_id = application[1]
 			update_status(job_id, cv_id, 2)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
@@ -511,7 +497,7 @@ def get_applicant_jobs():
 
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
 		#try:
-		jobs = get_jobs_applicant()
+		jobs = get_jobs_applicant(user_id)
 		jobs_dict = create_jobs_dictionary(jobs)
 		complete_applications = get_completed_applications(user_id)
 		incomplete_applications = get_incomplete_applications(user_id)

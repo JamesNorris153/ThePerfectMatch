@@ -387,9 +387,9 @@ function showFeedbackModal(job_id) {
   if (job_feedback == "0") {
     feedback = "Your application has been submitted and is with our hiring team. Once they have made a decision about your application, you will be notified via email.";
   } else if (job_feedback == "1") {
-    feedback = "Unfortunately your application has not been selected for the next stage of hiring.";
-  } else {
     feedback = "Your application has been selected by our staff for the next stage of hiring. A member of our team will be in contact with you via email soon.";
+  } else {
+    feedback = "Unfortunately your application has not been selected for the next stage of hiring.";
   }
 
   // Show the modal with the correct details
