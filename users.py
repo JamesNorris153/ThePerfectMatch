@@ -189,6 +189,14 @@ def get_jobs():
     con.close()
     return jobs
 
+def get_jobs_applicant():
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT * FROM jobs WHERE status="Available"')
+    jobs = cur.fetchall()
+    con.close()
+    return jobs
+
 def create_jobs_dictionary(jobs):
     all_jobs = []
     for job in jobs:
