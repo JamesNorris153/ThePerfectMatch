@@ -269,30 +269,6 @@ function showTestModal(job_id) {
   // Reset the test modal
   $('.test_question:not(.template)').remove();
 
-  // questions = [
-  //   {
-  //     "Question":"Q1",
-  //     "Correct":"A1",
-  //     "Incorrect1":"B1",
-  //     "Incorrect2":"C1",
-  //     "Incorrect3":"D1"
-  //   },
-  //   {
-  //     "Question":"Q2",
-  //     "Correct":"A2",
-  //     "Incorrect1":"B2",
-  //     "Incorrect2":"C2",
-  //     "Incorrect3":"D2"
-  //   },
-  //   {
-  //     "Question":"Q3",
-  //     "Correct":"A3",
-  //     "Incorrect1":"B3",
-  //     "Incorrect2":"C3",
-  //     "Incorrect3":"D3"
-  //   }
-  // ];
-
   // For each question being asked, get the question itself, and all the possible answers
   for (q in questions) {
     question = questions[q];
@@ -347,22 +323,6 @@ function giveUpTest() {
 
 // Method for getting all the applicant's answers and sending them to the API
 function submitTest() {
-  //JSON Format
-
-  // answers = [
-  //   {
-  //     "Question":question,
-  //     "Answer":answer
-  //   },
-  //   {
-  //     "Question":question,
-  //     "Answer":answer
-  //   },
-  //   {
-  //     "Question":question,
-  //     "Answer":answer
-  //   }
-  // ];
 
   // Get all the question elements from the test
   all_questions = $('.test_question:not(.template)');
@@ -388,12 +348,12 @@ function submitTest() {
   job_id = $('#cur_job_id').html();
 
   // Post the applicant's answers to the API and display the returned data
-  $.post("/applicant/send_test_answers",{job_id:job_id,answers:answers},function(data) {
+  $.post("/applicant/send_test_answers",{job_id:job_id,answers:JSON.stringify(answers)},function(data) {
+    alert(data);
     if (data == "Success") {
       $('#test_feedback_modal').addClass('is-active');
       $('#'+job_id).find('.test_button').addClass('is-hidden');
       $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
-      $('#test_modal').removeClass('is-active');
     } else {
       $('#test_error_modal .modal-message').html(data);
       $('#test_error_modal').addClass('is-active');
