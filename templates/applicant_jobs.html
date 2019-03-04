@@ -40,6 +40,34 @@
     </div>
   </div>
 
+  <div class="modal" id="are_you_sure_modal">
+    <div class="modal-background" onclick="closeAreYouSureModal();"></div>
+    <div class="modal-content">
+      <div class="box has-text-centered">
+        <div class="modal-message">
+          You are about to begin the test for this job.<br>
+          You will only get one chance to take this test, and if you exit out of this window during it, you will score 0 for it.<br>
+          Are you sure you want to begin the test?
+        </div>
+        <button class="button begin_test_button is-large is-success" onclick="showTestModal();">Begin Test</button>
+        <button class="button is-large is-danger" onclick="closeAreYouSureModal();">Cancel</button>
+        <button class="modal-close is-large" aria-label="close" onclick="closeAreYouSureModal();"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="no_test_modal">
+    <div class="modal-background" onclick="closeNoTestModal();"></div>
+    <div class="modal-content">
+      <div class="box has-text-centered">
+        <div class="modal-message">
+          This position does not require a test; your application has been sent to our recruiting team. You will receive an email about the progress of your application soon.
+        </div>
+        <button class="modal-close is-large" aria-label="close" onclick="closeNoTestModal();"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="test_modal">
     <div class="modal-background"></div>
 

@@ -515,7 +515,7 @@ def get_applicant_jobs():
 							break
 			jobs_json = json.dumps(jobs_dict)
 		except:
-		return Response("Could not connect to the database", status=200, mimetype="text/html")
+			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")

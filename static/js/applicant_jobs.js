@@ -250,7 +250,7 @@ $('#job_table').on('click', '.view_button', function(event) {
 // Adds functionality to all test buttons in the table
 $('#job_table').on('click', '.test_button', function(event) {
     var job_id = $(this).parent().parent().parent().attr('id');
-    showTestModal(job_id);
+    showAreYouSureModal(job_id);
 });
 
 // Adds functionality to all feedback buttons in the table
@@ -259,58 +259,81 @@ $('#job_table').on('click', '.feedback_button', function(event) {
     showFeedbackModal(job_id);
 });
 
+function showAreYouSureModal(job_id) {
+  modal = $('#are_you_sure_modal');
+  $(modal).find('.begin_test_button').attr('onclick','showTestModal('+job_id+')');
+  $(modal).addClass('is-active');
+}
+
+function closeAreYouSureModal() {
+  $('#are_you_sure_modal').removeClass('is-active');
+}
+
+function closeNoTestModal() {
+  $('#no_test_modal').removeClass('is-active');
+}
 
 // Shows the modal that allows applicants to take tests for the jobs they apply for
 function showTestModal(job_id) {
 
+  $('#are_you_sure_modal').removeClass('is-active');
+
   $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
-    questions = JSON.parse(data);
 
-  // Reset the test modal
-  $('.test_question:not(.template)').remove();
+    if (data == "[]") {
+      // NO TEST FOR THIS JOB!
+      $('#no_test_modal').addClass('is-active');
+      $('#'+job_id).find('.test_button').addClass('is-hidden');
+      $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
+    } else {
+      questions = JSON.parse(data);
 
-  // For each question being asked, get the question itself, and all the possible answers
-  for (q in questions) {
-    question = questions[q];
-    question_name = question["Question"];
-    answers = [];
-    answers.push(question["Correct"]);
-    answers.push(question["Incorrect1"]);
-    answers.push(question["Incorrect2"]);
-    answers.push(question["Incorrect3"]);
+      // Reset the test modal
+      $('.test_question:not(.template)').remove();
 
-    // Create a new element for this question from the template
-    test_question = $('.test_question.template').clone().removeClass('template');
-    $(test_question).find('.question').html(question_name);
+      // For each question being asked, get the question itself, and all the possible answers
+      for (q in questions) {
+        question = questions[q];
+        question_name = question["Question"];
+        answers = [];
+        answers.push(question["Correct"]);
+        answers.push(question["Incorrect1"]);
+        answers.push(question["Incorrect2"]);
+        answers.push(question["Incorrect3"]);
 
-    // Shuffle and then display the answers
-    for (var i = answers.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = answers[i];
-        answers[i] = answers[j];
-        answers[j] = temp;
+        // Create a new element for this question from the template
+        test_question = $('.test_question.template').clone().removeClass('template');
+        $(test_question).find('.question').html(question_name);
+
+        // Shuffle and then display the answers
+        for (var i = answers.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = answers[i];
+          answers[i] = answers[j];
+          answers[j] = temp;
+        }
+        $(test_question).find('.answer1').html(answers[0]);
+        $(test_question).find('.answer2').html(answers[1]);
+        $(test_question).find('.answer3').html(answers[2]);
+        $(test_question).find('.answer4').html(answers[3]);
+
+        // Label this question so that only one of the answers can be selected
+        $(test_question).find('input[name="answer"]').attr('name',q);
+
+        // Insert the question into the test area
+        $(test_question).insertAfter($('.test_question.template'));
+
+      }
+
+      // Get information about the job and display it in the modal
+      job_title = $('#'+job_id).find('.job_title').html();
+      $('#test_modal .modal-card-title').html(job_title+" - Test");
+      $('#cur_job_id').html(job_id);
+
+      // Show the modal
+      $('#test_modal').addClass('is-active');
     }
-    $(test_question).find('.answer1').html(answers[0]);
-    $(test_question).find('.answer2').html(answers[1]);
-    $(test_question).find('.answer3').html(answers[2]);
-    $(test_question).find('.answer4').html(answers[3]);
-
-    // Label this question so that only one of the answers can be selected
-    $(test_question).find('input[name="answer"]').attr('name',q);
-
-    // Insert the question into the test area
-    $(test_question).insertAfter($('.test_question.template'));
-
-  }
-
-  // Get information about the job and display it in the modal
-  job_title = $('#'+job_id).find('.job_title').html();
-  $('#test_modal .modal-card-title').html(job_title+" - Test");
-  $('#cur_job_id').html(job_id);
-
-  // Show the modal
-  $('#test_modal').addClass('is-active');
-});
+  });
 }
 
 // If the user gives up, close the test and show don't let them attempt it again
