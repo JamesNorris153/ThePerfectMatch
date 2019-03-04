@@ -292,15 +292,30 @@ def save_job():
 			job_json["Location"],
 			job_json["Position"],
 			job_json["Status"])
-		#try:
+
+		questions = job_json["Questions"]
+		# questions = json.loads(job_json["Questions"])
+		question_number = job_json["QuestionNumber"]
+		print(questions)
+		print(question_number)
+		# try:
 		if job_id == "-1":
-			insert_job(job)
+			new_job_id = insert_job(job)
+			test_id = add_test(new_job_id,question_number)
+			for question in questions:
+				temp_question = Question(question["Question"],question["Correct"],question["Incorrect1"],question["Incorrect2"],question["Incorrect3"])
+				add_question(test_id, temp_question)
 			return Response("Success", status=200, mimetype="text/html")
 		else:
 			edit_job(job_id, job)
+			delete_test(job_id)
+			test_id = add_test(new_job_id,question_number)
+			for question in questions:
+				temp_question = Question(question["Question"],question["Correct"],question["Incorrect1"],question["Incorrect2"],question["Incorrect3"])
+				add_question(test_id, temp_question)
 			return Response("Success", status=200, mimetype="text/html")
-		#except:
-		#return Response("Could not connect to the database", status=200, mimetype="text/html")
+		# except:
+		# 	return Response("Could not connect to the database", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])
