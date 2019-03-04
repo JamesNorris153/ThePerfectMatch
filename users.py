@@ -516,12 +516,22 @@ def what_job(jobID):
 def get_test(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT id from tests where Job_ID=(?) order by random() limit 1',(jobID,))
-    test = cur.fetchone()[0]
-    cur.execute('SELECT * from question_test where Test_ID=(?) order by random() limit 10',(test,))
+    cur.execute('SELECT id,question_no from tests where Job_ID=(?)',(jobID,))
+    test_data = cur.fetchone()
+    test_id = test_data[0]
+    question_no = test_data[1]
+    cur.execute('SELECT * from question_test where Test_ID=(?) order by random() limit (?)',(test_id,question_no,))
     questions=cur.fetchall()
     con.close()
     return questions
+
+def delete_test(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('DELETE FROM question_test WHERE Test_ID IN (SELECT id from tests WHERE Job_ID=(?))',(jobID,))
+    cur.execute('DELETE from tests WHERE Job_ID=(?)',(jobID,))
+    con.commit()
+    con.close()
 
 
 # Use the one defined bellow
@@ -787,16 +797,20 @@ def all_applications(jobID):
     con.close()
     return users
 
-def add_test(jobID):
+def add_test(jobID, question_no):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into tests values (NULL,?)',(jobID,))
+    cur.execute('INSERT into tests values (NULL,?,?)',(jobID,question_no,))
+    con.commit()
+    cur.execute('SELECT id FROM tests WHERE Job_ID=?',(jobID,))
+    test_id = cur.fetchone()[0]
     con.close()
+    return test_id
 
-def add_question(testID,question,answer):
+def add_question(testID,question,answer,incorrect1,incorrect2,incorrect3):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into question_test values (NULL,?,?,?)',(testID,question,answer))
+    cur.execute('INSERT into question_test values (NULL,?,?,?,?,?,?)',(testID,question,answer,incorrect1,incorrect2,incorrect3))
     con.close()
 
 
