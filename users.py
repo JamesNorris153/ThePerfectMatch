@@ -545,7 +545,16 @@ def get_current_cv(userID):
     user = cur.fetchone()[0]
     con.close()
     return user
-
+    
+def select_testScore(jobID, cvID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('select testScore from job_cv WHERE Job_ID=(?) AND CV_ID=(?)',(jobID,cvID))
+    testScore = cur.fetchall()[0]
+    con.commit()
+    con.close()
+    return testScore
+    
 def score_test(answers,job_id,cv_id):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
