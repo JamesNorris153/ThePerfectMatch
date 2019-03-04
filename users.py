@@ -63,13 +63,11 @@ class CV:
 		degrees = []
 		for degree in self.degrees:
 			degrees.append(degree.__dict__)
-			print(degrees)
 		cv_dict["degrees"] = degrees
 
 		languages = []
 		for language in self.languages:
 			languages.append(language.__dict__)
-			print(languages)
 		cv_dict["languages"] = languages
 
 		hobbies = []
