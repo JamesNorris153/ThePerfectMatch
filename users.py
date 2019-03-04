@@ -143,11 +143,18 @@ class Edu:
 
 class Question:
 
+    def __init__(self,question,correct,incorrect1,incorrect2,incorrect3):
+        self.question = question
+        self.correct = correct
+        self.incorrect1 = incorrect1
+        self.incorrect2 = incorrect2
+        self.incorrect3 = incorrect3
+
 	question = ""
 	correct = ""
-	incorrect_1 = ""
-	incorrect_2 = ""
-	incorrect_3 = ""
+	incorrect1 = ""
+	incorrect2 = ""
+	incorrect3 = ""
 
 class Answer:
 
@@ -229,8 +236,10 @@ def insert_job(job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status))
+    job_id = cur.lastrowid
     con.commit()
     con.close()
+    return job_id
 
 def edit_job(job_id, job):
     con = sql.connect(path.join(ROOT, 'database.db'))
@@ -814,10 +823,10 @@ def add_test(jobID, question_no):
     con.close()
     return test_id
 
-def add_question(testID,question,answer,incorrect1,incorrect2,incorrect3):
+def add_question(testID,question):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into question_test values (NULL,?,?,?,?,?,?)',(testID,question,answer,incorrect1,incorrect2,incorrect3))
+    cur.execute('INSERT into question_test values (NULL,?,?,?,?,?,?)',(testID,question.question,question.correct,question.incorrect1,question.incorrect2,question.incorrect3))
     con.close()
 
 

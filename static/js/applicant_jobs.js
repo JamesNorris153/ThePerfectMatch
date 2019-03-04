@@ -263,36 +263,35 @@ $('#job_table').on('click', '.feedback_button', function(event) {
 // Shows the modal that allows applicants to take tests for the jobs they apply for
 function showTestModal(job_id) {
 
-  // $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
-  //   alert(data);
-  // });
+  $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
+    questions = JSON.parse(data);
 
   // Reset the test modal
   $('.test_question:not(.template)').remove();
 
-  questions = [
-    {
-      "Question":"Q1",
-      "Correct":"A1",
-      "Incorrect1":"B1",
-      "Incorrect2":"C1",
-      "Incorrect3":"D1"
-    },
-    {
-      "Question":"Q2",
-      "Correct":"A2",
-      "Incorrect1":"B2",
-      "Incorrect2":"C2",
-      "Incorrect3":"D2"
-    },
-    {
-      "Question":"Q3",
-      "Correct":"A3",
-      "Incorrect1":"B3",
-      "Incorrect2":"C3",
-      "Incorrect3":"D3"
-    }
-  ];
+  // questions = [
+  //   {
+  //     "Question":"Q1",
+  //     "Correct":"A1",
+  //     "Incorrect1":"B1",
+  //     "Incorrect2":"C1",
+  //     "Incorrect3":"D1"
+  //   },
+  //   {
+  //     "Question":"Q2",
+  //     "Correct":"A2",
+  //     "Incorrect1":"B2",
+  //     "Incorrect2":"C2",
+  //     "Incorrect3":"D2"
+  //   },
+  //   {
+  //     "Question":"Q3",
+  //     "Correct":"A3",
+  //     "Incorrect1":"B3",
+  //     "Incorrect2":"C3",
+  //     "Incorrect3":"D3"
+  //   }
+  // ];
 
   // For each question being asked, get the question itself, and all the possible answers
   for (q in questions) {
@@ -335,6 +334,7 @@ function showTestModal(job_id) {
 
   // Show the modal
   $('#test_modal').addClass('is-active');
+});
 }
 
 // If the user gives up, close the test and show don't let them attempt it again
