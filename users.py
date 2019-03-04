@@ -281,7 +281,7 @@ def get_trait_level(table, jobID):
 def insert_job(job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status))
+    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status,job.creator))
     job_id = cur.lastrowid
     con.commit()
     con.close()
@@ -290,7 +290,7 @@ def insert_job(job):
 def edit_job(job_id, job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job_id))
+    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?), creator=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job.creator, job_id))
     con.commit()
     con.close()
 
