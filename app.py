@@ -163,24 +163,12 @@ def show_staff_candidates_page():
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		job_id = request.args.get("job_id")
 		if session['job_id'] is None:
 			return Response("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
-		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
-		# candidates = [
-		# {
-		# 	"ID":candidate_id,
-		# 	"First Name":first_name,
-		# 	"Last Name":last_name,
-		# 	"Email":email,
-		# 	"Score":score,
-		# 	"CVID":cvid,
-		# 	"Status":status ("Like"/"Dislike"/"Unknown")
-		# }
-		# ]
 		try:
-			candidates = show_best_candidates(job_id)
-			candidates_json = json.dumps(candidates)
+			candidates_raw = all_applications(session["job_id"])
+			candidates_dict = create_candidates_dict(candidates_raw)
+			candidates_json = json.dumps(candidates_dict)
 		except:
 			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 

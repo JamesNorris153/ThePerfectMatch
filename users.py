@@ -828,6 +828,20 @@ def all_applications(jobID):
     con.close()
     return users
 
+def create_candidates_dict(candidates_raw):
+	all_candidates = []
+	for candidate in candidates_raw:
+		candidate_dict = {}
+		candidate_dict["ID"] = "" if (candidate[5] == None) else candidate[5]
+		candidate_dict["First Name"] = "" if (candidate[7] == None) else candidate[7]
+		candidate_dict["Last Name"] = "" if (candidate[7] == None) else candidate[8]
+		candidate_dict["Email"] = "" if (candidate[10] == None) else candidate[10]
+		candidate_dict["Score"] = "" if (candidate[2] == None) else candidate[2]
+		candidate_dict["CVID"] = "" if (candidate[1] == None) else candidate[1]
+		candidate_dict["Status"] = "" if (candidate[2] == None) else candidate[2]
+		all_candidates.append(candidate_dict)
+	return all_candidates
+
 def add_test(jobID, question_no):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
