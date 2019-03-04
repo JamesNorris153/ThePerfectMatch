@@ -15,13 +15,14 @@ ROOT = path.dirname(path.relpath((__file__)))
 class Job:
 
     #def __init__(self, name, description,deadline,position,location,hobbies,skills,languages,ALevels):
-    def __init__(self, name, description, deadline, location, position, status):
+    def __init__(self, name, description, deadline, location, position, status, creator):
         self.name = name
         self.location = location
         self.position = position
         self.deadline = deadline
         self.description = description
         self.status = status
+        self.creator = creator
         #self.hobbies = hobbies
         #self.skills = skills
         #self.languages = languages
