@@ -520,13 +520,7 @@ def send_test_answers():
 		# SCORE TEST AND STORE IN DATABASE
 		try:
 			answers_json = json.loads(answers)
-<<<<<<< HEAD
-			applications = show_current_applications(user_id)
-
 			cv_id = get_cv_for_job(user_id, job_id)
-=======
-			cv_id = get_cv_for_job(user_id,job_id)
->>>>>>> 01d15a15b42c450f1632d209122df0d2d6940755
 			score = score_test(answers_json, job_id, cv_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
