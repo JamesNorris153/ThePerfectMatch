@@ -207,6 +207,7 @@ def create_jobs_dictionary(jobs):
         jobs_dict["Location"] = "" if (job[4] == None) else job[4]
         jobs_dict["Position"] = "" if (job[5] == None) else job[5]
         jobs_dict["Status"] = "" if (job[6] == None) else job[6]
+        jobs_dict["Creator"] = "" if (job[7] == None) else job[7]
         all_jobs.append(jobs_dict)
     return all_jobs
 
@@ -221,6 +222,7 @@ def create_staff_jobs_dictionary(jobs):
         jobs_dict["Location"] = "" if (job[4] == None) else job[4]
         jobs_dict["Position"] = "" if (job[5] == None) else job[5]
         jobs_dict["Status"] = "" if (job[6] == None) else job[6]
+        jobs_dict["Creator"] = "" if (job[7] == None) else job[7]
         question_data = get_all_test_questions(jobs_dict["ID"])
         jobs_dict["QuestionNumber"] = question_data[0]
         jobs_dict["Questions"] = question_data[1]
