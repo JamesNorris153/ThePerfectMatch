@@ -545,7 +545,7 @@ def score_test(answers,job_id,cv_id):
         correct = cur.fetchone()[0]
         if i["Answer"] == correct:
             score+=1
-    cur.execute('Update job_cv set scoreTest=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cv_id,job_id))
+    cur.execute('Update job_cv set testScore=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cv_id,job_id))
     con.commit()
     con.close()
     return score
