@@ -10,11 +10,13 @@ from os import path
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 # db = SQLAlchemy(app)
 
+# The file contains methods that interact with the database as well as classes that
+# represent the objects that will be retreived and uploaded to the database
+
 ROOT = path.dirname(path.relpath((__file__)))
 
 class Job:
 
-    #def __init__(self, name, description,deadline,position,location,hobbies,skills,languages,ALevels):
     def __init__(self, name, description, deadline, location, position, status, creator):
         self.name = name
         self.location = location
@@ -23,10 +25,6 @@ class Job:
         self.description = description
         self.status = status
         self.creator = creator
-        #self.hobbies = hobbies
-        #self.skills = skills
-        #self.languages = languages
-        #self.ALevel = ALevels
 
 class Applicant:
 
@@ -124,21 +122,11 @@ class Emp:
     position = ""
     length = ""
 
-    # def __init__(self,company,positon,length):
-    #     self.name=company
-    #     self.position=position
-    #     self.length=self.length
-
 class Edu:
 
     name = ""
     course = ""
     grade = ""
-
-    # def __init__(self, university, course, grade):
-    #     self.name=university
-    #     self.course=course
-    #     self.grade=self.grade
 
 class Question:
 
@@ -160,12 +148,14 @@ class Answer:
 	question = ""
 	answer = ""
 
-#Example Methods
 def create_user(applicant):
+    """Adds a new applicant to the db. Takes an object of type applicant as argument
+    The password is hashed using bcrypt for security reasons."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     if check_mail(applicant.email)==True:
-        cur.execute('INSERT INTO users VALUES (NULL,?,?,?,?)',(applicant.FName,applicant.LName,bcrypt.hashpw(applicant.password.encode("utf8"),bcrypt.gensalt()),applicant.email))
+        cur.execute('INSERT INTO users VALUES (NULL,?,?,?,?)',(applicant.FName,
+        applicant.LName,bcrypt.hashpw(applicant.password.encode("utf8"),bcrypt.gensalt()),applicant.email))
     con.commit()
     cur.execute('SELECT id FROM users WHERE email=?',(applicant.email,))
     user_id = cur.fetchone()[0]
@@ -173,6 +163,7 @@ def create_user(applicant):
     return user_id
 
 def get_users():
+    """Returns all the user accounts in the db."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * FROM users')
@@ -181,6 +172,7 @@ def get_users():
     return users
 
 def get_jobs():
+    """Returns all the jobs."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * FROM jobs')
@@ -189,15 +181,17 @@ def get_jobs():
     return jobs
 
 def get_jobs_applicant(user_id):
+    """Returns all the available jobs."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    # cur.execute('SELECT * FROM jobs WHERE status="Available"')
     cur.execute('select * from jobs where status="Available" or id in (select job_id from job_cv where cv_id in (select cv_id from cvs where user_id=(?)))',(user_id,))
     jobs = cur.fetchall()
     con.close()
     return jobs
 
 def create_jobs_dictionary(jobs):
+    """Returns an array of jobs in dictionary format. Takes as input an array of
+    jobs in SQL format."""
     all_jobs = []
     for job in jobs:
         jobs_dict = {}
@@ -213,6 +207,7 @@ def create_jobs_dictionary(jobs):
     return all_jobs
 
 def create_staff_jobs_dictionary(jobs):
+    """Returns the jobs together with the test questions."""
     all_jobs = []
     for job in jobs:
         jobs_dict = {}
@@ -231,6 +226,7 @@ def create_staff_jobs_dictionary(jobs):
     return all_jobs
 
 def get_all_test_questions(jobID):
+    """Returns all test questions for a job in dict format."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT id,question_no from tests where Job_ID=(?)',(jobID,))
@@ -253,8 +249,9 @@ def get_all_test_questions(jobID):
         all_questions.append(temp_dict)
     return [question_no,all_questions]
 
-# Returns true IF user doesn't exist, false otherwise
 def check_mail(email):
+    """Used when creating a new account. Returns True if the email is not present
+    in the db and False otherwise."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * FROM users WHERE email=(?)',(email,))
@@ -266,6 +263,7 @@ def check_mail(email):
         return True
 
 def get_user(id):
+    """Returns a specific user by id."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * FROM users WHERE id=(?)',(id,))
@@ -274,14 +272,16 @@ def get_user(id):
     return user
 
 def get_ID(email):
+    """Returns the id of a user taking input an email."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT id from users where email=(?)',(email,))
     id = cur.fetchone()
     return id
 
-#ALevel/Hobbies/Languages/Skills
 def get_trait_level(table, jobID):
+    """Returns the ML level of a ALevel/Hobby/Language/Skill for a specific job.
+    Takes as input a String: the table name and an int: the id of the job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT name,level FROM {} WHERE Job_ID=(?)'.format(table),(jobID,))
@@ -290,22 +290,28 @@ def get_trait_level(table, jobID):
     return user
 
 def insert_job(job):
+    """Adds a new job to the db. Takes as arguent an object of type Job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status,job.creator))
+    cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,
+    job.position,job.status,job.creator))
     job_id = cur.lastrowid
     con.commit()
     con.close()
     return job_id
 
 def edit_job(job_id, job):
+    """Allows an admin to change the information about a job. Takes input a job id
+    and a Job object."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?), creator=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job.creator, job_id))
+    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?), creator=(?) WHERE id=(?)',
+    (job.name, job.description, job.deadline, job.location, job.position, job.status, job.creator, job_id))
     con.commit()
     con.close()
 
 def selectAllSkills():
+    """Returns all skills."""
     skills = []
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -319,6 +325,7 @@ def selectAllSkills():
     return skills
 
 def selectAllLanguages():
+    """Returns all languages."""
     languages = []
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -332,6 +339,7 @@ def selectAllLanguages():
     return languages
 
 def selectAllAlevels():
+    """Returns all ALevels."""
     Alevels = []
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -345,6 +353,7 @@ def selectAllAlevels():
     return Alevels
 
 def selectAllHobbies():
+    """Returns all hobbies."""
     Hobbies = []
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -358,6 +367,7 @@ def selectAllHobbies():
     return Hobbies
 
 def selectAllEmployment():
+    """Returns all the employment."""
     Employment = []
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -372,6 +382,9 @@ def selectAllEmployment():
 
 # ALevel/Hobbies/Skills/Languages
 def insert_trait_dependency(table, jobID, name, level):
+    """Adds a link between a certain ALevel/Hobby/Skill/Language and the likelihood
+    of its possessor to get a specific job. Takes as input the table name, the job id
+    the name of the trait and the level of the link."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into {} VALUES (NULL,?,?,?)'.format(table),(jobID,name,level))
@@ -380,6 +393,9 @@ def insert_trait_dependency(table, jobID, name, level):
 
 # Degrees/Employment
 def insert_special_dependency(table, jobID, name, second, level):
+    """Adds a link between a certain Degrees/Employment and the likelihood
+    of its possessor to get a specific job. Takes as input the table name, the job id
+    the name of the trait, the position/degree and the level of the link."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into {} VALUES (NULL,?,?,?,?)'.format(table),(jobID,name,second,level))
@@ -387,6 +403,8 @@ def insert_special_dependency(table, jobID, name, second, level):
     con.close()
 
 def authenticate_user(email, password):
+    """Checks if the inputed password matches the one in the db to permit access
+    to a user account."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT id, password from users where email=(?)',(email,))
@@ -400,6 +418,8 @@ def authenticate_user(email, password):
         return None
 
 def get_CV(cvID):
+    """Returns a cv based on a cv id. A CV object is formed and filled with info from
+    all the tables."""
     info = CV()
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -457,6 +477,7 @@ def get_CV(cvID):
     return info
 
 def update_status(jobID,cvID,status):
+    """Changes the statu of an application."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE job_cv SET status=(?) WHERE Job_ID=(?) AND CV_ID=(?)',(status,jobID,cvID))
@@ -464,6 +485,7 @@ def update_status(jobID,cvID,status):
     con.close()
 
 def select_status(jobID, cvID):
+    """Returns the status of an applicaton."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('select status from job_cv WHERE Job_ID=(?) AND CV_ID=(?)',(jobID,cvID))
@@ -473,6 +495,7 @@ def select_status(jobID, cvID):
     return status
 
 def update_score(jobID,cvID,score):
+    """Change the score of an application."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE job_cv SET score=(?) WHERE Job_ID=(?) AND CV_ID=(?)',(score,jobID,cvID))
@@ -480,6 +503,7 @@ def update_score(jobID,cvID,score):
     con.close()
 
 def close_job(jobID):
+    """Makes the job unavailable and rejects all candidates that were not dealt with."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     con.execute('UPDATE jobs SET status="Unavailable" where id=(?)',(jobID,))
@@ -489,6 +513,7 @@ def close_job(jobID):
     con.close()
 
 def remove_job(jobID):
+    """Deletes a job from the db."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('DELETE FROM jobs WHERE id=(?)', (jobID))
@@ -496,6 +521,7 @@ def remove_job(jobID):
     con.close()
 
 def reopen_job(jobID):
+    """Makes an Unavailable job available."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     con.execute('UPDATE jobs SET status="Available" where id=(?)',(jobID,))
@@ -503,6 +529,8 @@ def reopen_job(jobID):
     con.close()
 
 def new_trait(jobID,trait,table):
+    """Links a certain attribute to the likeliood of being accepted for a specific
+    job. Usable for ALevels/Skills/Hobbies/Languages."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into {} values (NULL,?,?,0)'.format(table),(jobID,trait))
@@ -510,6 +538,8 @@ def new_trait(jobID,trait,table):
     con.close()
 
 def new_degree(jobID,university,course):
+    """Links a certain degree to the likeliood of being accepted for a specific
+    job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into degrees values (NULL,?,?,?,?)',(jobID,university,course,0))
@@ -517,6 +547,8 @@ def new_degree(jobID,university,course):
     con.close()
 
 def new_employment(jobID,company,position):
+    """Links a certain employment to the likeliood of being accepted for a specific
+    job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into employment values (NULL,?,?,?,?)',(jobID,company,position,0))
@@ -524,6 +556,7 @@ def new_employment(jobID,company,position):
     con.close()
 
 def get_degree_level(jobID):
+    """Returns the level of a degree for a job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT university,course,level FROM degrees WHERE Job_ID=(?)',(jobID,))
@@ -532,6 +565,7 @@ def get_degree_level(jobID):
     return user
 
 def get_employment_level(jobID):
+    """Returns the level of an employment for a job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT company,position,level FROM employment WHERE Job_ID=(?)',(jobID,))
@@ -540,6 +574,7 @@ def get_employment_level(jobID):
     return user
 
 def get_current_cv(userID):
+    """Selects the last CV a user has uploaded."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT MAX(id) from cvs where User_ID=(?)',(userID,))
@@ -548,6 +583,7 @@ def get_current_cv(userID):
     return user
 
 def select_testScore(jobID, cvID):
+    """Returns the test score of an applicant."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('select testScore from job_cv WHERE Job_ID=(?) AND CV_ID=(?)',(jobID,cvID))
@@ -557,6 +593,8 @@ def select_testScore(jobID, cvID):
     return testScore
 
 def score_test(answers,job_id,cv_id):
+    """Marks the answers of an applicant and stores the result in the db. Also returns
+    the score."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     score=0
@@ -571,6 +609,7 @@ def score_test(answers,job_id,cv_id):
     return score
 
 def show_current_applications(userID):
+    """Shows the applications in process for a specific user."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT Job_ID, CV_ID from job_cv where CV_ID in (SELECT id from cvs where User_ID=?) and status=0',(userID,))
@@ -579,6 +618,7 @@ def show_current_applications(userID):
     return jobs
 
 def get_completed_applications(userID):
+    """Returns the completed applications for a user."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT Job_ID, status from job_cv where CV_ID in (SELECT id from cvs where User_ID=?) and score>=0',(userID,))
@@ -587,6 +627,7 @@ def get_completed_applications(userID):
     return jobs
 
 def get_incomplete_applications(userID):
+    """Returns the application for which the user has to take the test."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT Job_ID, status from job_cv where CV_ID in (SELECT id from cvs where User_ID=?) and score=-1',(userID,))
@@ -595,6 +636,7 @@ def get_incomplete_applications(userID):
     return jobs
 
 def what_job(jobID):
+    """Returns all the information about a job based on its id."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * from jobs where id=(?)',(jobID,))
@@ -603,6 +645,7 @@ def what_job(jobID):
     return job
 
 def get_test(jobID):
+    """Returns 10 randomly selected questions from a randomly selected test for a specific job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT id,question_no from tests where Job_ID=(?)',(jobID,))
@@ -615,6 +658,7 @@ def get_test(jobID):
     return questions
 
 def delete_test(jobID):
+    """Removes a test from the db."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('DELETE FROM question_test WHERE Test_ID IN (SELECT id from tests WHERE Job_ID=(?))',(jobID,))
@@ -622,87 +666,8 @@ def delete_test(jobID):
     con.commit()
     con.close()
 
-
-# Use the one defined bellow
-
-# def insert_cv (form):
-#     con = sql.connect(path.join(ROOT, 'test.db'))
-#     cur = con.cursor()
-#
-#     cur.execute('Insert into cvs values (NULL,?)',(form.id))
-#     cur.execute('Select max(id) from cvs')
-#     max=cur.fetchone()
-#
-#     for i in range (1,len(form.skills)):
-#         cur.execute('Select id from skills where name=(?) and Job_ID=(?)',(form.skills[i].name,),(form.jobID,))
-#         id=cur.fetchone()
-#         if id!=None:
-#             cur.execute('INSERT into skills_cv values (?,?,?)',(id,max,form.skills[i].level))
-#         else:
-#             new_trait(form.jobID,form.skills[i].name,skills)
-#             cur.execute('SELECT max(id) from skills')
-#             id1=cur.fetchone()
-#             cur.execute('INSERT into skills_cv values (?,?,?)',(id1,max,form.skills[i].level))
-#
-#     for i in range (1,len(form.hobbies)):
-#         cur.execute('Select id from hobbies where name=(?) and Job_ID=(?)',(form.hobbies[i].name,),(form.jobID,))
-#         id=cur.fetchone()
-#         if id!=None:
-#             cur.execute('INSERT into hobbies_cv values (?,?,?)',(id,max,form.hobbies[i].level))
-#         else:
-#             new_trait(form.jobID,form.hobbies[i].name,hobbies)
-#             cur.execute('SELECT max(id) from hobbies')
-#             id1=cur.fetchone()
-#             cur.execute('INSERT into hobbies_cv values (?,?,?)',(id1,max,form.hobbies[i].level))
-#
-#     for i in range (1,len(form.languages)):
-#         cur.execute('Select id from languages where name=(?) and Job_ID=(?)',(form.languages[i].name,),(form.jobID,))
-#         id=cur.fetchone()
-#         if id!=None:
-#             cur.execute('INSERT into languages_cv values (?,?,?)',(id,max,form.languages[i].level))
-#         else:
-#             new_trait(form.jobID,form.languages[i].name,languages)
-#             cur.execute('SELECT max(id) from languages')
-#             id1=cur.fetchone()
-#             cur.execute('INSERT into languages_cv values (?,?,?)',(id1,max,form.languages[i].level))
-#
-#     for i in range (1,len(form.ALevels)):
-#         cur.execute('Select id from alevel where name=(?) and Job_ID=(?)',(form.ALevels[i].name,),(form.jobID,))
-#         id=cur.fetchone()
-#         if id!=None:
-#             cur.execute('INSERT into alevel_cv values (?,?,?)',(id,max,form.ALevels[i].level))
-#         else:
-#             new_trait(form.jobID,form.ALevels[i].name,alevels)
-#             cur.execute('SELECT max(id) from languages')
-#             id1=cur.fetchone()
-#             cur.execute('INSERT into languages_cv values (?,?,?)',(id1,max,form.languages[i].level))
-#
-#     for i in range (1,len(form.degrees)):
-#         cur.execute('Select id from degrees where name=(?) and Job_ID=(?) and position=(?)',(form.degrees[i].name,),(form.jobID,),(form.degrees[i].position,))
-#         id=cur.fetchone()
-#         if id!=None:
-#             cur.execute('INSERT into degrees_cv values (?,?,?)',(id,max,form.degrees[i].level))
-#         else:
-#             new_degree(form.jobID,form.degrees[i].name,form.degrees[i].position)
-#             cur.execute('SELECT max(id) from degrees')
-#             id1=cur.fetchone()
-#             cur.execute('INSERT into degrees_cv values (?,?,?)',(id1,max,form.degrees[i].level))
-#
-#     for i in range (1,len(form.employment)):
-#         cur.execute('Select id from employment where name=(?) and Job_ID=(?) and position=(?)',(form.employment[i].name,),(form.jobID,),(form.employment[i].course,))
-#         id=cur.fetchone()
-#         if id!=None:
-#             cur.execute('INSERT into employment_cv values (?,?,?)',(id,max,form.employment[i].level))
-#         else:
-#             new_employment(form.jobID,form.employment[i].name,form.employment[i].course)
-#             cur.execute('SELECT max(id) from employment')
-#             id1=cur.fetchone()
-#             cur.execute('INSERT into employment_cv values (?,?,?)',(id1,max,form.employment[i].level))
-#
-#     con.commit()
-#     con.close()
-
 def apply_job(cvID,jobID):
+    """Adds an entry marking a user applying to a role in the db."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into job_cv values (?,?,?,?,?)',(jobID,cvID,-1,0,0))
@@ -710,6 +675,7 @@ def apply_job(cvID,jobID):
     con.close()
 
 def change_level(jobID,table,name,level):
+    """Modifies the level of a certain attribute in relation to a job."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE {} SET level=(?) WHERE Job_ID=(?) and name=(?)'.format(table),(level,jobID,name))
@@ -717,6 +683,8 @@ def change_level(jobID,table,name,level):
     con.close()
 
 def authenticate_admin(username, password):
+    """Checks the password in the database to match the one inserted. Is used in admin
+    authenticaion."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT id,password from admins where username=(?)',(username,))
@@ -730,6 +698,7 @@ def authenticate_admin(username, password):
         return None
 
 def create_admin(admin):
+    """Create an admin account."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     user_id = None
@@ -742,6 +711,7 @@ def create_admin(admin):
     return user_id
 
 def check_user(username):
+    """Check if a username is taken. Used in admin creation."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * FROM admins WHERE username=(?)',(username,))
@@ -753,6 +723,7 @@ def check_user(username):
         return True
 
 def show_best_candidates(jobId):
+    """Displays the best candidates for a specific job ordered by their scores."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT * from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where status=0 and score!=-1 and Job_ID=(?) order by score desc',(jobId,))
@@ -761,6 +732,7 @@ def show_best_candidates(jobId):
     return users
 
 def select_cvs(jobId):
+    """Return all the CV that were used to apply to a certain job."""
     cvID = []
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -773,6 +745,7 @@ def select_cvs(jobId):
     return cvID
 
 def insert_json_cv(form,userID):
+    """Allows users to insert a CV."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
 
@@ -861,24 +834,28 @@ def insert_json_cv(form,userID):
     con.close()
 
 def change_pass_user(userID,newpass):
+    """Updates the password of a user in the database."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE users set password=(?) where id=(?)',(bcrypt.hashpw(newpass.encode("utf8"),bcrypt.gensalt()),userID))
     con.close()
 
 def change_pass_admin(userID,newpass):
+    """Updates the password of an admin in the db."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('UPDATE admins set password=(?) where id=(?)',(bcrypt.hashpw(newpass.encode("utf8"),bcrypt.gensalt()),userID))
     con.close()
 
 def backup_db():
+    """Used to backup the entire db."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('.backup backup_file.sq3')
     con.close()
 
 def all_applications(jobID):
+    """All the applicants for a certain position."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT user_id,fname,lname,email,score,cv_id,status from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) order by score desc',(jobID,))
@@ -887,6 +864,7 @@ def all_applications(jobID):
     return users
 
 def create_candidates_dict(candidates_raw):
+    """Transforms a list of candidates in SQL format into a dict format."""
     all_candidates = []
     for candidate in candidates_raw:
         candidate_dict = {}
@@ -901,6 +879,7 @@ def create_candidates_dict(candidates_raw):
         return all_candidates
 
 def add_test(jobID, question_no):
+    """Permits the creation of a new test."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into tests values (NULL,?,?)',(jobID,question_no,))
@@ -911,6 +890,7 @@ def add_test(jobID, question_no):
     return test_id
 
 def add_question(testID,question):
+    """Adds a new question to a test."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into question_test values (NULL,?,?,?,?,?,?)',(testID,question.question,question.correct,question.incorrect1,question.incorrect2,question.incorrect3))
@@ -918,6 +898,7 @@ def add_question(testID,question):
     con.close()
 
 def get_cv_for_job(user_id,job_id):
+    """Gets the cv with wich a specific user applied to a role."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT cv_id FROM job_cv WHERE job_id=(?) and cv_id in (select id from cvs where user_id=(?))',(job_id,user_id,))
@@ -926,6 +907,7 @@ def get_cv_for_job(user_id,job_id):
     return cv_id
 
 def jsonify_cv(cv):
+    """Transforms a CV in dict format from SQL format."""
     cv_dict = dict()
 
     cv_dict["FName"] = cv.FName
