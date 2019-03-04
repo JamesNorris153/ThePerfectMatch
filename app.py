@@ -4,7 +4,7 @@ from flask_mail import Mail, Message
 import json
 
 from users import *
-from ml import retrain
+# from ml import retrain
 import os
 
 ## Session variables
@@ -328,7 +328,8 @@ def retrain_job():
 
 		# PERFORM ML RETRAINING
 		try:
-			retrain(job_id)
+			print()
+			# retrain(job_id)
 		except:
 			return Response("Could not update data in the database", status=200, mimetype="text/html")
 
