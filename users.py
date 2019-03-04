@@ -288,7 +288,7 @@ def get_trait_level(table, jobID):
     con.close()
     return user
 
-def insert_job(job, admin_id):
+def insert_job(job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status,job.creator))
@@ -545,7 +545,7 @@ def get_current_cv(userID):
     user = cur.fetchone()[0]
     con.close()
     return user
-    
+
 def select_testScore(jobID, cvID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -554,7 +554,7 @@ def select_testScore(jobID, cvID):
     con.commit()
     con.close()
     return testScore
-    
+
 def score_test(answers,job_id,cv_id):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -880,24 +880,24 @@ def backup_db():
 def all_applications(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT * from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) order by score desc',(jobID,))
+    cur.execute('SELECT user_id,fname,lname,email,score,cv_id,status from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) order by score desc',(jobID,))
     users=cur.fetchall()
     con.close()
     return users
 
 def create_candidates_dict(candidates_raw):
-	all_candidates = []
-	for candidate in candidates_raw:
-		candidate_dict = {}
-		candidate_dict["ID"] = "" if (candidate[5] == None) else candidate[5]
-		candidate_dict["First Name"] = "" if (candidate[7] == None) else candidate[7]
-		candidate_dict["Last Name"] = "" if (candidate[7] == None) else candidate[8]
-		candidate_dict["Email"] = "" if (candidate[10] == None) else candidate[10]
-		candidate_dict["Score"] = "" if (candidate[2] == None) else candidate[2]
-		candidate_dict["CVID"] = "" if (candidate[1] == None) else candidate[1]
-		candidate_dict["Status"] = "" if (candidate[2] == None) else candidate[2]
-		all_candidates.append(candidate_dict)
-	return all_candidates
+    all_candidates = []
+    for candidate in candidates_raw:
+        candidate_dict = {}
+        candidate_dict["ID"] = "" if (candidate[0] == None) else candidate[0]
+        candidate_dict["First Name"] = "" if (candidate[1] == None) else candidate[1]
+        candidate_dict["Last Name"] = "" if (candidate[2] == None) else candidate[2]
+        candidate_dict["Email"] = "" if (candidate[3] == None) else candidate[3]
+        candidate_dict["Score"] = "" if (candidate[4] == None) else candidate[4]
+        candidate_dict["CVID"] = "" if (candidate[5] == None) else candidate[5]
+        candidate_dict["Status"] = "" if (candidate[6] == None) else candidate[6]
+        all_candidates.append(candidate_dict)
+        return all_candidates
 
 def add_test(jobID, question_no):
     con = sql.connect(path.join(ROOT, 'database.db'))

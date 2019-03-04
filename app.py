@@ -6,7 +6,7 @@ import string
 import random
 
 from users import *
-# from ml import retrain
+from ml import retrain
 import os
 
 ## Session variables
@@ -62,6 +62,7 @@ def login_check():
 # Function to reset all session variables
 def logout():
 	session.clear()
+	session.modified = True
 
 ## Sends static files when necessary
 @app.route("/static/<path:path>")
@@ -93,6 +94,7 @@ def index():
 @app.route("/logout")
 def logout_user():
 	session.clear()
+	session.modified = True
 	return redirect("/")
 
 ## Staff Pages ##
@@ -130,13 +132,14 @@ def staff_login():
 			else:
 				session["account_type"] = "Admin"
 				session["user_id"] = user_id
+				session.modified = True
 				return Response("Success", status=200, mimetype="text/html")
 		except:
 			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
 
 ### Change staff password
 # Recieves: password
-@app.route("/staff/reset_password" methods=["POST"])
+@app.route("/staff/reset_password", methods=["POST"])
 def reset_staff_password():
 	# GET REQUIRED REQUEST PARAMETERS
 	email = request.form.get("email")
@@ -204,8 +207,10 @@ def show_staff_candidates_page():
 		job_id = request.args.get('job_id')
 		if job_id is None:
 			session['job_id'] = None
+			session.modified = True
 			return redirect("/staff/jobs")
 		session['job_id'] = job_id
+		session.modified = True
 		return render_template("staff_candidates.html")
 	return redirect("/")
 
@@ -215,10 +220,11 @@ def show_staff_candidates_page():
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		if session['job_id'] is None:
+		job_id = session.get('job_id')
+		if job_id is None:
 			return Response("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		try:
-			candidates_raw = all_applications(session["job_id"])
+			candidates_raw = all_applications(job_id)
 			candidates_dict = create_candidates_dict(candidates_raw)
 			candidates_json = json.dumps(candidates_dict)
 		except:
@@ -307,9 +313,10 @@ def dislike_candidate():
 #		"Questions":[{
 #			"Question":question,
 #			"Correct":correct_answer,
-#			"Incorrect":[{
-#				"Answer":answer
-#			}],
+#			"Incorrect1":incorrect1,
+# 			"Incorrect2":incorrect2,
+# 			"Incorrect3":incorrect3
+# 		}]
 # 		"QuestionNumber":number of questions to be randomly given to applicant
 #		}]
 #	};
@@ -322,7 +329,6 @@ def save_job():
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 		job_json = json.loads(request.form.get("job"))
-		print(job_id)
 
 		# CREATE JOB IN DATABASE
 		job = Job(
@@ -336,8 +342,6 @@ def save_job():
 
 		questions = job_json["Questions"]
 		question_number = job_json["QuestionNumber"]
-		print(questions)
-		print(question_number)
 		try:
 			if job_id == "-1":
 				new_job_id = insert_job(job)
@@ -381,8 +385,7 @@ def retrain_job():
 
 		# PERFORM ML RETRAINING
 		try:
-			print()
-			# retrain(job_id)
+			retrain(job_id)
 		except:
 			return Response("Could not update data in the database", status=200, mimetype="text/html")
 
@@ -421,6 +424,7 @@ def applicant_login():
 			else:
 				session["account_type"] = "Applicant"
 				session["user_id"] = user_id
+				session.modified = True
 				return Response("Success", status=200, mimetype="text/html")
 		except:
 			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
@@ -447,13 +451,14 @@ def register_applicant():
 		user_id = create_user(new_applicant)
 		session["account_type"] = "Applicant"
 		session["user_id"] = user_id
+		session.modified = True
 		return Response("Success", status=200, mimetype="text/html")
 	except:
 		return Response("There was an error creating your account, please try again", status=200, mimetype="text/html")
 
 ## Change staff password
 # Recieves: password
-@app.route("/applicant/reset_password" methods=["POST"])
+@app.route("/applicant/reset_password", methods=["POST"])
 def reset_applicant_password():
 	# GET REQUIRED REQUEST PARAMETERS
 	email = request.form.get("email")

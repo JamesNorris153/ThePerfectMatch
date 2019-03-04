@@ -9,57 +9,60 @@ function refreshCandidates() {
       window.location.href="/";
     } else if (data == "Could not find candidates for this job, please reload the page") {
       alert(data);
-      return;
     } else if (data == "Could not retrieve data from the database") {
       alert("Could not retrieve data at this time, please try again");
-      return;
-    }
+    } else if (data == null) {
+      $('#total_applicants').html(0);
+      $('#liked_applicants').html(0);
+      $('#disliked_applicants').html(0);
+      $('#unknown_applicants').html(0);
+    } else {
+      // Reset the table
+      $('#candidates_table tbody .candidate:not(.template)').remove();
 
-    // Reset the table
-    $('#candidates_table tbody .candidate:not(.template)').remove();
+      candidates = data;
 
-    candidates = data;
-    // alert(JSON.stringify(candidates));
-    // Iterate over each received candidate and add them to the table
-    candidate_template = $('.candidate.template');
-    for (i in candidates) {
+      // Iterate over each received candidate and add them to the table
+      candidate_template = $('.candidate.template');
+      for (i in candidates) {
 
-      // Get the candidate's data
-      candidate = candidates[i];
-      candidate_id = candidate["ID"];
-      candidate_name = candidate["First Name"]+" "+candidate["Last Name"];
-      candidate_email = candidate["Email"];
-      candidate_score = candidate["Score"];
-      candidate_cv = candidate["CVID"];
-      if (candidate["Status"] == 0) {
-        candidate_status = "Unknown";
-      } else if (candidate["Status"] == 1) {
-        candidate_status = "Like";
-      } else {
-        candidate_status = "Dislike";
+        // Get the candidate's data
+        candidate = candidates[i];
+        candidate_id = candidate["ID"];
+        candidate_name = candidate["First Name"]+" "+candidate["Last Name"];
+        candidate_email = candidate["Email"];
+        candidate_score = candidate["Score"];
+        candidate_cv = candidate["CVID"];
+        if (candidate["Status"] == 0) {
+          candidate_status = "Unknown";
+        } else if (candidate["Status"] == 1) {
+          candidate_status = "Like";
+        } else {
+          candidate_status = "Dislike";
+        }
+
+        // Insert all data into new row in table
+        candidate_element = $(candidate_template).clone().removeClass('template').attr('id',candidate_id);
+        $(candidate_element).find('.candidate_name').html(candidate_name);
+        $(candidate_element).find('.candidate_email').html(candidate_email);
+        $(candidate_element).find('.candidate_score').html(candidate_score);
+        $(candidate_element).find('.candidate_status').html(candidate_status);
+        $(candidate_element).find('.cv_button').attr('onclick','showCVModal(this,'+candidate_cv+');');
+
+        // Insert job at top of table
+        $(candidate_element).insertAfter($(candidate_template));
       }
 
-      // Insert all data into new row in table
-      candidate_element = $(candidate_template).clone().removeClass('template').attr('id',candidate_id);
-      $(candidate_element).find('.candidate_name').html(candidate_name);
-      $(candidate_element).find('.candidate_email').html(candidate_email);
-      $(candidate_element).find('.candidate_score').html(candidate_score);
-      $(candidate_element).find('.candidate_status').html(candidate_status);
-      $(candidate_element).find('.cv_button').attr('onclick','showCVModal(this,'+candidate_cv+');');
-
-      // Insert job at top of table
-      $(candidate_element).insertAfter($(candidate_template));
+      // Get applicant statistics and display them in the top bar
+      applicant_number = candidates.length;
+      liked_applicant_number = $('.candidate_status:contains("Like")').length;
+      disliked_applicant_number = $('.candidate_status:contains("Dislike")').length;
+      unknown_applicant_number = $('.candidate_status:contains("Unknown")').length;
+      $('#total_applicants').html(applicant_number);
+      $('#liked_applicants').html(liked_applicant_number);
+      $('#disliked_applicants').html(disliked_applicant_number);
+      $('#unknown_applicants').html(unknown_applicant_number);
     }
-
-    // Get applicant statistics and display them in the top bar
-    applicant_number = candidates.length;
-    liked_applicant_number = $('.candidate_status:contains("Like")').length;
-    disliked_applicant_number = $('.candidate_status:contains("Dislike")').length;
-    unknown_applicant_number = $('.candidate_status:contains("Unknown")').length;
-    $('#total_applicants').html(applicant_number);
-    $('#liked_applicants').html(liked_applicant_number);
-    $('#disliked_applicants').html(disliked_applicant_number);
-    $('#unknown_applicants').html(unknown_applicant_number);
 
   });
 }
