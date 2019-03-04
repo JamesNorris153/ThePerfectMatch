@@ -280,6 +280,7 @@ def get_ID(email):
     return id
 
 def get_admin_ID(email):
+    """Returns the id of an admin taking input an email."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT id from admins where username=(?)',(email,))
