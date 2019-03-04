@@ -51,18 +51,18 @@ function showJobModal(job_id) {
     question_element = $('.add_question_button').parent().find(".template").clone().removeClass('template');
     question_title = question["Question"];
     correct = question["Correct"];
+    incorrect1 = question["Incorrect1"];
+    incorrect2 = question["Incorrect2"];
+    incorrect3 = question["Incorrect3"];
 
-    // Show the question and correct answer
+
+    // Show the question and all answers
     $(question_element).find('input[name="question"]').val(question_title);
     $(question_element).find('input[name="correct_answer"]').val(correct);
-
-    // Display each incorrect answer
-    incorrect_answers = question["Incorrect"];
-    var i=0;
-    $(question_element).find('input[name="incorrect_answer"]').each(function() {
-      $(this).val(incorrect_answers[i]["Answer"]);
-      i++;
-    });
+    incorrect_inputs = $(question_element).find('input[name="incorrect_answer"]');
+    $(incorrect_inputs[0]).val(incorrect1);
+    $(incorrect_inputs[1]).val(incorrect2);
+    $(incorrect_inputs[2]).val(incorrect3);
 
     // Insert the question at the end of the modal
     $(question_element).insertBefore('.add_question_button');
@@ -146,23 +146,8 @@ function refreshJobs() {
       job_location = job["Location"];
       job_position = job["Position"];
       job_status = job["Status"];
-      job_question_number = 2; // TEMPORARY VALUE
-      job_questions = [
-        {"Question":"Q1",
-        "Correct":"A",
-        "Incorrect":[
-          {"Answer":"B"},
-          {"Answer":"C"},
-          {"Answer":"D"}
-        ]},
-        {"Question":"Q2",
-        "Correct":"A2",
-        "Incorrect":[
-          {"Answer":"B2"},
-          {"Answer":"C2"},
-          {"Answer":"D2"}
-        ]}
-      ]; // TEMPORARY VALUE
+      job_question_number = job["QuestionNumber"]
+      job_questions = job["Questions"]
 
       // Insert all data into new row in table
       job_element = $(job_template).clone().removeClass('template').attr('id',job_id);

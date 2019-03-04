@@ -69,7 +69,9 @@ function saveChanges() {
     question_details.push({
       "Question":question,
       "Correct":correct_answer,
-      "Incorrect":incorrect_answers
+      "Incorrect1":incorrect_answers[0]["Answer"],
+      "Incorrect2":incorrect_answers[1]["Answer"],
+      "Incorrect3":incorrect_answers[2]["Answer"]
     });
   });
 

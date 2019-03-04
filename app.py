@@ -137,7 +137,7 @@ def get_staff_jobs():
 		# GET ALL JOBS IN JSON FORMAT
 		try:
 			jobs = get_jobs()
-			jobs_dict = create_jobs_dictionary(jobs)
+			jobs_dict = create_staff_jobs_dictionary(jobs)
 			jobs_json = json.dumps(jobs_dict)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
@@ -163,24 +163,12 @@ def show_staff_candidates_page():
 def get_candidates():
 	if login_check() == "Admin":
 		# GET REQUIRED REQUEST PARAMETERS
-		job_id = request.args.get("job_id")
 		if session['job_id'] is None:
 			return Response("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
-		# GET ALL THIS JOB CREATED BY THIS USER IN JSON FORMAT
-		# candidates = [
-		# {
-		# 	"ID":candidate_id,
-		# 	"First Name":first_name,
-		# 	"Last Name":last_name,
-		# 	"Email":email,
-		# 	"Score":score,
-		# 	"CVID":cvid,
-		# 	"Status":status ("Like"/"Dislike"/"Unknown")
-		# }
-		# ]
 		try:
-			candidates = show_best_candidates(job_id)
-			candidates_json = json.dumps(candidates)
+			candidates_raw = all_applications(session["job_id"])
+			candidates_dict = create_candidates_dict(candidates_raw)
+			candidates_json = json.dumps(candidates_dict)
 		except:
 			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
@@ -282,6 +270,7 @@ def save_job():
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 		job_json = json.loads(request.form.get("job"))
+		print(job_id)
 
 		# CREATE JOB IN DATABASE
 		job = Job(
@@ -291,14 +280,26 @@ def save_job():
 			job_json["Location"],
 			job_json["Position"],
 			job_json["Status"])
+
+		questions = job_json["Questions"]
+		question_number = job_json["QuestionNumber"]
+		print(questions)
+		print(question_number)
 		try:
-			if job_id == -1:
-				insert_job(job)
+			if job_id == "-1":
+				new_job_id = insert_job(job)
+				test_id = add_test(new_job_id,question_number)
+				for question in questions:
+					temp_question = Question(question["Question"],question["Correct"],question["Incorrect1"],question["Incorrect2"],question["Incorrect3"])
+					add_question(test_id, temp_question)
 				return Response("Success", status=200, mimetype="text/html")
 			else:
-				# TODO: edit job method
-				close_job(job_id)
-				insert_job(job)
+				edit_job(job_id, job)
+				delete_test(job_id)
+				test_id = add_test(job_id,question_number)
+				for question in questions:
+					temp_question = Question(question["Question"],question["Correct"],question["Incorrect1"],question["Incorrect2"],question["Incorrect3"])
+					add_question(test_id, temp_question)
 				return Response("Success", status=200, mimetype="text/html")
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
@@ -312,7 +313,7 @@ def delete_job():
 
 		# DELETE JOB IN DATABASE
 		try:
-			close_job(job_id)
+			remove_job(job_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
@@ -412,26 +413,26 @@ def get_applicant_jobs():
 		user_id = session["user_id"]
 
 		# GET ALL JOBS IN JSON FORMAT - Signify whether user has Not Applied / Applied But Not Taken Test / Received Feedback
-		try:
-			jobs = get_jobs()
-			jobs_dict = create_jobs_dictionary(jobs)
-			complete_applications = get_completed_applications(user_id)
-			incomplete_applications = get_incomplete_applications(user_id)
-			for job in jobs_dict:
-				job["Application"] = 0
+		#try:
+		jobs = get_jobs_applicant()
+		jobs_dict = create_jobs_dictionary(jobs)
+		complete_applications = get_completed_applications(user_id)
+		incomplete_applications = get_incomplete_applications(user_id)
+		for job in jobs_dict:
+			job["Application"] = 0
+			job["Feedback"] = 0
+			if any(job["ID"] in application for application in incomplete_applications):
+				job["Application"] = 1
 				job["Feedback"] = 0
-				if any(job["ID"] in application for application in incomplete_applications):
-					job["Application"] = 1
-					job["Feedback"] = 0
-				else:
-					for application in complete_applications:
-						if job["ID"] == application[0]:
-							job["Application"] = 2
-							job["Feedback"] = application[1]
-							break
-			jobs_json = json.dumps(jobs_dict)
-		except:
-			return Response("Could not connect to the database", status=200, mimetype="text/html")
+			else:
+				for application in complete_applications:
+					if job["ID"] == application[0]:
+						job["Application"] = 2
+						job["Feedback"] = application[1]
+						break
+		jobs_json = json.dumps(jobs_dict)
+		#except:
+		#return Response("Could not connect to the database", status=200, mimetype="text/html")
 
 		return Response(jobs_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
@@ -448,7 +449,6 @@ def show_applicant_cv_page():
 @app.route("/applicant/get_cv")
 def get_applicant_cv():
 	account_type = login_check()
-	print(account_type)
 	if account_type == "Applicant":
 		# GET REQUIRED SESSION PARAMETER
 		user_id = session["user_id"]
@@ -520,7 +520,13 @@ def send_test_answers():
 		# SCORE TEST AND STORE IN DATABASE
 		try:
 			answers_json = json.loads(answers)
-			cv_id = get_current_cv(user_id)
+<<<<<<< HEAD
+			applications = show_current_applications(user_id)
+
+			cv_id = get_cv_for_job(user_id, job_id)
+=======
+			cv_id = get_cv_for_job(user_id,job_id)
+>>>>>>> 01d15a15b42c450f1632d209122df0d2d6940755
 			score = score_test(answers_json, job_id, cv_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
@@ -535,24 +541,29 @@ def send_test_answers():
 def get_job_test():
 	if login_check() == "Applicant":
 		# GET REQUIRED REQUEST PARAMETERS
+		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 
 		#This method also needs to change the application score from -1 to 0
-		#try:
-		questions = get_test(job_id);
-		questions_json = json.dumps(questions)
-		# Can we get questions in this form if possible?
-		# questions = [
-		# 	{
-		# 		"Question":question,
-		# 		"Correct":correct,
-		# 		"Incorrect1":incorrect1,
-		# 		"Incorrect2":incorrect2,
-		# 		"Incorrect3":incorrect3
-		# 	}
-		# ]
-		#except:
-		#return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
+		try:
+			questions = get_test(job_id)
+
+			all_questions = []
+			for question in questions:
+				question_dict = {}
+				question_dict["Question"] = question[2]
+				question_dict["Correct"] = question[3]
+				question_dict["Incorrect1"] = question[4]
+				question_dict["Incorrect2"] = question[5]
+				question_dict["Incorrect3"] = question[6]
+				all_questions.append(question_dict)
+
+			questions_json = json.dumps(all_questions)
+
+			cv_id = get_cv_for_job(user_id,job_id)
+			update_score(job_id,cv_id,0)
+		except:
+			return Response("Could not retrieve data from the database", status=200, mimetype="text/html")
 
 		return Response(questions_json, status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")

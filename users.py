@@ -63,13 +63,11 @@ class CV:
 		degrees = []
 		for degree in self.degrees:
 			degrees.append(degree.__dict__)
-			print(degrees)
 		cv_dict["degrees"] = degrees
 
 		languages = []
 		for language in self.languages:
 			languages.append(language.__dict__)
-			print(languages)
 		cv_dict["languages"] = languages
 
 		hobbies = []
@@ -143,11 +141,18 @@ class Edu:
 
 class Question:
 
+    def __init__(self,question,correct,incorrect1,incorrect2,incorrect3):
+        self.question = question
+        self.correct = correct
+        self.incorrect1 = incorrect1
+        self.incorrect2 = incorrect2
+        self.incorrect3 = incorrect3
+
 	question = ""
 	correct = ""
-	incorrect_1 = ""
-	incorrect_2 = ""
-	incorrect_3 = ""
+	incorrect1 = ""
+	incorrect2 = ""
+	incorrect3 = ""
 
 class Answer:
 
@@ -182,6 +187,14 @@ def get_jobs():
     con.close()
     return jobs
 
+def get_jobs_applicant():
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT * FROM jobs WHERE status="Available"')
+    jobs = cur.fetchall()
+    con.close()
+    return jobs
+
 def create_jobs_dictionary(jobs):
     all_jobs = []
     for job in jobs:
@@ -195,6 +208,46 @@ def create_jobs_dictionary(jobs):
         jobs_dict["Status"] = "" if (job[6] == None) else job[6]
         all_jobs.append(jobs_dict)
     return all_jobs
+
+def create_staff_jobs_dictionary(jobs):
+    all_jobs = []
+    for job in jobs:
+        jobs_dict = {}
+        jobs_dict["ID"] = "" if (job[0] == None) else job[0]
+        jobs_dict["Name"] = "" if (job[1] == None) else job[1]
+        jobs_dict["Description"] = "" if (job[2] == None) else job[2]
+        jobs_dict["Deadline"] = "" if (job[3] == None) else job[3]
+        jobs_dict["Location"] = "" if (job[4] == None) else job[4]
+        jobs_dict["Position"] = "" if (job[5] == None) else job[5]
+        jobs_dict["Status"] = "" if (job[6] == None) else job[6]
+        question_data = get_all_test_questions(jobs_dict["ID"])
+        jobs_dict["QuestionNumber"] = question_data[0]
+        jobs_dict["Questions"] = question_data[1]
+        all_jobs.append(jobs_dict)
+    return all_jobs
+
+def get_all_test_questions(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT id,question_no from tests where Job_ID=(?)',(jobID,))
+    test_data = cur.fetchone()
+    if test_data is None:
+        return [0,[]]
+    test_id = test_data[0]
+    question_no = test_data[1]
+    cur.execute('SELECT question,answer,incorrect1,incorrect2,incorrect3 from question_test where Test_ID=(?)',(test_id,))
+    questions=cur.fetchall()
+    con.close()
+    all_questions = []
+    for question in questions:
+        temp_dict = {}
+        temp_dict["Question"] = question[0]
+        temp_dict["Correct"] = question[1]
+        temp_dict["Incorrect1"] = question[2]
+        temp_dict["Incorrect2"] = question[3]
+        temp_dict["Incorrect3"] = question[4]
+        all_questions.append(temp_dict)
+    return [question_no,all_questions]
 
 # Returns true IF user doesn't exist, false otherwise
 def check_mail(email):
@@ -229,6 +282,15 @@ def insert_job(job):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('INSERT into jobs VALUES (NULL,?,?,?,?,?,?)',(job.name,job.description,job.deadline,job.location,job.position,job.status))
+    job_id = cur.lastrowid
+    con.commit()
+    con.close()
+    return job_id
+
+def edit_job(job_id, job):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job_id))
     con.commit()
     con.close()
 
@@ -415,6 +477,13 @@ def close_job(jobID):
     con.commit()
     con.close()
 
+def remove_job(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('DELETE FROM jobs WHERE id=(?)', (jobID))
+    con.commit()
+    con.close()
+
 def reopen_job(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
@@ -467,16 +536,16 @@ def get_current_cv(userID):
     con.close()
     return user
 
-def score_test(answers,jobID,cvID):
+def score_test(answers,job_id,cv_id):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     score=0
     for i in answers:
-        cur.execute('Select answer from question_test where id=(?)',(i.id))
-        correct = cur.fetchone()
-        if i.answer == correct:
+        cur.execute('Select answer from question_test where question=(?) and test_id in (SELECT id from tests where job_id=(?))',(i["Question"],job_id))
+        correct = cur.fetchone()[0]
+        if i["Answer"] == correct:
             score+=1
-    cur.execute('Update job_cv set score=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cvID,jobID))
+    cur.execute('Update job_cv set score=(?) where CV_ID=(?) and Job_ID=(?) and status=0',(score,cv_id,job_id))
     con.commit()
     con.close()
     return score
@@ -516,12 +585,22 @@ def what_job(jobID):
 def get_test(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT id from tests where Job_ID=(?) order by random() limit 1',(jobID,))
-    test = cur.fetchone()[0]
-    cur.execute('SELECT * from question_test where Test_ID=(?) order by random() limit 10',(test,))
+    cur.execute('SELECT id,question_no from tests where Job_ID=(?)',(jobID,))
+    test_data = cur.fetchone()
+    test_id = test_data[0]
+    question_no = test_data[1]
+    cur.execute('SELECT * from question_test where Test_ID=(?) order by random() limit (?)',(test_id,question_no,))
     questions=cur.fetchall()
     con.close()
     return questions
+
+def delete_test(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('DELETE FROM question_test WHERE Test_ID IN (SELECT id from tests WHERE Job_ID=(?))',(jobID,))
+    cur.execute('DELETE from tests WHERE Job_ID=(?)',(jobID,))
+    con.commit()
+    con.close()
 
 
 # Use the one defined bellow
@@ -787,18 +866,44 @@ def all_applications(jobID):
     con.close()
     return users
 
-def add_test(jobID):
+def create_candidates_dict(candidates_raw):
+	all_candidates = []
+	for candidate in candidates_raw:
+		candidate_dict = {}
+		candidate_dict["ID"] = "" if (candidate[5] == None) else candidate[5]
+		candidate_dict["First Name"] = "" if (candidate[7] == None) else candidate[7]
+		candidate_dict["Last Name"] = "" if (candidate[7] == None) else candidate[8]
+		candidate_dict["Email"] = "" if (candidate[10] == None) else candidate[10]
+		candidate_dict["Score"] = "" if (candidate[2] == None) else candidate[2]
+		candidate_dict["CVID"] = "" if (candidate[1] == None) else candidate[1]
+		candidate_dict["Status"] = "" if (candidate[2] == None) else candidate[2]
+		all_candidates.append(candidate_dict)
+	return all_candidates
+
+def add_test(jobID, question_no):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into tests values (NULL,?)',(jobID,))
+    cur.execute('INSERT into tests values (NULL,?,?)',(jobID,question_no,))
+    con.commit()
+    cur.execute('SELECT id FROM tests WHERE Job_ID=?',(jobID,))
+    test_id = cur.fetchone()[0]
     con.close()
+    return test_id
 
-def add_question(testID,question,answer):
+def add_question(testID,question):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into question_test values (NULL,?,?,?)',(testID,question,answer))
+    cur.execute('INSERT into question_test values (NULL,?,?,?,?,?,?)',(testID,question.question,question.correct,question.incorrect1,question.incorrect2,question.incorrect3))
+    con.commit()
     con.close()
 
+def get_cv_for_job(user_id,job_id):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT cv_id FROM job_cv WHERE job_id=(?) and cv_id in (select id from cvs where user_id=(?))',(job_id,user_id,))
+    cv_id = cur.fetchone()[0]
+    con.close()
+    return cv_id
 
 def jsonify_cv(cv):
     cv_dict = dict()

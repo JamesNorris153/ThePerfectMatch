@@ -263,36 +263,11 @@ $('#job_table').on('click', '.feedback_button', function(event) {
 // Shows the modal that allows applicants to take tests for the jobs they apply for
 function showTestModal(job_id) {
 
-  // $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
-  //   alert(data);
-  // });
+  $.post("/applicant/get_job_test",{job_id:job_id},function(data) {
+    questions = JSON.parse(data);
 
   // Reset the test modal
   $('.test_question:not(.template)').remove();
-
-  questions = [
-    {
-      "Question":"Q1",
-      "Correct":"A1",
-      "Incorrect1":"B1",
-      "Incorrect2":"C1",
-      "Incorrect3":"D1"
-    },
-    {
-      "Question":"Q2",
-      "Correct":"A2",
-      "Incorrect1":"B2",
-      "Incorrect2":"C2",
-      "Incorrect3":"D2"
-    },
-    {
-      "Question":"Q3",
-      "Correct":"A3",
-      "Incorrect1":"B3",
-      "Incorrect2":"C3",
-      "Incorrect3":"D3"
-    }
-  ];
 
   // For each question being asked, get the question itself, and all the possible answers
   for (q in questions) {
@@ -335,6 +310,7 @@ function showTestModal(job_id) {
 
   // Show the modal
   $('#test_modal').addClass('is-active');
+});
 }
 
 // If the user gives up, close the test and show don't let them attempt it again
@@ -347,22 +323,6 @@ function giveUpTest() {
 
 // Method for getting all the applicant's answers and sending them to the API
 function submitTest() {
-  //JSON Format
-
-  // answers = [
-  //   {
-  //     "Question":question,
-  //     "Answer":answer
-  //   },
-  //   {
-  //     "Question":question,
-  //     "Answer":answer
-  //   },
-  //   {
-  //     "Question":question,
-  //     "Answer":answer
-  //   }
-  // ];
 
   // Get all the question elements from the test
   all_questions = $('.test_question:not(.template)');
@@ -372,7 +332,7 @@ function submitTest() {
   $(all_questions).each(function(){
     question = $(this).find('.question').html();
     // If applicant hasn't selected an option, set answer to an empty string, otherwise get their answer
-    if ($(this).find("input[type='radio']:checked").size() == 0) {
+    if ($(this).find("input[type='radio']:checked").length == 0) {
       answer = "";
     } else {
       answer = $(this).find("input[type='radio']:checked").parent().find('span').html();
@@ -388,12 +348,12 @@ function submitTest() {
   job_id = $('#cur_job_id').html();
 
   // Post the applicant's answers to the API and display the returned data
-  $.post("/applicant/send_test_answers",{job_id:job_id,answers:answers},function(data) {
+  $.post("/applicant/send_test_answers",{job_id:job_id,answers:JSON.stringify(answers)},function(data) {
+    alert(data);
     if (data == "Success") {
       $('#test_feedback_modal').addClass('is-active');
       $('#'+job_id).find('.test_button').addClass('is-hidden');
       $('#'+job_id).find('.feedback_button').removeClass('is-hidden');
-      $('#test_modal').removeClass('is-active');
     } else {
       $('#test_error_modal .modal-message').html(data);
       $('#test_error_modal').addClass('is-active');
