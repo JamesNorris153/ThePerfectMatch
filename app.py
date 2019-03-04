@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, Response, session
 from flask_cors import CORS
 from flask_mail import Mail, Message
 import json
+import string
+import random
 
 from users import *
 # from ml import retrain
@@ -44,7 +46,7 @@ def pass_mail(candidate):
 	msg.body = "Your pass has been changed. New generated pass is: "+newpass
 	mail.send(msg)
 	return "Sent"
-	
+
 ## Function to check whether user is logged in
 # Returns account_type or None if not logged in
 # If either session variable has been lost, log user out and return None
@@ -131,6 +133,45 @@ def staff_login():
 				return Response("Success", status=200, mimetype="text/html")
 		except:
 			return Response("There was an issue logging you in, please try again", status=200, mimetype="text/html")
+
+### Change staff password
+# Recieves: password
+@app.route("/staff/reset_password" methods=["POST"])
+def reset_staff_password():
+	# GET REQUIRED REQUEST PARAMETERS
+	email = request.form.get("email")
+
+	msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
+	msg.add_recipient(email)
+	letters = string.ascii_letters
+	newpass = "".join(random.choice(letters) for i in range(10))
+
+	try:
+		user_id = get_ID(email)
+		change_pass_admin(user_id[0], newpass)
+		msg.body = "Your pass has been changed. New generated pass is: " + newpass
+		msg.header = "Reset Password"
+		mail.send(msg)
+	except:
+		return Response("Could not connect to database", status=200, mimetype="text/html")
+
+	return Response("Success", status=200, mimetype="text/html")
+
+## Change staff password
+# Recieves: old_password, new_password
+@app.route("/staff/change_password", methods=["POST"])
+def change_staff_password():
+	# GET REQUIRED REQUEST PARAMETERS
+	user_id = session["user_id"]
+	password = request.form.get("password")
+
+	try:
+		email = get_user(user_id)[4]
+		change_pass_admin(user_id, password)
+	except:
+		return Response("Could not connect to the database", status=200, mimetype="text/html")
+
+	return Response("Success", status=200, mimetype="text/html")
 
 ## Staff Jobs Page
 @app.route("/staff/jobs")
@@ -410,6 +451,45 @@ def register_applicant():
 	except:
 		return Response("There was an error creating your account, please try again", status=200, mimetype="text/html")
 
+## Change staff password
+# Recieves: password
+@app.route("/applicant/reset_password" methods=["POST"])
+def reset_applicant_password():
+	# GET REQUIRED REQUEST PARAMETERS
+	email = request.form.get("email")
+
+	msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
+	msg.add_recipient(email)
+	letters = string.ascii_letters
+	newpass = "".join(random.choice(letters) for i in range(10))
+
+	try:
+		user_id = get_ID(email)
+		change_pass_user(user_id[0], newpass)
+		msg.body = "Your pass has been changed. New generated pass is: " + newpass
+		msg.header = "Reset Password"
+		mail.send(msg)
+	except:
+		return Response("Could not connect to database", status=200, mimetype="text/html")
+
+	return Response("Success", status=200, mimetype="text/html")
+
+## Change staff password
+# Recieves: old_password, new_password
+@app.route("/applicant/change_password", methods=["POST"])
+def change_applicant_password():
+	# GET REQUIRED REQUEST PARAMETERS
+	user_id = session["user_id"]
+	password = request.form.get("password")
+
+	try:
+		email = get_user(user_id)[4]
+		change_pass_user(user_id, password)
+	except:
+		return Response("Could not connect to the database", status=200, mimetype="text/html")
+
+	return Response("Success", status=200, mimetype="text/html")
+
 ## Applicant Jobs Page
 @app.route("/applicant/jobs")
 def show_applicant_jobs_page():
@@ -586,7 +666,6 @@ def create_test_admin():
 	if user_id is None:
 		return Response("ERROR", status=200, mimetype="text/html")
 	return Response(str(user_id), status=200, mimetype="text/html")
-
 
 
 ## SETUP APP
