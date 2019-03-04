@@ -282,6 +282,7 @@ def save_job():
 		user_id = session["user_id"]
 		job_id = request.form.get("job_id")
 		job_json = json.loads(request.form.get("job"))
+		print(job_id)
 
 		# CREATE JOB IN DATABASE
 		job = Job(
@@ -291,17 +292,15 @@ def save_job():
 			job_json["Location"],
 			job_json["Position"],
 			job_json["Status"])
-		try:
-			if job_id == -1:
-				insert_job(job)
-				return Response("Success", status=200, mimetype="text/html")
-			else:
-				# TODO: edit job method
-				close_job(job_id)
-				insert_job(job)
-				return Response("Success", status=200, mimetype="text/html")
-		except:
-			return Response("Could not connect to the database", status=200, mimetype="text/html")
+		#try:
+		if job_id == "-1":
+			insert_job(job)
+			return Response("Success", status=200, mimetype="text/html")
+		else:
+			edit_job(job_id, job)
+			return Response("Success", status=200, mimetype="text/html")
+		#except:
+		#return Response("Could not connect to the database", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
 @app.route("/staff/delete_job", methods=["POST"])

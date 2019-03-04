@@ -232,6 +232,13 @@ def insert_job(job):
     con.commit()
     con.close()
 
+def edit_job(job_id, job):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('UPDATE jobs SET name=(?), description=(?), deadline=(?), location=(?), position=(?), status=(?) WHERE id=(?)',(job.name, job.description, job.deadline, job.location, job.position, job.status, job_id))
+    con.commit()
+    con.close()
+
 def selectAllSkills():
     skills = []
     con = sql.connect(path.join(ROOT, 'database.db'))
