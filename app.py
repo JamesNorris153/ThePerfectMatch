@@ -396,6 +396,32 @@ def retrain_job():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
+@app.route("/staff/email_report")
+def email_report():
+	if login_check() == "Admin":
+		# GET REQUIRED REQUEST PARAMETERS
+		job_id = request.form.get("job_id")
+		user_id = session["user_id"]
+
+		# EMAIL ADMIN
+		try:
+			email = str(get_admin(user_id)[1])
+			msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
+			msg.add_recipient(email)
+
+			complete_applications = len(all_complete_applications(job_id))
+			incomplete_applications = len(all_applications(job_id)) - complete_applications
+			job_name = str(what_job(job_id)[0][1])
+
+			msg.body = "Dear " + email + " you have " + str(complete_applications) + " completed applications and " + str(incomplete_applications) + " for the job " + job_name + ". Please review the applications at http://127.0.0.1:5000/applicant/jobs"
+			msg.header = "Application Report: " + job_name
+			mail.send(msg)
+		except:
+			return Response("Could not send email", status=200, mimetype="text/html")
+
+		return Response("Success", status=200, mimetype="text/html")
+	return Response("You are not loggen in", status=200, mimetype="text/html")
+
 ## Applicant Pages
 
 # Applicant Login Page
