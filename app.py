@@ -406,7 +406,6 @@ def email_report():
 		# EMAIL ADMIN
 		try:
 			email = str(get_admin(user_id)[1])
-			email = "James.Norris153@gmail.com"
 			msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
 			msg.add_recipient(email)
 
