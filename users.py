@@ -1120,7 +1120,7 @@ def all_complete_applications(jobID):
     """All the applicants who have finished their application for a certain position."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('SELECT user_id,fname,lname,email,score,cv_id,status from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) and score>=0 order by score desc',(jobID,))
+    cur.execute('SELECT user_id,fname,lname,email,score,cv_id,status from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) and score>=0 order by status asc, score desc',(jobID,))
     users=cur.fetchall()
     con.close()
     return users
