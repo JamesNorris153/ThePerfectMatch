@@ -47,14 +47,6 @@ def pass_mail(candidate):
 	mail.send(msg)
 	return "Sent"
 
-# Sends email to a user with the given title and content
-def send_mail(email,title,content):
-	msg = Message(title,sender='PerfectCandidate.Notifications@gmail.com')
-	msg.add_recipient(email)
-	msg.html = render_template('email_template.html',content=content,title=title)
-	mail.send(msg)
-	return "Sent"
-
 ## Function to check whether user is logged in
 # Returns account_type or None if not logged in
 # If either session variable has been lost, log user out and return None
@@ -151,6 +143,9 @@ def staff_login():
 def reset_staff_password():
 	# GET REQUIRED REQUEST PARAMETERS
 	email = request.form.get("email")
+
+	msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
+	msg.add_recipient(email)
 	letters = string.ascii_letters
 	newpass = "".join(random.choice(letters) for i in range(10))
 	try:
@@ -158,9 +153,9 @@ def reset_staff_password():
 		# If user with this email doesn't exist -> For security reasons don't disclose this information
 		if user_id is not None:
 			try:
-				content = "Your pass has been changed. New generated pass is: " + newpass
-				title = "Reset Password"
-				send_mail(email,title,content)
+				msg.body = "Your pass has been changed. New generated pass is: " + newpass
+				msg.header = "Reset Password"
+				mail.send(msg)
 			except:
 				# Invalid email address
 				return Response("The email address entered is invalid, please try again", status=200, mimetype="text/html")
@@ -724,15 +719,6 @@ def create_test_admin():
 	if user_id is None:
 		return Response("ERROR", status=200, mimetype="text/html")
 	return Response(str(user_id), status=200, mimetype="text/html")
-
-@app.route("/emailtemplate")
-def show_email_template():
-	return render_template('email_template.html',content="CONTENT",title="TITLE")
-
-@app.route("/sendemailtemplate")
-def send_email_template():
-	return send_mail('matthew.wooding@me.com',"TITLE1","CONTENT1")
-
 
 ## SETUP APP
 
