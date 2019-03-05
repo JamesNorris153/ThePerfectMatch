@@ -238,7 +238,7 @@ def get_candidates():
 		if job_id is None:
 			return Response("Could not find candidates for this job, please reload the page", status=200, mimetype="text/html")
 		try:
-			candidates_raw = all_applications(job_id)
+			candidates_raw = all_complete_applications(job_id)
 			candidates_dict = create_candidates_dict(candidates_raw)
 			candidates_json = json.dumps(candidates_dict)
 		except:

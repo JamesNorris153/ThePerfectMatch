@@ -762,6 +762,19 @@ def select_cvs(jobId):
     con.close()
     return cvID
 
+def select_cvs_completed(jobId):
+    """Return all the CV that were used to apply to a certain job in completed applications (completed test)."""
+    cvID = []
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT cv_id from job_cv where job_id=(?) and score>=0',(jobId,))
+    ids = cur.fetchall()
+    for item in ids:
+        cvID.append(item)
+    con.commit()
+    con.close()
+    return cvID
+
 def insert_json_cv(form,userID):
     """Allows users to insert a CV."""
     con = sql.connect(path.join(ROOT, 'database.db'))
@@ -879,6 +892,15 @@ def all_applications(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
     cur.execute('SELECT user_id,fname,lname,email,score,cv_id,status from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) order by score desc',(jobID,))
+    users=cur.fetchall()
+    con.close()
+    return users
+
+def all_complete_applications(jobID):
+    """All the applicants who have finished their application for a certain position."""
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT user_id,fname,lname,email,score,cv_id,status from job_cv join cvs on CV_ID=cvs.id join users on User_ID=users.id where Job_ID=(?) and score>=0 order by score desc',(jobID,))
     users=cur.fetchall()
     con.close()
     return users
