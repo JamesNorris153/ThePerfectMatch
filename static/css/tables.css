@@ -2,6 +2,10 @@ th, td {
   vertical-align: middle !important;
   text-align: center !important;
 }
+.sortable:hover {
+  color:#209CEE !important;
+  cursor:pointer !important;
+}
 .modal-card {
   width:80%;
   min-width:500px;

@@ -48,14 +48,14 @@
   <table class="table is-hoverable is-fullwidth is-bordered is-striped" id="job_table" style="margin-top:50px">
   <thead>
     <tr>
-      <th onclick="sortTable(0,this);">Title</th>
-      <th onclick="sortTable(1,this);">Location</th>
-      <th onclick="sortTable(2,this);">Position</th>
-      <th onclick="sortTable(3,this);">Deadline</th>
-      <th onclick="sortTable(4,this);">Status</th>
+      <th class="sortable" onclick="sortTable(0,this);">Title</th>
+      <th class="sortable" onclick="sortTable(1,this);">Location</th>
+      <th class="sortable" onclick="sortTable(2,this);">Position</th>
+      <th class="sortable" onclick="sortTable(3,this);">Deadline</th>
+      <th class="sortable" onclick="sortTable(4,this);">Status</th>
       <th>
         Actions
-        <a class="button is-rounded is-small add_button" onclick="showJobModal(-1);">Add Job</a>
+        <a class="button is-rounded is-small add_button" onclick="showJobModal(-1);">Add New Job</a>
       </th>
     </tr>
   </thead>
@@ -68,10 +68,10 @@
       <td class="job_status"></td>
       <td>
         <div>
-          <a class="button is-rounded is-small edit_button" style="margin:2px">Edit</a>
-          <a class="button is-rounded is-small delete_button" style="margin:2px">Delete</a>
-          <a class="button is-rounded is-small candidates_button" style="margin:2px">Candidates</a>
-          <a class="button is-rounded is-small retrain_button" style="margin:2px">Retrain</a>
+          <a class="button is-rounded is-small edit_button tooltip is-tooltip-info is-tooltip-multiline is-tooltip-left" data-tooltip="Make changes to an existing job without losing any applications" style="margin:2px">Edit</a>
+          <a class="button is-rounded is-small delete_button tooltip is-tooltip-info is-tooltip-multiline is-tooltip-left" data-tooltip="Delete all information surrounding this job, including any applications received" style="margin:2px">Delete</a>
+          <a class="button is-rounded is-small candidates_button tooltip is-tooltip-info is-tooltip-multiline is-tooltip-left" data-tooltip="View all candidates who have applied for this position, providing simple feedback to help improve our suggestions" style="margin:2px">Candidates</a>
+          <a class="button is-rounded is-small retrain_button tooltip is-tooltip-info is-tooltip-multiline is-tooltip-left" data-tooltip="Retraining the system will help it find you the best candidates by using any feedback you've already sent to candidates" style="margin:2px">Retrain</a>
         </div>
         <div class="is-hidden job_description"></div>
         <div class="is-hidden job_question_number"></div>
