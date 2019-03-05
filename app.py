@@ -388,10 +388,10 @@ def retrain_job():
 		job_id = request.form.get("job_id")
 
 		# PERFORM ML RETRAINING
-		try:
-			retrain(job_id)
-		except:
-			return Response("Could not update data in the database", status=200, mimetype="text/html")
+		# try:
+		retrain(job_id)
+		# except:
+		# 	return Response("Could not update data in the database", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")

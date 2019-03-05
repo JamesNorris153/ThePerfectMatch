@@ -35,7 +35,7 @@ def retrain(jobID):
             return 0
 
     dict = {'A*' : 10, 'A' : 9, 'B' : 8, 'C' : 7, 'D' : 6}
-
+    degree = {'1st' : 10, '2:1' : 9, '2:2' : 8, '3rd' : 7, 'Pass' : 6}
     X1 = []
     X2 = []
     y1 = []
@@ -59,8 +59,9 @@ def retrain(jobID):
         info = users.get_CV(i[0])
         status = users.select_status(jobID, i[0])[0]
         applicant = []
-        applicant.append(convertUniScore(info.degrees[0]))
-        applicant.append(dict[info.degrees[1]])
+        print(info.degrees[0])
+        applicant.append(convertUniScore(info.degrees[0].name))
+        applicant.append(degree[info.degrees[0].grade])
         applicant.append(users.select_testScore(jobID, i[0]))
         if status == 0:
             newApplicants.append(i[0])
