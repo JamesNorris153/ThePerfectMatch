@@ -20,6 +20,7 @@ def test(jobID, numOfTrainingData, numOfTestData):
     # employment = users.selectAllEmployment(jobID)
 
     dict = {'A*' : 10, 'A' : 9, 'B' : 8, 'C' : 7, 'D' : 6}
+    degree = {'1st' : 10, '2:1' : 9, '2:2' : 8, '3rd' : 7, 'Pass' : 6}
 
     X1 = []
     X2 = []
@@ -37,8 +38,8 @@ def test(jobID, numOfTrainingData, numOfTestData):
     readUniScore()
 
     def convertUniScore(uniName):
-        if uniScore.get(uniName) != None:
-            return uniScore[uniName]
+        if uniScore.get(uniName.upper()) != None:
+            return uniScore[uniName.upper()]
         else:
             return 0
 
@@ -59,9 +60,9 @@ def test(jobID, numOfTrainingData, numOfTestData):
         applicant = []
         level = []
         info = users.get_CV(cvs[i][0])
-        applicant.append(convertUniScore(info.degrees[0]))
-        applicant.append(dict[info.degrees[1]])
-        applicant.append(users.select_testScore(jobID, i[0]))
+        applicant.append(convertUniScore(info.degrees[0].name))
+        applicant.append(degree[info.degrees[1].grade])
+        applicant.append(users.select_testScore(jobID, i[0])[0])
         getData(info.skills, skills, applicant, 2)
         getData(info.languages, languages, applicant)
         getData(info.ALevels, ALevels, applicant, 1)
@@ -76,9 +77,9 @@ def test(jobID, numOfTrainingData, numOfTestData):
         info = users.get_CV(cvs[i][0])
         applicant = []
         level = []
-        applicant.append(convertUniScore(info.degrees[0]))
-        applicant.append(dict[info.degrees[1]])
-        applicant.append(users.select_testScore(jobID, i[0]))
+        applicant.append(convertUniScore(info.degrees[0].name))
+        applicant.append(degree[info.degrees[1].grade])
+        applicant.append(users.select_testScore(jobID, i[0])[0])
         getData(info.skills, skills, applicant, 2)
         getData(info.languages, languages, applicant)
         getData(info.ALevels, ALevels, applicant, 1)
