@@ -398,6 +398,77 @@ def selectAllEmployment():
 
     return Employment
 
+#
+# def selectAllSkills(jobID):
+#     """Returns all skills."""
+#     skills = []
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     result = cur.execute('select * from skills where job_id=(?)',(jobID,))
+#     result = cur.fetchall()
+#     for item in result:
+#         skills.append(item[2])
+#     con.commit()
+#     con.close()
+#
+#     return skills
+#
+# def selectAllLanguages(jobID):
+#     """Returns all languages."""
+#     languages = []
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     result = cur.execute('select * from languages where job_id=(?)',(jobID,))
+#     result = cur.fetchall()
+#     for item in result:
+#         languages.append(item[2])
+#     con.commit()
+#     con.close()
+#
+#     return languages
+#
+# def selectAllAlevels(jobID):
+#     """Returns all ALevels."""
+#     Alevels = []
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     result = cur.execute('select * from ALevel where job_id=(?)',(jobID,))
+#     result = cur.fetchall()
+#     for item in result:
+#         Alevels.append(item[2])
+#     con.commit()
+#     con.close()
+#
+#     return Alevels
+#
+# def selectAllHobbies(jobID):
+#     """Returns all hobbies."""
+#     Hobbies = []
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     result = cur.execute('select * from Hobbies where job_id=(?)',(jobID,))
+#     result = cur.fetchall()
+#     for item in result:
+#         Hobbies.append(item[2])
+#     con.commit()
+#     con.close()
+#
+#     return Hobbies
+#
+# def selectAllEmployment(jobID):
+#     """Returns all the employment."""
+#     Employment = []
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     result = cur.execute('select * from Employment where job_id=(?)',(jobID,))
+#     result = cur.fetchall()
+#     for item in result:
+#         Employment.append(item[2])
+#     con.commit()
+#     con.close()
+#
+#     return Employment
+
 # ALevel/Hobbies/Skills/Languages
 def insert_trait_dependency(table, jobID, name, level):
     """Adds a link between a certain ALevel/Hobby/Skill/Language and the likelihood
@@ -547,29 +618,30 @@ def reopen_job(jobID):
     con.close()
 
 # WE NEED TO CHECK DESCRIPTION FOR IF TRAIT EXISTS -> SET TO 1
-# def new_trait(jobID,trait,table):
-#     """Links a certain attribute to the likeliood of being accepted for a specific
-#     job. Usable for ALevels/Skills/Hobbies/Languages."""
-#     con = sql.connect(path.join(ROOT, 'database.db'))
-#     cur = con.cursor()
-#     cur.execute('INSERT into {} values (NULL,?,?,0)'.format(table),(jobID,trait))
-#     con.commit()
-#     con.close()
-
 def new_trait(jobID,trait,table):
     """Links a certain attribute to the likeliood of being accepted for a specific
     job. Usable for ALevels/Skills/Hobbies/Languages."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    value = 0
-    description = get_description(jobID)
-    print(description)
-    if trait in description:
-        print('TRAIT FOUND')
-        value = 1
-    cur.execute('INSERT into {} values (NULL,?,?,?)'.format(table),(jobID,trait,value,))
+    cur.execute('INSERT into {} values (NULL,?,?,0)'.format(table),(jobID,trait))
     con.commit()
     con.close()
+
+# def new_trait(jobID,trait,table):
+#     """Links a certain attribute to the likeliood of being accepted for a specific
+#     job. Usable for ALevels/Skills/Hobbies/Languages."""
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     value = 0
+#     if job_id != -1:
+#         description = get_description(jobID)
+#         print(description)
+#         if trait in description:
+#             print('TRAIT FOUND')
+#             value = 1
+#     cur.execute('INSERT into {} values (NULL,?,?,?)'.format(table),(jobID,trait,value,))
+#     con.commit()
+#     con.close()
 
 def get_description(jobID):
     con = sql.connect(path.join(ROOT, 'database.db'))
@@ -715,6 +787,41 @@ def apply_job(cvID,jobID):
     cur.execute('INSERT into job_cv values (?,?,?,?,?)',(jobID,cvID,-1,0,0))
     con.commit()
     con.close()
+
+# NEEDS TO: Get all skills/alevels/etc from cv -> link them to job specific ids
+# CURRENTLY all skills/alevels/etc. are in skills/alevels/etc. table with jobid -1
+# Check if job has same skills/alevels in table already -> if so, update alevel_id to one for job
+# If not, create row in table with job_id new and level=0 or 1 depending on whether it appears in description
+
+# Skills
+# skills_ids = select skills_id from skills_cv where cv_id=cvID // GETS ALL SKILL IDS IN CV (JOB ID = -1)
+#
+#
+
+# select skills_id from skills_cv where cv_id=cvID
+# select id from skills where job_id=jobID
+# def apply_job(cvID,jobID):
+#     """Adds an entry marking a user applying to a role in the db."""
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#
+#     cur.execute('SELECT skills_id from skills_cv where cv_id=(?)',(cvID,))
+#     skill_ids = cur.fetchall()
+#     for skill in skill_ids:
+#         skill_id = skill[0]
+#         cur.execute('SELECT id FROM skills WHERE name=(SELECT name FROM skills WHERE id=(?)) AND job_id=(?)',(skill_id,jobID,))
+#         data = cur.fetchone()
+#         if data == None:
+#             # Skill does not exist for this job
+#             cur.execute('INSERT INTO skills VALUES (NULL,?,?,?)',(jobID,name,level,))
+#         else:
+#             # Skill exists for this job
+#             job_skill_id = data[0]
+#
+#     # cur.execute('UPDATE job')
+#     # cur.execute('INSERT into job_cv values (?,?,?,?,?)',(jobID,cvID,-1,0,0))
+#     # con.commit()
+#     con.close()
 
 def change_level(jobID,table,name,level):
     """Modifies the level of a certain attribute in relation to a job."""
@@ -887,6 +994,95 @@ def insert_json_cv(form,userID):
             con.commit()
 
     con.close()
+
+# def insert_json_cv(form,userID):
+#     """Allows users to insert a CV."""
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#
+#     cur.execute('Insert into cvs values (NULL,?)',(userID,))
+#     con.commit()
+#     cur.execute('Select max(id) from cvs')
+#     max=cur.fetchone()
+#
+#     for i in range (0,len(form["Skills"])):
+#         cur.execute('Select id from skills where name=(?) and Job_ID=-1',(form["Skills"][i]["Skill"],))
+#         id=cur.fetchone()
+#         if id!=None:
+#             cur.execute('INSERT into skills_cv values (?,?,?)',(id[0],max[0],int(form["Skills"][i]["Expertise"])))
+#             con.commit()
+#         else:
+#             new_trait(-1,form["Skills"][i]["Skill"],'skills')
+#             cur.execute('SELECT max(id) from skills')
+#             id1=cur.fetchone()
+#             cur.execute('INSERT into skills_cv values (?,?,?)',(id1[0],max[0],form["Skills"][i]["Expertise"]))
+#             con.commit()
+#
+#     for i in range (0,len(form["Hobbies"])):
+#         cur.execute('Select id from hobbies where name=(?) and Job_ID=-1',(form["Hobbies"][i]["Name"],))
+#         id=cur.fetchone()
+#         if id!=None:
+#             cur.execute('INSERT into hobby_cv values (?,?,?)',(id[0],max[0],form["Hobbies"][i]["Interest"]))
+#             con.commit()
+#         else:
+#             new_trait(-1,form["Hobbies"][i]["Name"],'hobbies')
+#             cur.execute('SELECT max(id) from hobbies')
+#             id1=cur.fetchone()
+#             cur.execute('INSERT into hobby_cv values (?,?,?)',(id1[0],max[0],form["Hobbies"][i]["Interest"]))
+#             con.commit()
+#
+#     for i in range (0,len(form["Languages Known"])):
+#         cur.execute('Select id from languages where name=(?) and Job_ID=-1',(form["Languages Known"][i]["Language"],))
+#         id=cur.fetchone()
+#         if id!=None:
+#             cur.execute('INSERT into language_cv values (?,?,?)',(id[0],max[0],form["Languages Known"][i]["Expertise"]))
+#             con.commit()
+#         else:
+#             new_trait(-1,form["Languages Known"][i]["Language"],'languages')
+#             cur.execute('SELECT max(id) from languages')
+#             id1=cur.fetchone()
+#             cur.execute('INSERT into language_cv values (?,?,?)',(id1[0],max[0],form["Languages Known"][i]["Expertise"]))
+#             con.commit()
+#
+#     for i in range (0,len(form["A-Level Qualifications"])):
+#         cur.execute('Select id from alevel where name=(?) and Job_ID=-1',(form["A-Level Qualifications"][i]["Subject"],))
+#         id=cur.fetchone()
+#         if id!=None:
+#             cur.execute('INSERT into alevel_cv values (?,?,?)',(id[0],max[0],form["A-Level Qualifications"][i]["Grade"]))
+#             con.commit()
+#         else:
+#             new_trait(-1,form["A-Level Qualifications"][i]["Subject"],'alevel')
+#             cur.execute('SELECT max(id) from alevel')
+#             id1=cur.fetchone()
+#             cur.execute('INSERT into alevel_cv values (?,?,?)',(id1[0],max[0],form["A-Level Qualifications"][i]["Grade"]))
+#             con.commit()
+#
+#     cur.execute('Select id from degrees where university=(?) and Job_ID=-1 and course=(?)',(form["University Attended"],form["Degree Qualification"]))
+#     id=cur.fetchone()
+#     if id!=None:
+#         cur.execute('INSERT into degree_cv values (?,?,?)',(id[0],max[0],form["Degree Level"]))
+#         con.commit()
+#     else:
+#         new_degree(-1,form["University Attended"],form["Degree Qualification"])
+#         cur.execute('SELECT max(id) from degrees')
+#         id1=cur.fetchone()
+#         cur.execute('INSERT into degree_cv values (?,?,?)',(id1[0],max[0],form["Degree Level"]))
+#         con.commit()
+#
+#     for i in range (0,len(form["Previous Employment"])):
+#         cur.execute('Select id from employment where company=(?) and Job_ID=-1 and position=(?)',(form["Previous Employment"][i]["Company"],form["Previous Employment"][i]["Position"]))
+#         id=cur.fetchone()
+#         if id!=None:
+#             cur.execute('INSERT into employment_cv values (?,?,?)',(id[0],max[0],form["Previous Employment"][i]["Length of Employment"]))
+#             con.commit()
+#         else:
+#             new_employment(-1,form["Previous Employment"][i]["Company"],form["Previous Employment"][i]["Position"])
+#             cur.execute('SELECT max(id) from employment')
+#             id1=cur.fetchone()
+#             cur.execute('INSERT into employment_cv values (?,?,?)',(id1[0],max[0],form["Previous Employment"][i]["Length of Employment"]))
+#             con.commit()
+#
+#     con.close()
 
 def change_pass_user(userID,newpass):
     """Updates the password of a user in the database."""
