@@ -47,6 +47,7 @@ def pass_mail(candidate):
 	mail.send(msg)
 	return "Sent"
 
+# Sends email to a user with the given title and content
 def send_mail(email,title,content):
 	msg = Message(title,sender='PerfectCandidate.Notifications@gmail.com')
 	msg.add_recipient(email)
@@ -150,9 +151,6 @@ def staff_login():
 def reset_staff_password():
 	# GET REQUIRED REQUEST PARAMETERS
 	email = request.form.get("email")
-
-	# msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
-	# msg.add_recipient(email)
 	letters = string.ascii_letters
 	newpass = "".join(random.choice(letters) for i in range(10))
 	try:
@@ -160,9 +158,6 @@ def reset_staff_password():
 		# If user with this email doesn't exist -> For security reasons don't disclose this information
 		if user_id is not None:
 			try:
-				# msg.body = "Your pass has been changed. New generated pass is: " + newpass
-				# msg.header = "Reset Password"
-				# mail.send(msg)
 				content = "Your pass has been changed. New generated pass is: " + newpass
 				title = "Reset Password"
 				send_mail(email,title,content)
