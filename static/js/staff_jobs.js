@@ -36,7 +36,7 @@ function showJobModal(job_id) {
   $('#job_modal input[name="job_name"]').val(job_name);
   $('#job_modal input[name="job_location"]').val(job_location);
   $('#job_modal input[name="job_deadline"]').val(job_deadline);
-  $('#job_modal .job_description_box').html(job_description);
+  $('#job_modal .job_description_box').val(job_description);
   $('#job_modal div[name="job_position"]').find('select').val(job_position);
   $('#job_modal div[name="job_status"]').find('select').val(job_status);
   $('#job_modal .question_number').val(job_question_number);

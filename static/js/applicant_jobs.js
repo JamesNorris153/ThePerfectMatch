@@ -6,7 +6,7 @@ function closeDescriptionModal() {
 // Shows the description modal and displays the description of the job selected
 function showDescriptionModal(job_id) {
   description = $('#'+job_id).find('.job_description').html();
-  $('#description_modal .modal-message').html(description);
+  $('#description_modal .modal-message').val(description);
   $('#description_modal').addClass('is-active');
 }
 
