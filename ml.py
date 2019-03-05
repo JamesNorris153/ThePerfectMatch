@@ -29,8 +29,8 @@ def retrain(jobID):
     readUniScore()
 
     def convertUniScore(uniName):
-        if uniScore.get(uniName) != None:
-            return uniScore[uniName]
+        if uniScore.get(uniName.upper()) != None:
+            return uniScore[uniName.upper()]
         else:
             return 0
 
@@ -59,10 +59,9 @@ def retrain(jobID):
         info = users.get_CV(i[0])
         status = users.select_status(jobID, i[0])[0]
         applicant = []
-        print(info.degrees[0])
         applicant.append(convertUniScore(info.degrees[0].name))
         applicant.append(degree[info.degrees[0].grade])
-        applicant.append(users.select_testScore(jobID, i[0]))
+        applicant.append(users.select_testScore(jobID, i[0])[0])
         if status == 0:
             newApplicants.append(i[0])
             getData(info.skills, skills, applicant, 2)
