@@ -7,11 +7,16 @@ import re
 def retrain(jobID):
     cvs = users.select_cvs(jobID)
     # cvs = users.select_cvs_completed(jobID) -> Should we use this method so that scores don't change for user's that haven't taken the test yet?
-    skills = users.selectAllSkills()
-    languages = users.selectAllLanguages()
-    ALevels = users.selectAllAlevels()
-    hobbies = users.selectAllHobbies()
-    employment = users.selectAllEmployment()
+    # skills = users.selectAllSkills()
+    # languages = users.selectAllLanguages()
+    # ALevels = users.selectAllAlevels()
+    # hobbies = users.selectAllHobbies()
+    # employment = users.selectAllEmployment()
+    skills = users.selectAllSkills(jobID)
+    languages = users.selectAllLanguages(jobID)
+    ALevels = users.selectAllAlevels(jobID)
+    hobbies = users.selectAllHobbies(jobID)
+    employment = users.selectAllEmployment(jobID)
 
     uniScore = {}
     def readUniScore():
