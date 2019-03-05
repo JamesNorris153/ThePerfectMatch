@@ -1,12 +1,14 @@
 from flask import Flask, render_template, request, redirect, Response, session
 from flask_cors import CORS
 from flask_mail import Mail, Message
+from celery import Celery
 import json
 import string
 import random
 
 from users import *
 from ml import retrain
+import tasks
 import os
 
 ## Session variables
@@ -16,6 +18,8 @@ import os
 ## NOTE: WHEN CONNECTING TO THE DATABASE, USE TRY EXCEPT BLOCKS INCASE OF DATABASE DISCONNECT OR ANY OTHER ISSUE
 
 app = Flask(__name__, static_url_path='/static')
+
+celery = Celery(app.name)
 
 CORS(app)
 # Email Setup
@@ -45,6 +49,12 @@ def pass_mail(candidate):
 	change_pass_user(id,newpass)
 	msg.body = "Your pass has been changed. New generated pass is: "+newpass
 	mail.send(msg)
+	return "Sent"
+
+def send_retraining_complete_mail(job_id):
+	# msg = Message('Retraining Complete', sender = 'PerfectCandidate.Notifications@gmail.com', recipients = email)
+	# msg.body = message
+	# mail.send(msg)
 	return "Sent"
 
 ## Function to check whether user is logged in
@@ -398,10 +408,13 @@ def retrain_job():
 		if cvs_liked_or_disliked == 0:
 			return Response("You must provide feedback for at least one cv before you can retrain the system",status=200,mimetype="text/html")
 		# PERFORM ML RETRAINING
-		try:
-			retrain(job_id)
-		except:
-			return Response("Their was an issue retraining your data please try again later", status=200, mimetype="text/html")
+		# try:
+
+		# task = retrain_job_in_background.delay(job_id)
+		task = tasks.retrain_job_in_background.delay(job_id=job_id)
+		# retrain(job_id)
+		# except:
+		# 	return Response("Their was an issue retraining your data please try again later", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
