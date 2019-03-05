@@ -546,14 +546,38 @@ def reopen_job(jobID):
     con.commit()
     con.close()
 
+# WE NEED TO CHECK DESCRIPTION FOR IF TRAIT EXISTS -> SET TO 1
+# def new_trait(jobID,trait,table):
+#     """Links a certain attribute to the likeliood of being accepted for a specific
+#     job. Usable for ALevels/Skills/Hobbies/Languages."""
+#     con = sql.connect(path.join(ROOT, 'database.db'))
+#     cur = con.cursor()
+#     cur.execute('INSERT into {} values (NULL,?,?,0)'.format(table),(jobID,trait))
+#     con.commit()
+#     con.close()
+
 def new_trait(jobID,trait,table):
     """Links a certain attribute to the likeliood of being accepted for a specific
     job. Usable for ALevels/Skills/Hobbies/Languages."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('INSERT into {} values (NULL,?,?,0)'.format(table),(jobID,trait))
+    value = 0
+    description = get_description(jobID)
+    print(description)
+    if trait in description:
+        print('TRAIT FOUND')
+        value = 1
+    cur.execute('INSERT into {} values (NULL,?,?,?)'.format(table),(jobID,trait,value,))
     con.commit()
     con.close()
+
+def get_description(jobID):
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT description from jobs where id=(?)',(jobID,))
+    description = cur.fetchone()[0]
+    con.close()
+    return description
 
 def new_degree(jobID,university,course):
     """Links a certain degree to the likeliood of being accepted for a specific
@@ -918,7 +942,7 @@ def create_candidates_dict(candidates_raw):
         candidate_dict["CVID"] = "" if (candidate[5] == None) else candidate[5]
         candidate_dict["Status"] = "" if (candidate[6] == None) else candidate[6]
         all_candidates.append(candidate_dict)
-        return all_candidates
+    return all_candidates
 
 def add_test(jobID, question_no):
     """Permits the creation of a new test."""
