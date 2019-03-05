@@ -271,6 +271,15 @@ def get_user(id):
     con.close()
     return user
 
+def get_admin(id):
+    """Returns a specific admin by id."""
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT * FROM admins WHERE id=(?)',(id,))
+    user = cur.fetchone()
+    con.close()
+    return user
+
 def get_ID(email):
     """Returns the id of a user taking input an email."""
     con = sql.connect(path.join(ROOT, 'database.db'))

@@ -174,16 +174,25 @@ def reset_staff_password():
 @app.route("/staff/change_password", methods=["POST"])
 def change_staff_password():
 	# GET REQUIRED REQUEST PARAMETERS
-	user_id = session["user_id"]
-	password = request.form.get("password")
-
+	user_id = session.get("user_id")
+	current_password = request.form.get("current_password")
+	new_password = request.form.get("new_password")
 	try:
-		email = get_user(user_id)[4]
-		change_pass_admin(user_id, password)
+		email = get_admin(user_id)[1]
+		if authenticate_admin(email, current_password) is None:
+			# if None returned, password is incorrect
+			return Response("The current password entered was incorrect", status=200, mimetype="text/html")
+		change_pass_admin(user_id, new_password)
 	except:
-		return Response("Could not connect to the database", status=200, mimetype="text/html")
+		return Response("There was an error changing your password, please try again", status=200, mimetype="text/html")
 
 	return Response("Success", status=200, mimetype="text/html")
+
+@app.route("/staff/settings")
+def get_settings_page():
+	if login_check() == "Admin":
+		return render_template("staff_settings.html")
+	return redirect("/")
 
 ## Staff Jobs Page
 @app.route("/staff/jobs")
@@ -483,21 +492,30 @@ def reset_applicant_password():
 
 	return Response("Success", status=200, mimetype="text/html")
 
-## Change staff password
+## Change applicant password
 # Recieves: old_password, new_password
 @app.route("/applicant/change_password", methods=["POST"])
 def change_applicant_password():
 	# GET REQUIRED REQUEST PARAMETERS
-	user_id = session["user_id"]
-	password = request.form.get("password")
-
+	user_id = session.get("user_id")
+	current_password = request.form.get("current_password")
+	new_password = request.form.get("new_password")
 	try:
-		email = get_user(user_id)[4]
-		change_pass_user(user_id, password)
+		email = get_user(user_id)[0][4]
+		if authenticate_user(email, current_password) is None:
+			# if None returned, password is incorrect
+			return Response("The current password entered was incorrect", status=200, mimetype="text/html")
+		change_pass_user(user_id, new_password)
 	except:
-		return Response("Could not connect to the database", status=200, mimetype="text/html")
+		return Response("There was an error changing your password, please try again", status=200, mimetype="text/html")
 
 	return Response("Success", status=200, mimetype="text/html")
+
+@app.route("/applicant/settings")
+def get_applicant_settings_page():
+	if login_check() == "Applicant":
+		return render_template("applicant_settings.html")
+	return redirect("/")
 
 ## Applicant Jobs Page
 @app.route("/applicant/jobs")

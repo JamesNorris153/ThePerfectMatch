@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="/static/css/bulma_min.css">
+  <title>Admin Settings</title>
+</head>
+<style>
+  body {
+    background-image: url("/static/imgs/lines.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+  .changePasswordForm {
+    max-width:450px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .changePasswordForm * {
+    margin-bottom:5px;
+  }
+</style>
+<body>
+  {% include 'header.html' %}
+  <div class="hero">
+    <section class="hero is-fullheight">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <div class="column is-4 is-offset-4">
+        <p class="subtitle">Change Your Password</p>
+        <form class="box changePasswordForm" onsubmit="changePassword(old,new_pass,confirm); return false;">
+          <input class="input is-large" type="password" placeholder="Current Password" name="old">
+          <input class="input is-large" type="password" placeholder="New Password" name="new_pass">
+          <input class="input is-large" type="password" placeholder="Confirm Password" name="confirm">
+          <input class="button is-info is-block is-large is-fullwidth" type="submit" value="Change Password">
+          <p id="change_error" class="has-text-danger">{{ error }}</p>
+        </form>
+      </div>
+    </div>
+    </div>
+  </section>
+  </div>
+</body>
+<script src="/static/js/jquery-3.3.1.min.js"></script>
+<script src="/static/js/staff_settings.js"></script>
+</html>
