@@ -1206,3 +1206,22 @@ def jsonify_cv(cv):
     cv_dict["skills"] = skills
 
     return json.dumps(cv_dict)
+
+
+def get_untrained_cv_number(job_id):
+    """Gets the number of cvs for a job that have not been used in training"""
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT COUNT(cv_id) FROM job_cv WHERE job_id=(?) and status=0 and score!=-1',(job_id,))
+    cv_num = cur.fetchone()[0]
+    con.close()
+    return cv_num
+
+def get_liked_disliked_cv_number(job_id):
+    """Gets the number of cvs for a job that have been liked or disliked"""
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT COUNT(cv_id) FROM job_cv WHERE job_id=(?) and status!=0',(job_id,))
+    cv_num = cur.fetchone()[0]
+    con.close()
+    return cv_num

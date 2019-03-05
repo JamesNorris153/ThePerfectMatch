@@ -98,15 +98,24 @@ $('#job_table').on('click', '.delete_button', function(event) {
     });
 });
 
+function showRetrainModal(message) {
+  $('#retrain_modal .modal-message').html(message);
+  $('#retrain_modal').addClass('is-active');
+}
+
+function closeRetrainModal() {
+  $('#retrain_modal').removeClass('is-active');
+}
+
 // Add functionality for the delete job button
 $('#job_table').on('click', '.retrain_button', function(event) {
     var job_id = $(this).parent().parent().parent().attr('id');
     // POST the job id for the job being delete to the database so that it can be deleted
     $.post("/staff/retrain_job",{job_id:job_id},function(data) {
       if (data == "Success") {
-        alert("Success");
+        showRetrainModal("Retraining has begun for your job. You will receive an email to let you know when it is completed.");
       } else {
-        alert(data);
+        showRetrainModal(data);
       }
     });
 });

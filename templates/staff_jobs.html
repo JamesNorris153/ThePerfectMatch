@@ -14,6 +14,16 @@
 <body class="has-navbar-fixed-top">
   {% include 'header.html' %}
 
+  <div class="modal" id="retrain_modal">
+    <div class="modal-background" onclick="closeRetrainModal();"></div>
+    <div class="modal-content">
+      <div class="box has-text-centered">
+        <div class="modal-message"></div>
+        <button class="modal-close is-large" aria-label="close" onclick="closeRetrainModal();"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="job_modal">
     <div class="modal-background" onclick="closeJobModal();"></div>
     <div class="modal-card">

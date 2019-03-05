@@ -387,11 +387,21 @@ def retrain_job():
 		# GET REQUIRED REQUEST PARAMETERS
 		job_id = request.form.get("job_id")
 
+		# Only call retrain if:
+		# at least 1 cv has score 0
+		# at least 1 cv has been liked/disliked
+		cvs_to_score = get_untrained_cv_number(job_id)
+		if cvs_to_score == 0:
+			return Response("Your suggestions are currently up to date and the system does not require retraining",status=200,mimetype="text/html")
+
+		cvs_liked_or_disliked = get_liked_disliked_cv_number(job_id)
+		if cvs_liked_or_disliked == 0:
+			return Response("You must provide feedback for at least one cv before you can retrain the system",status=200,mimetype="text/html")
 		# PERFORM ML RETRAINING
-		# try:
-		retrain(job_id)
-		# except:
-		# 	return Response("Could not update data in the database", status=200, mimetype="text/html")
+		try:
+			retrain(job_id)
+		except:
+			return Response("Their was an issue retraining your data please try again later", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
