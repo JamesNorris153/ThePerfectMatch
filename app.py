@@ -8,7 +8,7 @@ import random
 
 from users import *
 from ml import retrain
-import tasks
+# import tasks
 import os
 
 ## Session variables
@@ -19,7 +19,8 @@ import os
 
 app = Flask(__name__, static_url_path='/static')
 
-celery = Celery(app.name)
+# celery = Celery(app.name)
+celery=Celery(app.name,broker='sqla+sqlite:///database.db')
 
 CORS(app)
 # Email Setup
@@ -51,11 +52,15 @@ def pass_mail(candidate):
 	mail.send(msg)
 	return "Sent"
 
-def send_retraining_complete_mail(job_id):
-	# msg = Message('Retraining Complete', sender = 'PerfectCandidate.Notifications@gmail.com', recipients = email)
-	# msg.body = message
-	# mail.send(msg)
-	return "Sent"
+# Celery Task to perform in the background
+@celery.task
+def retrain_job_in_background(job_id,email):
+	with app.app_context():
+		retrain(job_id)
+		msg = Message('Retraining Complete', sender = 'PerfectCandidate.Notifications@gmail.com')
+		msg.add_recipient(email)
+		msg.body = 'The retraining you requested has been complete. Please go to ThePerfectCandidate to view the results.'
+		mail.send(msg)
 
 ## Function to check whether user is logged in
 # Returns account_type or None if not logged in
@@ -400,6 +405,7 @@ def retrain_job():
 		# Only call retrain if:
 		# at least 1 cv has score 0
 		# at least 1 cv has been liked/disliked
+		
 		cvs_to_score = get_untrained_cv_number(job_id)
 		if cvs_to_score == 0:
 			return Response("Your suggestions are currently up to date and the system does not require retraining",status=200,mimetype="text/html")
@@ -407,14 +413,16 @@ def retrain_job():
 		cvs_liked_or_disliked = get_liked_disliked_cv_number(job_id)
 		if cvs_liked_or_disliked == 0:
 			return Response("You must provide feedback for at least one cv before you can retrain the system",status=200,mimetype="text/html")
-		# PERFORM ML RETRAINING
-		# try:
+		# Try to being ML Retraining
+		try:
+			# Get the current user's email to know who to send the complete email to
+			user_id = session.get('user_id')
+			email = get_admin(user_id)[1]
 
-		# task = retrain_job_in_background.delay(job_id)
-		task = tasks.retrain_job_in_background.delay(job_id=job_id)
-		# retrain(job_id)
-		# except:
-		# 	return Response("Their was an issue retraining your data please try again later", status=200, mimetype="text/html")
+			# Begin the retraining in the background with the job_id and user's email as parameters
+			task = retrain_job_in_background.apply_async(args=[job_id,email])
+		except:
+			return Response("Their was an issue retraining your data please try again later", status=200, mimetype="text/html")
 
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
