@@ -5,18 +5,19 @@ import ml_test_func
 import re
 
 def test(jobID, numOfTrainingData, numOfTestData):
-    cvs = users.select_cvs(jobID)
+    # cvs = users.select_cvs(jobID)
+    cvs = users.select_cvs_completed(jobID)
     if numOfTestData + numOfTrainingData > len(cvs): return
-    # skills = users.selectAllSkills()
-    # languages = users.selectAllLanguages()
-    # ALevels = users.selectAllAlevels()
-    # hobbies = users.selectAllHobbies()
-    # employment = users.selectAllEmployment()
-    skills = users.selectAllSkills(jobID)
-    languages = users.selectAllLanguages(jobID)
-    ALevels = users.selectAllAlevels(jobID)
-    hobbies = users.selectAllHobbies(jobID)
-    employment = users.selectAllEmployment(jobID)
+    skills = users.selectAllSkills()
+    languages = users.selectAllLanguages()
+    ALevels = users.selectAllAlevels()
+    hobbies = users.selectAllHobbies()
+    employment = users.selectAllEmployment()
+    # skills = users.selectAllSkills(jobID)
+    # languages = users.selectAllLanguages(jobID)
+    # ALevels = users.selectAllAlevels(jobID)
+    # hobbies = users.selectAllHobbies(jobID)
+    # employment = users.selectAllEmployment(jobID)
 
     dict = {'A*' : 10, 'A' : 9, 'B' : 8, 'C' : 7, 'D' : 6}
 
