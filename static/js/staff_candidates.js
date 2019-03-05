@@ -33,7 +33,6 @@ function refreshCandidates() {
         candidate_id = candidate["ID"];
         candidate_name = candidate["First Name"]+" "+candidate["Last Name"];
         candidate_email = candidate["Email"];
-        // candidate_score = candidate["Score"];
         candidate_score = parseInt(i)+1;
         candidate_cv = candidate["CVID"];
         if (candidate["Status"] == 0) {
@@ -53,7 +52,6 @@ function refreshCandidates() {
         $(candidate_element).find('.cv_button').attr('onclick','showCVModal(this,'+candidate_cv+');');
 
         // Insert job at top of table
-        // $(candidate_element).insertAfter($(candidate_template));
         $(candidate_element).insertAfter($('.candidate:last-of-type'));
       }
 
