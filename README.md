@@ -9,3 +9,8 @@ Modules Required:
 - bcrypt
 - sqlite3
 - json
+- celery
+
+To start app run:
+celery worker -A app.celery &
+python app.py
