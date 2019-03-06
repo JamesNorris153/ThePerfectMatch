@@ -36,11 +36,11 @@ function refreshCandidates() {
         candidate_score = parseInt(i)+1;
         candidate_cv = candidate["CVID"];
         if (candidate["Status"] == 0) {
-          candidate_status = "Unknown";
+          candidate_status = "Awaiting";
         } else if (candidate["Status"] == 1) {
-          candidate_status = "Like";
+          candidate_status = "Liked";
         } else {
-          candidate_status = "Dislike";
+          candidate_status = "Disliked";
         }
 
         // Insert all data into new row in table
@@ -57,9 +57,9 @@ function refreshCandidates() {
 
       // Get applicant statistics and display them in the top bar
       applicant_number = candidates.length;
-      liked_applicant_number = $('.candidate_status:contains("Like")').length;
-      disliked_applicant_number = $('.candidate_status:contains("Dislike")').length;
-      unknown_applicant_number = $('.candidate_status:contains("Unknown")').length;
+      liked_applicant_number = $('.candidate_status:contains("Liked")').length;
+      disliked_applicant_number = $('.candidate_status:contains("Disliked")').length;
+      unknown_applicant_number = $('.candidate_status:contains("Awaiting")').length;
       $('#total_applicants').html(applicant_number);
       $('#liked_applicants').html(liked_applicant_number);
       $('#disliked_applicants').html(disliked_applicant_number);
@@ -183,10 +183,10 @@ function showCVModal(element,cv_id) {
     candidate_email = $(element).parent().parent().find('.candidate_email').html();
 
     // Display the correct Like/Dislike buttons from the candidate_status
-    if (candidate_status == "Like") {
+    if (candidate_status == "Liked") {
       $('.dislike_button').addClass('is-hidden').removeClass('is-danger').html('Dislike');
       $('.like_button').addClass('is-success').removeClass('is-hidden').html('Liked');
-    } else if (candidate_status == "Dislike") {
+    } else if (candidate_status == "Disliked") {
       $('.like_button').addClass('is-hidden').removeClass('is-success').html('Like');
       $('.dislike_button').addClass('is-danger').removeClass('is-hidden').html('Disliked');
     } else {
@@ -219,7 +219,7 @@ function likeCandidate(cv_id,candidate_id,button) {
       // Don't let the admin like the same person again
       $(button).attr('onclick','').html("Liked").addClass('is-success');
       $(button).parent().find('.dislike_button').addClass('is-hidden');
-      $('#'+candidate_id).find('.candidate_status').html('Like');
+      $('#'+candidate_id).find('.candidate_status').html('Liked');
 
       // Update the applicant stats
       unknown_applicant_number = Number($('#unknown_applicants').html());
@@ -241,7 +241,7 @@ function dislikeCandidate(cv_id,candidate_id,button) {
       // Don't let the admin dislike the same person again
       $(button).attr('onclick','').html("Disliked").addClass('is-danger');
       $(button).parent().find('.like_button').addClass('is-hidden');
-      $('#'+candidate_id).find('.candidate_status').html('Dislike');
+      $('#'+candidate_id).find('.candidate_status').html('Disliked');
 
       // Update the applicant stats
       unknown_applicant_number = Number($('#unknown_applicants').html());
