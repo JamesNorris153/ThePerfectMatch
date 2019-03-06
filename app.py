@@ -428,31 +428,24 @@ def retrain_job():
 		return Response("Success", status=200, mimetype="text/html")
 	return Response("You are not logged in", status=200, mimetype="text/html")
 
-@app.route("/staff/email_report")
-def email_report():
-	if login_check() == "Admin":
-		# GET REQUIRED REQUEST PARAMETERS
-		job_id = request.form.get("job_id")
-		user_id = session["user_id"]
+def email_report(job_id):
+	try:
+		email = str(get_admin(get_job_creator(job_id)[0])[1])
+		print(email)
+		msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
+		msg.add_recipient(email)
 
-		# EMAIL ADMIN
-		try:
-			email = str(get_admin(user_id)[1])
-			msg = Message('Hello', sender = 'PerfectCandidate.Notifications@gmail.com')
-			msg.add_recipient(email)
+		complete_applications = len(all_complete_applications(job_id))
+		incomplete_applications = len(all_applications(job_id)) - complete_applications
+		job_name = str(what_job(job_id)[0][1])
 
-			complete_applications = len(all_complete_applications(job_id))
-			incomplete_applications = len(all_applications(job_id)) - complete_applications
-			job_name = str(what_job(job_id)[0][1])
+		msg.body = "You have " + str(complete_applications) + " completed applications and " + str(incomplete_applications) + " partially complete applications pending for the job " + job_name + ". Please review the applications at http://127.0.0.1:5000/applicant/jobs"
+		msg.header = "Application Report: " + job_name
+		mail.send(msg)
+	except:
+		return Response("Could not send email", status=200, mimetype="text/html")
 
-			msg.body = "Dear " + email + " you have " + str(complete_applications) + " completed applications and " + str(incomplete_applications) + " for the job " + job_name + ". Please review the applications at http://127.0.0.1:5000/applicant/jobs"
-			msg.header = "Application Report: " + job_name
-			mail.send(msg)
-		except:
-			return Response("Could not send email", status=200, mimetype="text/html")
-
-		return Response("Success", status=200, mimetype="text/html")
-	return Response("You are not loggen in", status=200, mimetype="text/html")
+	return Response("Success", status=200, mimetype="text/html")
 
 ## Applicant Pages
 
@@ -676,6 +669,8 @@ def apply_for_job():
 		try:
 			cv_id = get_current_cv(user_id)
 			apply_job(cv_id, job_id)
+			if (all_applications(job_id) % 100) == 0:
+				email_report(job_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 

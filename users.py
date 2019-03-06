@@ -180,6 +180,15 @@ def get_jobs():
     con.close()
     return jobs
 
+def get_job_creator(job_id):
+    """Returns email of the person who created the job."""
+    con = sql.connect(path.join(ROOT, 'database.db'))
+    cur = con.cursor()
+    cur.execute('SELECT creator FROM jobs WHERE id=(?)', (job_id))
+    job = cur.fetchone()
+    con.close()
+    return job
+
 def get_jobs_applicant(user_id):
     """Returns all the available jobs."""
     con = sql.connect(path.join(ROOT, 'database.db'))
