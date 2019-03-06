@@ -8,7 +8,6 @@ import random
 
 from users import *
 from ml import retrain
-# import tasks
 import os
 
 ## Session variables
@@ -19,10 +18,10 @@ import os
 
 app = Flask(__name__, static_url_path='/static')
 
-# celery = Celery(app.name)
 celery=Celery(app.name,broker='sqla+sqlite:///database.db')
 
 CORS(app)
+
 # Email Setup
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -30,6 +29,7 @@ app.config['MAIL_USERNAME'] = 'PerfectCandidate.Notifications@gmail.com'
 app.config['MAIL_PASSWORD'] = 'TPCGroup32'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+
 mail = Mail(app)
 # PerfectCandidate.Notifications@gmail.com Password: TPCGroup32
 
@@ -390,6 +390,7 @@ def delete_job():
 		# DELETE JOB IN DATABASE
 		try:
 			remove_job(job_id)
+			delete_test(job_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
@@ -405,7 +406,7 @@ def retrain_job():
 		# Only call retrain if:
 		# at least 1 cv has score 0
 		# at least 1 cv has been liked/disliked
-		
+
 		cvs_to_score = get_untrained_cv_number(job_id)
 		if cvs_to_score == 0:
 			return Response("Your suggestions are currently up to date and the system does not require retraining",status=200,mimetype="text/html")
