@@ -391,7 +391,6 @@ def delete_job():
 		try:
 			delete_test(job_id)
 			remove_job(job_id)
-			delete_test(job_id)
 		except:
 			return Response("Could not connect to the database", status=200, mimetype="text/html")
 
