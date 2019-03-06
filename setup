@@ -1,0 +1,12 @@
+#!/bin/bash 
+
+pip install flask
+pip install flask_cors
+pip install flask_sqlalchemy
+pip install bcrypt
+pip install numpy
+pip install sklearn
+pip install pandas
+pip install flask_mail
+pip install json
+pip install celery
