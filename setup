@@ -10,3 +10,4 @@ pip install pandas
 pip install flask_mail
 pip install json
 pip install celery
+pip install sqlite3
