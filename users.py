@@ -193,7 +193,7 @@ def get_jobs_applicant(user_id):
     """Returns all the available jobs."""
     con = sql.connect(path.join(ROOT, 'database.db'))
     cur = con.cursor()
-    cur.execute('select * from jobs where status="Available" or id in (select job_id from job_cv where cv_id in (select cv_id from cvs where user_id=(?)))',(user_id,))
+    cur.execute('select * from jobs where status="Available" or id in (select job_id from job_cv where cv_id in (select id from cvs where user_id=(?)))',(user_id,))
     jobs = cur.fetchall()
     con.close()
     return jobs
